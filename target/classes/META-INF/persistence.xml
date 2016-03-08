@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="employmeo" transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>com.employmeo.objects.Account</class>
+		<class>com.employmeo.objects.Answer</class>
+		<class>com.employmeo.objects.Person</class>
+		<class>com.employmeo.objects.Position</class>
+		<class>com.employmeo.objects.Question</class>
+		<class>com.employmeo.objects.Respondant</class>
+		<class>com.employmeo.objects.Response</class>
+		<class>com.employmeo.objects.SurveyQuestion</class>
+		<class>com.employmeo.objects.Survey</class>
+		<class>com.employmeo.objects.User</class>
+		<class>com.employmeo.objects.PayrollEntry</class>
+		<class>com.employmeo.objects.PayrollSummary</class>
+      <properties>
+         <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+         <property name="javax.persistence.jdbc.user" value="employmeo"/>
+         <property name="javax.persistence.jdbc.password" value="employmeo"/>
+         <property name="javax.persistence.jdbc.url" value="jdbc:mysql://employmeo.cbnsxjh8bo1m.us-west-2.rds.amazonaws.com:3306/employmeo"/>
+      </properties>
+	</persistence-unit>
+</persistence>
