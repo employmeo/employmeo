@@ -10,11 +10,11 @@ import javax.mail.internet.*;
 public class EmailUtility {
 
 
+	public static final String FROM_ADDRESS = "info@employmeo.com";
 	public static final String SMTP_USERNAME = "info@employmeo.com"; 
 	private static final String SMTP_PASSWORD  = "employmeo";
 	private static final String SMTP_HOST = "xo7.x10hosting.com";
 	private static final int SMTP_PORT = 465;
-	public static final String FROM_ADDRESS = "info@employmeo.com";
 	
 	private static Logger logger = Logger.getLogger("EmailUtility");
 	

@@ -21,12 +21,18 @@
 			</div>
 			<div class="col-sm-9">
 				<div class="row content">
-					<div class="col-sm-12 col-md-12 col-lg-12">
+							<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
 
-						<div class="panel panel-primary">
-							<div class="panel-heading">Position Analysis</div>
-							<div class="panel-body">
-								<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+								<div class="panel panel-primary">
+									<div class="panel-heading">Applicants
+										<button class="btn-primary pull-right" type="button" onClick="updateRespondantsTable();"><i class="fa fa-refresh"></i></button>
+									</div>
+									<div class="panel-body" id="respondant_list">
+										<table id="respondants" class="table table-hover table-condensed"></table>
+									</div>
+								</div>
+							</div>
+							<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
 									<div class="panel panel-info">
 										<div class="panel-heading">
 											<span class="text-left">Position Profile<i
@@ -39,9 +45,7 @@
 											</div>
 										</div>
 									</div>
-								</div>
-								<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-									<div class="panel panel-info">
+																		<div class="panel panel-info">
 										<div class="panel-heading">
 											<span class="text-left">Position Turnover<i
 												class="fa fa-bar-chart pull-right"></i></span>
@@ -54,29 +58,11 @@
 										</div>
 									</div>
 								</div>
-
-							</div>
-						</div>
-						<div class="row content">
-							<div class="col-sm-12 col-md-12 col-lg-12">
-
-								<div class="panel panel-primary">
-									<div class="panel-heading">Applicants
-										<button class="btn-primary pull-right" type="button" onClick="updateRespondantsTable();"><i class="fa fa-refresh"></i></button>
-									</div>
-									<div class="panel-body" id="respondant_list">
-										<table id="respondants" class="table table-hover table-condensed"></table>
-									</div>
-								</div>
-							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			</div>
-			</div>
 			<script type="text/javascript">
-				updatePositionTenure();
 				updatePositionProfile();
 				initRespondantsTable()
 			</script>

@@ -26,23 +26,8 @@
 
 .qpanel .qpanel-body { padding: 0 !important; overflow: hidden; height: auto; z-index: 1; max-width: 100%; max-height: 100%;}
 .qpanel .qpanel-body a { overflow: hidden; }
-.qpanel .qpanel-body a img {
-	position: relative;
-    display: block;
-    margin: 0;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
-    max-width: 100%;
-    max-height: 100%;
-    overflow: auto; 
-    transition: all 0.5s; 
-    -moz-transition: all 0.5s; 
-    -webkit-transition: all 0.5s; 
-    -o-transition: all 0.5s; 
-}
-.qpanel .qpanel-header, .qpanel .qpanel-footer { 
+
+.qpanel .qpanel-header, .qpanel .qpanel-body, .qpanel .qpanel-footer  { 
 	padding: 8px !important;
 	position: fixed;
 	width: 100%;
@@ -51,9 +36,10 @@
 	z-index: 2;
 	opacity: 0.75; -moz-opacity: 0.75; -webkit-opacity: 0.75; filter: alpha(opacity=85); -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
 }	
-.qpanel .qpanel-header h4, .qpanel .qpanel-footer h4 { display: inline; font-family: Comfortaa,Arial,Verdana,sans-serif; font-size: 30px; color: #34495e margin: 0 !important; padding: 0 !important; }
-.qpanel .qpanel-header div, .qpanel .qpanel-footer div { display: inline; font-family: Comfortaa,Arial,Verdana,sans-serif; font-size: 36px; color: #34495e; text-align: center; background-color: transparent !important; border: none !important; }	
+.qpanel .qpanel-header h4, .qpanel .qpanel-body h4, .qpanel .qpanel-footer h4 { display: inline; font-family: Comfortaa,Arial,Verdana,sans-serif; font-size: 30px; color: #34495e margin: 0 !important; padding: 0 !important; }
+.qpanel .qpanel-header div, .qpanel .qpanel-body div, .qpanel .qpanel-footer div { display: inline; font-family: Comfortaa,Arial,Verdana,sans-serif; font-size: 36px; color: #34495e; text-align: center; background-color: transparent !important; border: none !important; }	
 .qpanel .qpanel-header { top: 0; }
+.qpanel .qpanel-body { top: auto; bottom: auto; }
 .qpanel .qpanel-footer { 
 	bottom: 20px;
     border-radius: 10px;

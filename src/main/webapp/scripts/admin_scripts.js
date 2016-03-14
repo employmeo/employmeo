@@ -31,7 +31,7 @@ function initRespondantsTable() {
 	  rTable = $('#respondants').DataTable( {
 	    	"order": [[ 0, 'desc' ]],
 	    	columns: [
-	    	     { title: 'Completed At', data: 'respondant_created_date'},
+	    	     { title: 'Completed At', data: 'respondant_created_date', 'type' : 'date'},
 	    	     { title: 'Respondant ID', data: 'respondant_id'},
 	    	     { title: 'First Name', data: 'respondant_person_fname'},
 	    	     { title: 'Last Name', data: 'respondant_person_lname'},
@@ -65,8 +65,10 @@ function updateRespondantsTable() {
 			  rTable.clear();
 			  $('#respondants').dataTable().fnAddData(response);
 			  rTable.$('tr').click(function (){
+		          rTable.$('tr.selected').removeClass('selected');
+		          $(this).addClass('selected');
 				  var respondant = $('#respondants').dataTable().fnGetData(this);
-				  window.alert(respondant);
+				  showApplicantScoring(respondant);
 			  });
            }
          });
@@ -175,6 +177,11 @@ function refreshDashCharts(response) {
 	
 }
 
+function showApplicantScoring(applicantData) {
+    refreshPositionTenure(getPositionTenureData()); //use stub code	
+    refreshPositionProfile(getApplicantProfileData()); //use stub code		
+}
+
 function updatePositionTenure(pos_id) {
     refreshPositionTenure(getPositionTenureData()); //use stub code	
 }
@@ -211,7 +218,7 @@ function uploadPayroll(e) {
 			    	     { title: 'Employee ID', data: 'employee'},
 			    	     { title: 'Raise Rate', data: 'RaiseRate'},
 			    	     { title: 'Total Hours', data: 'Total Hours' },
-			    	     { title: 'Tenue', data: 'Tenure' },
+			    	     { title: 'Tenure', data: 'Tenure' },
 			    	     { title: 'Monthly Hours', data: 'Monthly Hours' }
 			    	]
 			    

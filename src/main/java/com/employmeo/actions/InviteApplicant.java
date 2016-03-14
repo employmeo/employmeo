@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 
 import com.employmeo.EmpFormResponse;
-import com.employmeo.objects.Account;
 import com.employmeo.objects.Person;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Survey;
@@ -43,7 +42,7 @@ public class InviteApplicant extends MPFormAction {
 		  
 		  Respondant respondant = new Respondant();
 		  respondant.setPerson(applicant);
-		  respondant.setAccount(Account.getAccountById(accountId));
+		  respondant.setRespondantAccountId(accountId);
 		  respondant.setSurvey(Survey.getSurveyById(surveyId));
 		  respondant.persistMe();
 		  

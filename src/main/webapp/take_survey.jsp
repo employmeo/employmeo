@@ -41,17 +41,31 @@ if (respondantID != null) {
 	person.setPersonFname(RandomizerUtil.randomFname());
 	person.setPersonLname(RandomizerUtil.randomLname());
 	person.setPersonEmail(RandomizerUtil.randomEmail(person));
-	person.persistMe();
+	person.mergeMe();
 	respondant = new Respondant();
 	respondant.setSurvey(survey);
 	respondant.setRespondantAccountId(survey.getAccount().getAccountId());
 	respondant.setPerson(person);
-	respondant.persistMe();
+	respondant.mergeMe();
 }
 
 if ((survey != null) && (respondant != null)){
 	Question question = null;
 	List<SurveyQuestion> questions = survey.getSurveyQuestions();
+%>	
+		<div>
+            <div class="qpanel qpanel-default" style="background-image:url('/images/background-1.jpg');">
+				<div class="qpanel-header text-center">
+					<h4>Welcome</h4>
+				</div>        
+                <div class="qpanel-footer text-center">
+                    <h4>Swipe to the left to begin
+                    <i class="fa fa-play-circle-o" onClick='mySwipe.next();'></i></h4>
+				</div>
+			</div>
+		</div>
+	
+<%	
 		for (int j=0;j<questions.size();j++){
 			question = questions.get(j).getQuestion();
 			int type = question.getQuestionType();
@@ -61,13 +75,7 @@ if ((survey != null) && (respondant != null)){
             <div class="qpanel qpanel-default" style="background-image:url('/images/question-<%=question.getQuestionDisplayId() %>.jpg');">
 				<div class="qpanel-header text-center">
 					<h4><%=question.getQuestionText() %></h4>
-				</div>
-                <div class="qpanel-body">
-                    <a href="#" class="zoom">
-                        <!-- img src="/images/question-<%=question.getQuestionId() %>.jpg"-->
-                    </a>
-                </div>
-           
+				</div> 
                 <div class="qpanel-footer">  
 					<form name="question_<%=question.getQuestionId()%>" action="/response">
 					<input name="response_id" type="hidden" id="qr<%=question.getQuestionId()%>" value="">
@@ -219,11 +227,7 @@ if (type==1) {
             <div class="qpanel qpanel-default" style="background-image:url('/images/background-1.jpg');">
 				<div class="qpanel-header text-center">
 					<h4>Thank You</h4>
-				</div>
-                <div class="qpanel-body">
-                    <a href="#" class="zoom">
-                    </a>
-                </div>           
+				</div>       
                 <div class="qpanel-footer text-center">
                     <button type="button">Finish</button>
 				</div>
