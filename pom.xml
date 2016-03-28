@@ -10,7 +10,6 @@
 	<packaging>war</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<mysql-version>5.1.38</mysql-version>
 		<json-version>20151123</json-version>
 		<tomcat-version>8.0.30</tomcat-version>
 	</properties>
@@ -19,11 +18,6 @@
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-catalina</artifactId>
 			<version>${tomcat-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql-version}</version>
 		</dependency>
 		<dependency>
 		  	<groupId>org.postgresql</groupId>
@@ -67,6 +61,11 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-    	</plugins>
+	      <plugin>
+	        <groupId>com.heroku.sdk</groupId>
+	        <artifactId>heroku-maven-plugin</artifactId>
+	        <version>1.0.0</version>
+	      </plugin>
+       	</plugins>
 	</build>
 </project>
