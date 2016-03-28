@@ -1,0 +1,30 @@
+<Context reloadable="true">
+
+<!-- url="jdbc:mysql://employmeo.cbnsxjh8bo1m.us-west-2.rds.amazonaws.com:3306/employmeo?useUnicode=true&amp;characterEncoding=utf8" -->
+    <Resource name="jdbc/mydb"
+              auth="Container"
+              type="javax.sql.DataSource"
+              username="employmeo"
+              password="employmeo"
+              driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://employmeo.cbnsxjh8bo1m.us-west-2.rds.amazonaws.com:3306/employmeo?useUnicode=true&amp;characterEncoding=utf8"
+              removeAbandoned="true"
+              removeAbandonedTimeout="60"
+              maxActive="15"
+              maxIdle="5"
+              minIdle="2"
+              testOnBorrow="true"
+              defaultTransactionIsolation="READ_COMMITTED"
+              validationQuery="/* ping */Select 1" 
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+              />
+    <Resource name="mail/Session"
+    		  auth="Container"
+    		  type="javax.mail.Session"
+    		  mail.smtp.host="xo7.x10hosting.com"
+          	  mail.smtp.port="465"
+          	  mail.smtp.auth="true"
+          	  mail.smtp.user="info@employmeo.com"
+          	  mail.smtp.password="employmeo" 
+          	  mail.smtp.starttls.enable="true"/>
+</Context>

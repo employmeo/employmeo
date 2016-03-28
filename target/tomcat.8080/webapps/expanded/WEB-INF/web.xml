@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    
+     xmlns:web="http://xmlns.jcp.org/xml/ns/javaee"
+     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
+     version="3.1">
+  <display-name>employmeo</display-name>
+  <description>
+	employmeo.com - a new way to attract and evaluate talent
+    </description>
+  <servlet>
+    <servlet-name>employmeo</servlet-name>
+    <servlet-class>com.employmeo.EmpAdminServlet</servlet-class>
+    <init-param>
+      <param-name>readonly</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <servlet-name>survey</servlet-name>
+    <servlet-class>com.employmeo.EmpSurveyResponseServlet</servlet-class>
+    <init-param>
+      <param-name>readonly</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>employmeo</servlet-name>
+    <url-pattern>/mp</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>survey</servlet-name>
+    <url-pattern>/response</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>charsetFilter</filter-name>
+    <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>charsetFilter</filter-name>
+    <url-pattern>/mp,/response</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>autoLoginFilter</filter-name>
+    <filter-class>com.employmeo.EmpAutoLoginFilter</filter-class>
+    <init-param>
+      <param-name>unrestrictedPages</param-name>
+      <param-value>/take_survey.jsp,/login.jsp,/test.jsp,/error.jsp</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>autoLoginFilter</filter-name>
+    <url-pattern>*.jsp</url-pattern>
+  </filter-mapping>
+  <resource-ref>
+    <description>MyDB Datasource</description>
+    <res-ref-name>jdbc/mydb</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  <resource-ref>
+    <description>Ref to factory for javax.mail.Session for sending email</description>
+    <res-ref-name>mail/Session</res-ref-name>
+    <res-type>javax.mail.Session</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  <error-page>
+    <exception-type>java.lang.Throwable</exception-type>
+    <location>/error.jsp</location>
+  </error-page>
+</web-app>
