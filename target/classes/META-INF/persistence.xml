@@ -15,10 +15,10 @@
 		<class>com.employmeo.objects.PayrollEntry</class>
 		<class>com.employmeo.objects.PayrollSummary</class>
       <properties>
-         <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-         <property name="javax.persistence.jdbc.user" value="employmeo"/>
-         <property name="javax.persistence.jdbc.password" value="employmeo"/>
-         <property name="javax.persistence.jdbc.url" value="jdbc:mysql://employmeo.cbnsxjh8bo1m.us-west-2.rds.amazonaws.com:3306/employmeo"/>
+         <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+         <property name="javax.persistence.jdbc.user" value="rcxzyapqgrcncf"/>
+         <property name="javax.persistence.jdbc.password" value="QvKLIqbL3hR7Hazq1YhxYNd8IA"/>
+         <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://ec2-54-225-199-108.compute-1.amazonaws.com:5432/d69d4tsc1nrle9?currentSchema=employmeo&amp;sslmode=require"/>
       </properties>
 	</persistence-unit>
 </persistence>
