@@ -1,0 +1,1 @@
+web: java -jar target/dependency/webapp-runner.jar target/adminserver-1.0.war
