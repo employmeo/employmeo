@@ -21,7 +21,7 @@ public class Person extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="person_id")
-	private String personId;
+	private Integer personId;
 
 	@Column(name="person_city")
 	private String personCity;
@@ -57,11 +57,11 @@ public class Person extends PersistantObject implements Serializable {
 	public Person() {
 	}
 
-	public String getPersonId() {
+	public Integer getPersonId() {
 		return this.personId;
 	}
 
-	public void setPersonId(String personId) {
+	public void setPersonId(Integer personId) {
 		this.personId = personId;
 	}
 

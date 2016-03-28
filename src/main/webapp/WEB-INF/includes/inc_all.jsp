@@ -5,7 +5,7 @@
 <%@ page import="com.employmeo.*" %>
 <%@ page import="com.employmeo.util.*" %>
 <%@ page import="com.employmeo.objects.*" %>
-<%@page contentType="text/html; charset=UTF-8" %> 
+<%@ page contentType="text/html; charset=UTF-8" %> 
 <%
    Locale locale = (Locale) session.getAttribute("locale");
    if (locale == null) locale = Locale.ENGLISH;
