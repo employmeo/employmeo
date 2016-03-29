@@ -38,6 +38,9 @@ public class Question extends PersistantObject implements Serializable {
 
 	@Column(name="QUESTION_TYPE")
 	private int questionType;
+	
+	@Column(name="QUESTION_COREFACTOR_ID")
+	private int questionCorefactorId;
 
 	//bi-directional many-to-one association to Answer
 	@OneToMany(mappedBy="question")
@@ -102,6 +105,14 @@ public class Question extends PersistantObject implements Serializable {
 		this.questionType = questionType;
 	}
 
+	public int getQuestionCorefactorID() {
+		return this.questionCorefactorId;
+	}
+
+	public void setQuestionCorefactorId(int questionCorefactorId) {
+		this.questionCorefactorId = questionCorefactorId;
+	}
+
 	public List<Answer> getAnswers() {
 		return this.answers;
 	}
@@ -132,18 +143,18 @@ public class Question extends PersistantObject implements Serializable {
 		this.responses = responses;
 	}
 
-	public Response addRespons(Response respons) {
-		getResponses().add(respons);
-		respons.setQuestion(this);
+	public Response addResponse(Response response) {
+		getResponses().add(response);
+		response.setQuestion(this);
 
-		return respons;
+		return response;
 	}
 
-	public Response removeRespons(Response respons) {
-		getResponses().remove(respons);
-		respons.setQuestion(null);
+	public Response removeResponse(Response response) {
+		getResponses().remove(response);
+		response.setQuestion(null);
 
-		return respons;
+		return response;
 	}
 
 	public List<SurveyQuestion> getSurveyQuestions() {
@@ -196,6 +207,7 @@ public class Question extends PersistantObject implements Serializable {
 		json.put("question_display_id", this.questionDisplayId);
 		json.put("question_text", this.questionText);
 		json.put("question_type", this.questionType);
+		json.put("question_corefactor_id", this.questionCorefactorId);
 		for (int i=0; i<this.answers.size();i++) {
 			json.accumulate("answers", this.answers.get(i).getJSON());
 		}

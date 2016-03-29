@@ -16,6 +16,8 @@
 	<Form name="login" class="com.employmeo.actions.Login" success="/index.jsp"/>
 	<Form name="logout" class="com.employmeo.actions.Logout" success="/index.jsp"/>
 	<Form name="getfullsurvey" class="com.employmeo.actions.GetFullSurvey" success="/index.jsp"/>
+	<Form name="getlocationlist" class="com.employmeo.actions.GetLocationList" success="/index.jsp"/>
+	<Form name="getsurveylist" class="com.employmeo.actions.GetSurveyList" success="/index.jsp"/>
 	<Form name="getpositionlist" class="com.employmeo.actions.GetPositionList" success="/index.jsp"/>
 	<Form name="getrespondants" class="com.employmeo.actions.GetRespondants" success="/index.jsp"/>
 	<Form name="forgotpassword" class="com.employmeo.actions.ForgotPasswordEmail" success="/forgot_password_sent.jsp"/>
@@ -29,5 +31,6 @@
 	<Form name="settimezone" class="com.employmeo.actions.SetDefaultTimeZone" success="/index.jsp"/>
 	<Form name="joinfamily" class="com.employmeo.actions.JoinFamily" success="/edit_user.jsp"/>
 	<facebook appID="632766126762351" appSecret="a849f7f7eb3124e45110ab6f3d710ba4"/>
+	<googlemaps apiKey="AIzaSyA2bSTr1nfJEneqGPFjpJTASqy8P7cVyrc"/>
 	<amazon awsAccessID="AKIAJV5LNHMMOG63C4XA" associateTag="merit06-20" secretKey="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"/>	
 </config>

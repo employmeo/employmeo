@@ -37,7 +37,7 @@ public class CreateQuestion extends MPFormAction {
 		  survey.setSurveyName(surveyName);
 		  survey.setSurveyStatus(1);
 		  survey.setSurveyType(1);
-		  survey.persistMe();
+		  survey.mergeMe();
 		  
 		  fRes.setSuccess(true);
 		  

@@ -27,7 +27,7 @@ public class CreateAccount extends MPFormAction {
 		  account.setAccountCurrency(accountCurrency);
 		  account.setAccountName(accountName);
 		  account.setAccountTimezone(accountTimezone);
-		  account.persistMe();
+		  account.mergeMe();
 		  fRes.setSuccess(true);
 		  
 		  JSONObject json = new JSONObject();

@@ -40,7 +40,7 @@ public class CreatePosition extends MPFormAction {
 		  if (tenure != null) {
 			  position.setPositionTargetTenure(new BigDecimal(tenure));
 		  }
-		  position.persistMe();  
+		  position.mergeMe();  
 		  fRes.setSuccess(true);
 		  
 

@@ -12,5 +12,4 @@
     </div>
     <div class="row"><div class="pane"><button class="fbbutton" onclick='location="<%=response.encodeURL("/scoreboard.jsp")%>";return false;'><%=LocaleHelper.getMessage(locale, "return")%></button></div></div>
 </div>
-<%@ include file="/WEB-INF/includes/inc_footer.jsp" %>
 </html>

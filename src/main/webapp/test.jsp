@@ -35,25 +35,16 @@
   </div>
   <div class="form-group form-inline">
     <label for="location">Location:</label>
-    <select class="form-control" id="location">
+    <select class="form-control" id="location_id">
         <option>all</option>
-        <option>store 1</option>
-        <option>store 2</option>
-        <option>store 3</option>
     </select>
         <label for="position">Position:</label>
     <select class="form-control" id="position_id">
         <option>all</option>
-        <option>clerk</option>
-        <option>cook</option>
-        <option>manager</option>
     </select>
         <label for="position">Survey:</label>
     <select class="form-control" id="survey_id" name="survey_id">
-        <option>one</option>
-        <option value="2">two</option>
-        <option value="3">three</option>
-        <option>four</option>
+        <option>all</option>
     </select>
   </div>
   <div class="form-group form-inline">
@@ -114,6 +105,10 @@
   </div>
 </div>
 
+<script>
+  updatePositionsSelect();
+  updateLocationsSelect();
+  updateSurveysSelect();
+</script>
 
-<%@ include file="/WEB-INF/includes/inc_footer.jsp" %>
 </html>

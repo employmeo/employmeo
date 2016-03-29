@@ -52,9 +52,6 @@ public class User extends PersistantObject implements Serializable {
 	@Column(name="USER_PASSWORD")
 	private String userPassword;
 
-	@Column(name="USER_PERSIST_LOGIN")
-	private boolean userPersistLogin;
-
 	@Column(name="USER_STATUS")
 	private int userStatus;
 
@@ -143,14 +140,6 @@ public class User extends PersistantObject implements Serializable {
 
 	public void setUserPassword(String userPassword) {
 		this.userPassword = userPassword;
-	}
-
-	public boolean getUserPersistLogin() {
-		return this.userPersistLogin;
-	}
-
-	public void setUserPersistLogin(boolean userPersistLogin) {
-		this.userPersistLogin = userPersistLogin;
 	}
 
 	public int getUserStatus() {
@@ -248,7 +237,6 @@ public class User extends PersistantObject implements Serializable {
 		json.put("user_lname", this.userLname);
 		json.put("user_status", this.userStatus);
 		json.put("user_type", this.userType);
-		json.put("user_persist_login", this.userPersistLogin);
 		json.put("user_locale", this.userLocale);
 		
 		if (this.account != null) json.put("user_account", this.account.getJSON());

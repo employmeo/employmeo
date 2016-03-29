@@ -103,6 +103,4 @@
 	<script type="text/javascript">
 		updatePositionsNav();
 	</script>
-
-	<%@ include file="/WEB-INF/includes/inc_footer.jsp"%>
 </html>

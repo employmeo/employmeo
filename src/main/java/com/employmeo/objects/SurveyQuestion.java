@@ -29,6 +29,9 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 
 	@Column(name="SQ_SEQENCE")
 	private int sqSeqence;
+	
+	@Column(name="SQ_PAGE")
+	private int sqPage;
 
 	//bi-directional many-to-one association to Question
 	@ManyToOne
@@ -75,6 +78,14 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 		this.sqSeqence = sqSeqence;
 	}
 
+	public int getSqPage() {
+		return this.sqPage;
+	}
+
+	public void setSqPage(int sqPage) {
+		this.sqPage = sqPage;
+	}
+	
 	public Question getQuestion() {
 		return this.question;
 	}

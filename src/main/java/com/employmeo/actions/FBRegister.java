@@ -29,7 +29,6 @@ public class FBRegister extends MPFormAction {
 	        	graph = FaceBookHelper.getGraph(token);
 	           	user = FaceBookHelper.getUserFromGraph(graph);
 	           	user.setUserLocale(locale.getLanguage());
-	           	user.setUserPersistLogin(false);
 	           	
 	            //helper.createDBObject(user);
 	            //user.setAttribute("timezoneOffset", timezoneOffset);

@@ -25,7 +25,7 @@ public class FBGrant extends MPFormAction {
             	fRes.put("fbToken", token);
                	graph = FaceBookHelper.getGraph(token);
                	FaceBookHelper.mergeUserWithGraph(graph,user);
-               	user.persistMe();
+               	user.mergeMe();
                	sess.setAttribute("fbToken", token);
         	} catch (Exception e) {
                 fRes.setSuccess(false);

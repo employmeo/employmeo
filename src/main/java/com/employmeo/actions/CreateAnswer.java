@@ -43,7 +43,7 @@ public class CreateAnswer extends MPFormAction {
 		  answer.setAnswerDescription(answerDescription);
 		  answer.setAnswerText(answerText);
 		  
-		  answer.persistMe();
+		  answer.mergeMe();
 		  
 		  fRes.setSuccess(true);
 		  

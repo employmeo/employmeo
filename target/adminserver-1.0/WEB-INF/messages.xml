@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE messages [
+	<!ELEMENT messages ANY>
+	<!ELEMENT message ANY>
+	<!ATTLIST message locale CDATA #REQUIRED>
+	<!ATTLIST message key CDATA #REQUIRED>
+	<!ATTLIST message value CDATA #REQUIRED>
+]>
+<messages>
+	<message locale="en" key="Home Page" value="Home Page" />
+	<message locale="en" key="Motivate your kids" value="Motivate your kids" />
+	<message locale="en" key="MAIN_WELCOME" value="iMotiv8r is an easy to use web-based application that helps you motivate and reward good behavior. Using a simple point system, you can decide what good behevior will earn points for your kids, and what prizes they can spend those points on. It makes it easy to remind your kids what they are working toward."/>
+	<message locale="en" key="TASK_OVERVIEW" value="Set up regular tasks or chores for your kids to complete. Good grades, helping out in the house, or just getting up on time - award points for behavior you want to see. Completing tasks earns them points that you set." />
+	<message locale="en" key="POINTS_OVERVIEW" value="Watch your kids rack up the points with their good behavior. Check out the scoreboard, and show them how they are doing. Make sure to encourage their effort, and get them to keep up their good behavior.." />
+	<message locale="en" key="PRIZE_OVERVIEW" value="Of course, kids need something to work towards, so set up a few prizes they can spend their points on. Prizes can be anything that will encourage great behavior - books, toys, games, even TV time." />
+	<message locale="en" key="CALL_TO_ACTION" value="iMotiv8r is absolutely free - Sign up now and give it a try!" />
+	<message locale="en" key="ERROR_OVERVIEW" value="We apologize for the inconvenience. We are still in testing, so please try your request again, or let us know about the issue at our" />
+	<message locale="en" key="TAG_LINE" value="Using a Reward System to Motivate and Educate Kids" />
+	<message locale="en" key="SITE_TITLE" value="iMotiv8r" />
+	<message locale="en" key="Sign in" value="Sign in" />
+	<message locale="en" key="Sign Up" value="Sign Up" />
+	<message locale="en" key="login with" value="login with" />
+	<message locale="en" key="Tasks" value="Tasks" />
+	<message locale="en" key="Points" value="Points" />
+	<message locale="en" key="Prizes" value="Prizes" />
+	<message locale="en" key="Scores" value="Scores" />
+	<message locale="en" key="Kids" value="Kids" />
+	<message locale="en" key="Sign up - Step 1." value="Sign up - Step 1." />
+	<message locale="en" key="Create an Account" value="Create an Account" />
+	<message locale="en" key="E-Mail" value="E-Mail" />
+	<message locale="en" key="Password" value="Password" />
+	<message locale="en" key="First Name" value="First Name" />
+	<message locale="en" key="Last Name" value="Last Name" />
+	<message locale="en" key="Stay logged in" value="Stay logged in" />
+	<message locale="en" key="or sign up using your" value="or sign up using your" />
+	<message locale="en" key=" facebook account" value=" facebook account" />
+	<message locale="en" key="Manage Kids" value="Manage Kids" />
+	<message locale="en" key="My profile" value="My profile" />
+	<message locale="en" key="Scoreboard" value="Scoreboard" />
+	<message locale="en" key="Logout" value="Logout" />
+	<message locale="en" key="Step 2. Add Kids" value="Step 2. Add Kids" />
+	<message locale="en" key="Add kid" value="Add kid" />
+	<message locale="en" key="Age" value="Age" />
+	<message locale="en" key="Gender" value="Gender" />
+	<message locale="en" key="Male" value="Male" />
+	<message locale="en" key="Female" value="Female" />
+	<message locale="en" key="Login Name" value="Login Name" />
+	<message locale="en" key="Avatar" value="Avatar" />
+	<message locale="en" key="Add Another Kid" value="Add Another Kid" />
+	<message locale="en" key="Step 3. Add Tasks" value="Step 3. Add Tasks" />
+	<message locale="en" key="Add Tasks" value="Add Tasks" />
+	<message locale="en" key="Create a Task" value="Create a Task" />
+	<message locale="en" key="Task name" value="Task name" />
+	<message locale="en" key="Description" value="Description" />
+	<message locale="en" key="Image" value="Image" />
+	<message locale="en" key="Category" value="Category" />
+	<message locale="en" key="daily" value="daily" />
+	<message locale="en" key="weekly" value="weekly" />
+	<message locale="en" key="one-time" value="one-time" />
+	<message locale="en" key="add task" value="add task" />
+	<message locale="en" key="cancel" value="cancel" />
+	<message locale="en" key="Manage Tasks" value="Manage Tasks" />
+	<message locale="en" key="Task List" value="Task List" />
+	<message locale="en" key="Task Name" value="Task Name" />
+	<message locale="en" key="Point Value" value="Point Value" />
+	<message locale="en" key="Add more tasks" value="Add more tasks" />
+	<message locale="en" key="Step 4. Add Prizes" value="Step 4. Add Prizes" />
+	<message locale="en" key="Add Prizes" value="Add Prizes" />
+	<message locale="en" key="Find prize on Amazon" value="Find prize on Amazon" />
+	<message locale="en" key="Search" value="Search" />
+	<message locale="en" key="for" value="for" />
+	<message locale="en" key="Find prize by code" value="Find prize by code" />
+	<message locale="en" key="Code" value="Code" />
+	<message locale="en" key="Type" value="Type" />
+	<message locale="en" key="UPC" value="UPC" />
+	<message locale="en" key="SKU" value="SKU" />
+	<message locale="en" key="ISBN (books)" value="ISBN (books)" />
+	<message locale="en" key="ASIN (Amazon)" value="ASIN (Amazon)" />
+	<message locale="en" key="Create a prize" value="Create a prize" />
+	<message locale="en" key="Prize Name" value="Prize Name" />
+	<message locale="en" key="Cost (points)" value="Cost (points)" />
+	<message locale="en" key="Prize Desc" value="Prize Desc" />
+	<message locale="en" key="Link" value="Link" />
+	<message locale="en" key="add prize" value="add prize" />
+	<message locale="en" key="Search Results" value="Search Results" />
+	<message locale="en" key="N/A" value="N/A" />
+	<message locale="en" key="add" value="add" />
+	<message locale="en" key="More search results on Amazon.com" value="More search results on Amazon.com" />
+	<message locale="en" key="New Prize" value="New Prize" />
+	<message locale="en" key="Amazon ID" value="Amazon ID" />
+	<message locale="en" key="URL" value="URL" />
+	<message locale="en" key="save" value="save" />
+	<message locale="en" key="Manage Prizes" value="Manage Prizes" />
+	<message locale="en" key="Prize Cost" value="Prize Cost" />
+	<message locale="en" key="Add more prizes" value="Add more prizes" />
+	<message locale="en" key="Start motiv8ing!" value="Start motiv8ing!" />
+	<message locale="en" key="Edit Prize" value="Edit Prize" />
+	<message locale="en" key="Prize" value="Prize" />
+	<message locale="en" key="Cost" value="Cost" />
+	<message locale="en" key="Status" value="Status" />
+	<message locale="en" key="Available" value="Available" />
+	<message locale="en" key="Claimed" value="Claimed" />
+	<message locale="en" key="Not Available" value="Not Available" />
+	<message locale="en" key="Edit Task" value="Edit Task" />
+	<message locale="en" key="Deleted" value="Deleted" />
+	<message locale="en" key="Current Score" value="Current Score" />
+	<message locale="en" key="No goal set" value="No goal set" />
+	<message locale="en" key="Set One Now" value="Set One Now" />
+	<message locale="en" key="history" value="history" />
+	<message locale="en" key="Quick points" value="Quick points" />
+	<message locale="en" key="Enter reason" value="Enter reason" />
+	<message locale="en" key="Edit Kid" value="Edit Kid" />
+	<message locale="en" key="Edit" value="Edit" />
+	<message locale="en" key="Set Goal" value="Set Goal" />
+	<message locale="en" key="My Account" value="My Account" />
+	<message locale="en" key="Edit profile" value="Edit profile" />
+	<message locale="en" key="Email" value="Email" />
+	<message locale="en" key="Stay Logged In" value="Stay Logged In" />
+	<message locale="en" key="change password" value="change password" />
+	<message locale="en" key="Facebook" value="Facebook" />
+	<message locale="en" key="Click here to connect your facebook account" value="Click here to connect your facebook account" />
+	<message locale="en" key="Change Password" value="Change Password" />
+	<message locale="en" key="New Password" value="New Password" />
+	<message locale="en" key="Confirm Password" value="Confirm Password" />
+	<message locale="en" key="Invite Family Member" value="Invite Family Member" />
+	<message locale="en" key="Add another parent" value="Add another parent" />
+	<message locale="en" key="Contact Us" value="Contact Us" />
+	<message locale="en" key="Make a request" value="Make a request" />
+	<message locale="en" key="Request Type" value="Request Type" />
+	<message locale="en" key="Suggestion" value="Suggestion" />
+	<message locale="en" key="Report an Issue" value="Report an Issue" />
+	<message locale="en" key="Need Help" value="Need Help" />
+	<message locale="en" key="Other Request" value="Other Request" />
+	<message locale="en" key="Message" value="Message" />
+	<message locale="en" key="Privacy Policy" value="Privacy Policy" />
+	<message locale="en" key="imotiv8r.com" value="imotiv8r.com" />
+	<message locale="en" key="Error" value="Error" />
+	<message locale="en" key="An Error has Occurred" value="An Error has Occurred" />
+	<message locale="en" key="Oops - something went wrong" value="Oops - something went wrong" />
+	<message locale="en" key="contact us page." value="contact us page." />
+	<message locale="en" key="Details of error message" value="Details of error message" />
+<message locale="zh" key="Home Page" value="首頁"/>
+<message locale="zh" key="Motivate your kids" value="激勵您的孩子" />
+<message locale="zh" key="MAIN_WELCOME" value="iMotiv8r 是一個容易操作的網路應用程式，以正面的獎勵方式用來激勵孩子好的習慣和行為。它提供積分系統，並讓您決定孩子的正面行為和分數，設定獎品和獎品需要的積分。以正面的方法來隨時提醒孩子好的行為。"/>
+<message locale="zh" key="TASK_OVERVIEW" value="家長可以設定鼓勵事項或者是孩子該做的家事，譬如說：好的成績、在家幫忙、早上準時起床，等等值得鼓勵的行為。當孩子做到了，就加分。" />
+<message locale="zh" key="POINTS_OVERVIEW" value="iMotiv8r 讓您隨時積分、查看記分板、以及得獎進度。以正面的方法來鼓勵孩子好的行為。" />
+<message locale="zh" key="PRIZE_OVERVIEW" value="習慣的養成不是一朝一夕，借助獎品的激勵，可以讓孩子長時間養成良好習慣。iMotiv8r 讓您設定獎品目標，讓孩子用分數兌換。家長和孩子可以一起決定獎品目標，例如：玩具、孩子喜歡的書、限時玩iPad時間、或是限時的卡通時間等等。" />
+<message locale="zh" key="CALL_TO_ACTION" value="免費使用iMotiv8r - 現在就註冊加入我們的行列！" />
+<message locale="zh" key="ERROR_OVERVIEW" value="真抱歉，系統測試中，請您再試一次，或麻煩您在「與我們聯絡」的網頁留言。" />
+<message locale="zh" key="SITE_TITLE" value="iMotiv8r" />
+<message locale="zh" key="TAG_LINE" value="Using a Reward System to Motivate and Educate Kids" />
+<message locale="zh" key="Click here to connect your facebook account" value="用臉書帳號" />
+<message locale="zh" key="More search results on Amazon.com" value="More search results on Amazon.com" />
+<message locale="zh" key="Points" value="積分" />
+<message locale="zh" key="Prizes" value="獎品" />
+<message locale="zh" key="Tasks" value="鼓勵事項" />
+ <message locale="zh" key="Sign Up" value="免費加入" />
+<message locale="zh" key="Sign up - Step 1." value="加入- 第一步" />
+<message locale="zh" key="or sign up using your" value="或用" />
+<message locale="zh" key="facebook account" value="臉書帳號" />
+<message locale="zh" key="Login" value="登入" />
+<message locale="zh" key="Forgot Password?" value="忘記密碼?" />
+<message locale="zh" key="Sign Up Now" value="立即加入" />
+<message locale="zh" key="Scoreboard" value="積分板" />
+<message locale="zh" key="Forgot Password" value="忘記密碼" />
+<message locale="zh" key="Manage Tasks" value="管理鼓勵事項" />
+<message locale="zh" key="Task List" value="鼓勵事項" />
+<message locale="zh" key="Task Name" value="事項名稱" />
+<message locale="zh" key="Point Value" value="積分" />
+<message locale="zh" key="Add more tasks" value="增加鼓勵事項" />
+<message locale="zh" key="Manage Prizes" value="管理獎品" />
+<message locale="zh" key="Prize Name" value="獎品名稱" />
+<message locale="zh" key="Prize Cost" value="需要分數" />
+<message locale="zh" key="Add more prizes" value="增加獎品" />
+ <message locale="zh" key="Manage Kids" value="管理孩子" />
+<message locale="zh" key="Kids" value="孩子" />
+<message locale="zh" key="Add Another Kid" value="增加孩子" />
+<message locale="zh" key="Add Prizes" value="增加獎品" />
+<message locale="zh" key="Add Tasks" value="增加鼓勵事項" />
+<message locale="zh" key="Set Goal" value="設定目標" />
+<message locale="zh" key="Available Prizes" value="所有獎品" />
+<message locale="zh" key="Set goal for" value="設定目標" />
+ <message locale="zh" key="cancel" value="取消" />
+<message locale="zh" key="Point History" value="過去積分" />
+<message locale="zh" key="'s Point History" value="的過去積分" />
+ <message locale="zh" key="Current Score" value="目前積分" />
+<message locale="zh" key="Reason" value="原因" />
+<message locale="zh" key="Date" value="日期" />
+<message locale="zh" key="back" value="上一頁" />
+ <message locale="zh" key="Error" value="錯誤" />
+<message locale="zh" key="An error has occurred" value="系統錯誤" />
+<message locale="zh" key="Oops - something went wrong" value="真抱歉，系統出了問題" />
+<message locale="zh" key="Details of error message" value="錯誤信息" />
+<message locale="zh" key="Contact Us" value="與我們聯絡" />
+<message locale="zh" key="Sign in" value="登入" />
+<message locale="zh" key="login with" value="登入方法" />
+ <message locale="zh" key="Scores" value="積分" />
+<message locale="zh" key="Create an Account" value="新帳號" />
+<message locale="zh" key="E-Mail" value="電子郵件信箱" />
+<message locale="zh" key="Password" value="密碼" />
+<message locale="zh" key="Last Name" value="性" />
+<message locale="zh" key="First Name" value="名" />
+<message locale="zh" key="Stay logged in" value="永遠登入" />
+<message locale="zh" key=" facebook account" value=" 臉書帳號" />
+<message locale="zh" key="Email Address" value="電子郵件信箱" />
+<message locale="zh" key="Stay Logged In" value="永遠登入" />
+<message locale="zh" key="Forgot Password?" value="忘記密碼" />
+<message locale="zh" key="My profile" value="我的帳號" />
+ <message locale="zh" key="Logout" value="登出" />
+<message locale="zh" key="Goal" value="積分目標" />
+<message locale="zh" key="Cost" value="需要分數" />
+ <message locale="zh" key="change" value="更改" />
+<message locale="zh" key="Progress" value="進度" />
+<message locale="zh" key="history" value="過去積分" />
+<message locale="zh" key="Quick points" value="隨機加分" />
+<message locale="zh" key="Points" value="分數" />
+<message locale="zh" key="Enter reason" value="原因" />
+<message locale="zh" key="No goal set" value="目前未設目標" />
+<message locale="zh" key="Set One Now" value="設定目標" />
+ <message locale="zh" key="Current Score" value="目前積分" />
+<message locale="zh" key="Create a Task" value="增加鼓勵事項" />
+ <message locale="zh" key="Task name" value="鼓勵事項名稱" />
+<message locale="zh" key="Description" value="細節" />
+ <message locale="zh" key="Image" value="圖片" />
+<message locale="zh" key="Category" value="類別" />
+ <message locale="zh" key="daily" value="每天" />
+<message locale="zh" key="weekly" value="每週" />
+ <message locale="zh" key="one-time" value="一次性" />
+<message locale="zh" key="add task" value="增加鼓勵事項" />
+<message locale="zh" key="Edit Prize" value="更改獎品" />
+ <message locale="zh" key="Prize" value="獎品" />
+ <message locale="zh" key="Amazon ID" value="亞馬遜產品代號" />
+<message locale="zh" key="URL" value="網址" />
+<message locale="zh" key="Status" value="狀態" />
+ <message locale="zh" key="Available" value="未得" />
+<message locale="zh" key="Claimed" value="已得" />
+<message locale="zh" key="Not Available" value="取消" />
+ <message locale="zh" key="save" value="儲存" />
+<message locale="zh" key="Add kid" value="增加孩子" />
+ <message locale="zh" key="Age" value="年齡" />
+<message locale="zh" key="Gender" value="性別" />
+<message locale="zh" key="Male" value="男" />
+<message locale="zh" key="Female" value="女" />
+<message locale="zh" key="Login Name" value="登入名" />
+<message locale="zh" key="Step 2. Add Kids" value="第二步：孩子訊息" />
+<message locale="zh" key="Avatar" value="頭像" />
+<message locale="zh" key="Step 3. Add Tasks" value="第三步：鼓勵事項" />
+<message locale="zh" key="Edit Kid" value="更改孩子訊息" />
+<message locale="zh" key="Edit" value="變更" />
+<message locale="zh" key="Set Goal" value="設定目標" />
+<message locale="zh" key="Step 4. Add Prizes" value="第四步：設定獎勵" />
+<message locale="zh" key="Edit Task" value="更改鼓勵事項" />
+<message locale="zh" key="Deleted" value="已刪除" />
+<message locale="zh" key="Find prize on Amazon" value="搜尋獎品（亞馬遜網站）" />
+<message locale="zh" key="Search" value="搜尋" />
+<message locale="zh" key="Find prize by code" value="以產品碼搜尋獎品" />
+<message locale="zh" key="Code" value="碼" />
+<message locale="zh" key="Type" value="類別" />
+<message locale="zh" key="UPC" value="UPC碼" />
+<message locale="zh" key="SKU" value="SKU條碼" />
+<message locale="zh" key="ISBN (books)" value="ISBN (books)" />
+<message locale="zh" key="ASIN (Amazon)" value="ASIN (Amazon)" />
+<message locale="zh" key="Create a prize" value="新增獎品" />
+<message locale="zh" key="Cost (points)" value="需要分數" />
+<message locale="zh" key="Prize Desc" value="獎品說明" />
+<message locale="zh" key="Link" value="連結" />
+<message locale="zh" key="add prize" value="新增獎品" />
+<message locale="zh" key="Search Results" value="搜尋結果" />
+<message locale="zh" key="N/A" value="N/A" />
+<message locale="zh" key="add" value="增加" />
+<message locale="zh" key="New Prize" value="新增獎品" />
+<message locale="zh" key="Start motiv8ing!" value="開始激勵 motiv8ing!" />
+<message locale="zh" key="Request Type" value="聯絡類別" />
+<message locale="zh" key="Suggestion" value="建議" />
+<message locale="zh" key="Report an Issue" value="報告錯誤" />
+<message locale="zh" key="Need Help" value="需要幫忙" />
+<message locale="zh" key="Other Request" value="其它" />
+<message locale="zh" key="Message" value="信息" />
+<message locale="zh" key="Privacy Policy" value="隱私權政策" />
+<message locale="zh" key="imotiv8r.com" value="imotiv8r.com" />
+<message locale="zh" key="My Account" value="我的帳號" />
+<message locale="zh" key="Edit profile" value="變更資料" />
+<message locale="zh" key="Email" value="電子郵件" />
+<message locale="zh" key="change password" value="更改密碼" />
+<message locale="zh" key="Facebook" value="臉書" />
+<message locale="zh" key="Change Password" value="更改密碼" />
+<message locale="zh" key="New Password" value="新密碼" />
+<message locale="zh" key="Confirm Password" value="確認密碼" />
+<message locale="zh" key="Invite Family Member" value="邀請家人加入" />
+<message locale="zh" key="Add another parent" value="增加家長" />
+</messages>

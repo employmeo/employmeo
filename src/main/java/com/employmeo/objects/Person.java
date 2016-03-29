@@ -49,6 +49,12 @@ public class Person extends PersistantObject implements Serializable {
 
 	@Column(name="person_zip")
 	private String personZip;
+	
+	@Column(name="person_lat")
+	private double personLat;
+	
+	@Column(name="person_long")
+	private double personLong;
 
 	//bi-directional many-to-one association to Respondant
 	@OneToMany(mappedBy="person")
@@ -135,6 +141,22 @@ public class Person extends PersistantObject implements Serializable {
 
 	public void setPersonZip(String personZip) {
 		this.personZip = personZip;
+	}
+
+	public double getPersonLat() {
+		return this.personLat;
+	}
+
+	public void setPersonLat(double personLat) {
+		this.personLat = personLat;
+	}
+
+	public double getPersonLong() {
+		return this.personLong;
+	}
+
+	public void setPersonLong(double personLong) {
+		this.personLong = personLong;
 	}
 
 	public List<Respondant> getRespondants() {

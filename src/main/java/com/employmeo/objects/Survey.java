@@ -36,6 +36,12 @@ public class Survey extends PersistantObject implements Serializable {
 
 	@Column(name="SURVEY_TYPE")
 	private int surveyType;
+	
+	@Column(name="SURVEY_RENDER_PAGE")
+	private String surveyRenderPage;
+	
+	@Column(name="SURVEY_REDIRECT_PAGE")
+	private String surveyRedirectPage;
 
 	//bi-directional many-to-one association to SurveyQuestion
 	@OneToMany(mappedBy="survey")
@@ -86,11 +92,27 @@ public class Survey extends PersistantObject implements Serializable {
 	public String getSurveyName() {
 		return this.surveyName;
 	}
-
+	
 	public void setSurveyName(String surveyName) {
 		this.surveyName = surveyName;
 	}
+	
+	public void setSurveyRenderPage(String surveyRenderPage) {
+		this.surveyRenderPage = surveyRenderPage;
+	}
+	
+	public String getSurveyRenderPage() {
+		return this.surveyRenderPage;
+	}
 
+	public String getSurveyRedirectPage() {
+		return this.surveyRedirectPage;
+	}
+
+	public void setSurveyRedirectPage(String surveyRedirectPage) {
+		this.surveyRedirectPage = surveyRedirectPage;
+	}
+	
 	public int getSurveyStatus() {
 		return this.surveyStatus;
 	}
@@ -184,6 +206,8 @@ public class Survey extends PersistantObject implements Serializable {
 		json.put("survey_name", this.surveyName);
 		json.put("survey_status", this.surveyStatus);
 		json.put("survey_type", this.surveyType);
+		json.put("survey_render_page", this.surveyRenderPage);
+		json.put("survey_redirect_page", this.surveyRedirectPage);
 		if (this.user != null) json.put("survey_creator", this.user.getJSON());
 		if (this.account != null) json.put("survey_account", this.account.getJSON());
 		if (this.position != null) json.put("survey_position", this.position.getJSON());

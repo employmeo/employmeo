@@ -21,13 +21,6 @@ public class Register extends MPFormAction {
 		  user.setUserAvatarUrl(req.getParameter("user_avatar_url"));
 		  user.setUserLocale(req.getParameter("user_locale"));
 
-		  user.setUserPersistLogin(false);
-		  
-	      String stayloggedin = req.getParameter("rememberme");
-		  if (stayloggedin != null) {
-			   user.setUserPersistLogin(true);
-		  }
-
 		  // Validate required fields
 		  if (!SecurityUtil.isEmailValid(user.getUserEmail())) {
 			  fRes.setValid(false);

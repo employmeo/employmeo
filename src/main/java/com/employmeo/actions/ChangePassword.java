@@ -31,7 +31,7 @@ public class ChangePassword extends MPFormAction {
 	 	  
 			  if (user.getUserId() != null) {
 				  user.setUserPassword(SecurityUtil.hashPassword(newPassword));
-				  user.persistMe();
+				  user.mergeMe();
 				  fRes.addMessage("Successful Update");
 			  } else {
 				  fRes.addMessage("Old password did not match");

@@ -45,6 +45,5 @@
     </div>
    </div>
 </div>
-<%@ include file="/WEB-INF/includes/inc_footer.jsp" %>
 </html>
 

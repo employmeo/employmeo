@@ -35,9 +35,7 @@ function initRespondantsTable() {
 	    	     { title: 'Respondant ID', data: 'respondant_id'},
 	    	     { title: 'First Name', data: 'respondant_person_fname'},
 	    	     { title: 'Last Name', data: 'respondant_person_lname'},
-	    	     { title: 'Email', data: 'respondant_person_email'},
-	    	     { title: 'Survey ID', data: 'respondant_survey_id'},
-	    	     { title: 'Status', data: 'respondant_status' }
+	    	     { title: 'Email', data: 'respondant_person_email'}
 	    	     ]
 	    	});
 
@@ -52,15 +50,10 @@ function updateRespondantsTable() {
            type: "POST",
            async: true,
            url: url,
-           data: {
-        	   "formname" : "getrespondants",
-        	   "noRedirect" : true
-           },
+           data: $('#refine_query').serialize(),
            success: function(data)
            {
               response = JSON.parse(data);
-			  console.log("Fetch complete:", response);
-              //$("#respondant_list").html(data);
 			  rTable = $('#respondants').DataTable();
 			  rTable.clear();
 			  $('#respondants').dataTable().fnAddData(response);
@@ -75,6 +68,78 @@ function updateRespondantsTable() {
 
     return response;
 }
+function updatePositionsSelect() {
+	var url = "/mp";
+    $.ajax({
+           type: "POST",
+           async: true,
+           url: url,
+           data: {
+        	   "formname" : "getpositionlist",
+        	   "noRedirect" : true
+           },
+           success: function(data)
+           {
+              var positions = JSON.parse(data);
+			  console.log("Fetch complete:", positions);
+			  $.each(positions, function (index, value) {
+				    $('#position_id').append($('<option/>', { 
+				        value: this.position_id,
+				        text : this.position_name 
+				    }));
+			  });   
+           }
+         });
+}
+
+function updateLocationsSelect() {
+	var url = "/mp";
+    $.ajax({
+           type: "POST",
+           async: true,
+           url: url,
+           data: {
+        	   "formname" : "getlocationlist",
+        	   "noRedirect" : true
+           },
+           success: function(data)
+           {
+              var locations = JSON.parse(data);
+			  console.log("Fetch complete:", locations);
+			  $.each(locations, function (index, value) {
+				    $('#location_id').append($('<option/>', { 
+				        value: this.location_id,
+				        text : this.location_name 
+				    }));
+			  });   
+           }
+         });
+}
+
+function updateSurveysSelect() {
+	var url = "/mp";
+    $.ajax({
+           type: "POST",
+           async: true,
+           url: url,
+           data: {
+        	   "formname" : "getsurveylist",
+        	   "noRedirect" : true
+           },
+           success: function(data)
+           {
+              var surveys = JSON.parse(data);
+			  console.log("Fetch complete:", surveys);
+			  $.each(surveys, function (index, value) {
+				    $('#survey_id').append($('<option/>', { 
+				        value: this.survey_id,
+				        text : this.survey_name 
+				    }));
+			  });   
+           }
+         });
+}
+
 
 function updatePositionsNav() {
 	var url = "/mp";

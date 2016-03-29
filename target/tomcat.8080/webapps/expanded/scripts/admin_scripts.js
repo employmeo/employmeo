@@ -35,9 +35,10 @@ function initRespondantsTable() {
 	    	     { title: 'Respondant ID', data: 'respondant_id'},
 	    	     { title: 'First Name', data: 'respondant_person_fname'},
 	    	     { title: 'Last Name', data: 'respondant_person_lname'},
-	    	     { title: 'Email', data: 'respondant_person_email'},
-	    	     { title: 'Survey ID', data: 'respondant_survey_id'},
-	    	     { title: 'Status', data: 'respondant_status' }
+	    	     { title: 'Email', data: 'respondant_person_email'}
+//,
+//	    	     { title: 'Survey ID', data: 'respondant_survey_id'},
+//	    	     { title: 'Status', data: 'respondant_status' }
 	    	     ]
 	    	});
 
@@ -59,8 +60,6 @@ function updateRespondantsTable() {
            success: function(data)
            {
               response = JSON.parse(data);
-			  console.log("Fetch complete:", response);
-              //$("#respondant_list").html(data);
 			  rTable = $('#respondants').DataTable();
 			  rTable.clear();
 			  $('#respondants').dataTable().fnAddData(response);

@@ -25,7 +25,7 @@
 
 								<div class="panel panel-primary">
 									<div class="panel-heading">Applicants
-										<button class="btn-primary pull-right" type="button" onClick="updateRespondantsTable();"><i class="fa fa-refresh"></i></button>
+										<button id="applicantrefresh" class="btn-primary pull-right" type="button" onClick="updateRespondantsTable();"><i class="fa fa-refresh"></i></button>
 									</div>
 									<div class="panel-body" id="respondant_list">
 										<table id="respondants" class="table table-hover table-condensed"></table>

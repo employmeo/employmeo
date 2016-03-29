@@ -58,6 +58,10 @@ public class Account extends PersistantObject implements Serializable {
 	@OneToMany(mappedBy="account", fetch = FetchType.EAGER)
 	private List<Position> positions;
 	
+	//bi-directional many-to-one association to Position
+	@OneToMany(mappedBy="account", fetch = FetchType.EAGER)
+	private List<Location> locations;
+	
 	//bi-directional many-to-one association to Position	
 	@OneToMany(mappedBy="account")
 	//@OrderBy("respondant.respondantCreatedDate DESC")
@@ -172,8 +176,8 @@ public class Account extends PersistantObject implements Serializable {
 		user.setAccount(null);
 
 		return user;
-	}
-
+	}	
+	
 	public List<Position> getPositions() {
 		return this.positions;
 	}
@@ -196,6 +200,28 @@ public class Account extends PersistantObject implements Serializable {
 		return position;
 	}
 
+	public List<Location> getLocations() {
+		return this.locations;
+	}
+
+	public void setLocations(List<Location> locations) {
+		this.locations = locations;
+	}
+
+	public Location addLocation(Location location) {
+		getLocations().add(location);
+		location.setAccount(this);
+
+		return location;
+	}
+	
+	public Location removeLocation(Location location) {
+		getLocations().remove(location);
+		location.setAccount(null);
+
+		return location;
+	}
+	
 	@Override
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
