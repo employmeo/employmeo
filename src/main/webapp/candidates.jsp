@@ -12,19 +12,16 @@
 			<div class="col-sm-3 sidenav hidden-xs">
 				<ul class="nav nav-pills nav-stacked">
 					<li><a href="/index.jsp">Dashboard</a></li>
-					<li><a href="/positions.jsp">Job Definitions</a></li>
-					<li class="active"><a href="#">Applicants</a></li>
-					<li><a href="/completed_applications.jsp">-- Completed Applications</a></li>
-					<li><a href="/invite_applicant.jsp">-- Invite Applicant</a></li>
-					<li><a href="/analytics.jsp">-- Incomplete Applications</a></li>	
-					<li><a href="/analytics.jsp">Analytics</a></li>
-					<li><a href="/data_admin.jsp">Data Administration</a></li>
-				</ul>
-				<br>
+					<li class="active"><a href="#">Candidates</a></li>
+						<li><a href="/completed_applications.jsp">-- Completed Applications</a></li>
+						<li><a href="/incomplete_applications.jsp">-- In-Process Applications</a></li>
+						<li><a href="/invite_applicant.jsp">-- Invite Candidate</a></li>
+					<li><a href="/positions.jsp">Positions</a></li>
+					<li><a href="/surveys.jsp">Assessments</a></li>
+					<li><a href="/data_admin.jsp">Administration</a></li>
+				</ul>				
 			</div>
 			<div class="col-sm-9">
-				<div class="row content">
-							<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
 
 								<div class="panel panel-primary">
 									<div class="panel-heading">Applicants
@@ -63,16 +60,15 @@
 							<div class="col-xs-12 hidden-xs">
 								<hr>
 							</div>
-										<table id="respondants" class="table table-hover table-condensed"></table>
-									
-									</div>
-								</div>
-							</div>
-							<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+										<table id="respondants" class="table table-hover table-condensed display compact"></table>
+							<div class="col-xs-12 hidden-xs">
+								<hr>
+							</div>							<div class="row content">
+							<div class="col-sm-12 col-md-6">
 									<div class="panel panel-info">
 										<div class="panel-heading">
-											<span class="text-left">Position Profile<i
-												class="fa fa-line-chart pull-right"></i></span>
+											<span class="text-left">Applicant Profile<i
+												class="fa fa-user pull-right"></i></span>
 										</div>
 										<div class="panel-body text-center">
 											<div>
@@ -80,11 +76,12 @@
 													style="width: 100%, height: auto;"></canvas>
 											</div>
 										</div>
-									</div>
-																		<div class="panel panel-info">
+									</div></div>
+																<div class="col-sm-12 col-md-6">
+									<div class="panel panel-info">
 										<div class="panel-heading">
-											<span class="text-left">Position Turnover<i
-												class="fa fa-bar-chart pull-right"></i></span>
+											<span class="text-left">Similar Applicants<i
+												class="fa fa-users pull-right"></i></span>
 										</div>
 										<div class="panel-body text-center">
 											<div>
@@ -92,8 +89,8 @@
 													style="width: 100%, height: auto;"></canvas>
 											</div>
 										</div>
-									</div>
-								</div>
+									</div></div>
+								</div></div>									
 						</div>
 					</div>
 				</div>

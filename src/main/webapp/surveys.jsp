@@ -10,16 +10,14 @@
 <div class="container-fluid">
   <div class="row content">
     <div class="col-sm-3 sidenav hidden-xs">
-      <h2>Logo</h2>
-      <ul class="nav nav-pills nav-stacked">
-        <li class="active"><a href="#section1">Dashboard</a></li>
-        <li><a href="#section2">Age</a></li>
-        <li><a href="#section3">Gender</a></li>
-        <li><a href="#section3">Geo</a></li>
-      </ul><br>
+				<ul class="nav nav-pills nav-stacked">
+					<li><a href="/index.jsp">Dashboard</a></li>
+					<li><a href="/candidates.jsp">Candidates</a></li>
+					<li><a href="/positions.jsp">Positions</a></li>
+					<li><a href="/surveys.jsp">Assessments</a></li>
+					<li><a href="/data_admin.jsp">Administration</a></li>
+				</ul>
     </div>
-    <br>
-    
     <div class="col-sm-9">
       <div class="well">
              <p style="font-size:32px"><%=LocaleHelper.getMessage(locale, "Survey Questions")%></p>
@@ -57,5 +55,6 @@ if (surveyID != null) {
 %>
       </div>
   </div>
+</div>
 </div>
 </html>

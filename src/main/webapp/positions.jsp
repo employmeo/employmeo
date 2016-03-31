@@ -12,12 +12,11 @@
 			<div class="col-sm-3 sidenav hidden-xs">
 				<ul class="nav nav-pills nav-stacked">
 					<li><a href="/index.jsp">Dashboard</a></li>
-					<li class="active"><a href="#">Job Definitions</a></li>
-					<li><a href="/applications.jsp">Current Applications</a></li>
-					<li><a href="/analytics.jsp">Analytics</a></li>
-					<li><a href="/data_admin.jsp">Data Administration</a></li>
+					<li><a href="/candidates.jsp">Candidates</a></li>
+					<li class="active"><a href="#">Positions</a></li>
+					<li><a href="/surveys.jsp">Assessments</a></li>
+					<li><a href="/data_admin.jsp">Administration</a></li>
 				</ul>
-				<br>
 			</div>
 			<div class="col-sm-9">
 				<div class="row content">

@@ -1,3 +1,13 @@
+// new jquery plugin for datatables;
+jQuery.fn.dataTableExt.oApi.fnProcessingIndicator = function ( oSettings, onoff )
+{
+    if ( onoff === undefined ) {
+        onoff = true;
+    }
+    this.oApi._fnProcessingDisplay( oSettings, onoff );
+};
+
+
 function postToAction(e) {
     var url = "/mp";
     var response = "failed";
@@ -29,15 +39,20 @@ function getUserFname() {
 
 function initRespondantsTable() {
 	  rTable = $('#respondants').DataTable( {
-	    	"order": [[ 0, 'desc' ]],
+	    	order: [[ 0, 'desc' ]],
 	    	columns: [
 	    	     { title: 'Completed At', data: 'respondant_created_date', 'type' : 'date'},
 	    	     { title: 'Respondant ID', data: 'respondant_id'},
 	    	     { title: 'First Name', data: 'respondant_person_fname'},
 	    	     { title: 'Last Name', data: 'respondant_person_lname'},
 	    	     { title: 'Email', data: 'respondant_person_email'}
-	    	     ]
-	    	});
+	    	     ],
+    	    bProcessing: true,
+	    	language: {
+	    	    loadingRecords : "\<i class=\"fa fa-spinner fa-3x fa-spin\"\>\<\/i\>",
+	    	    processing : "\<i class=\"fa fa-spinner fa-3x fa-spin\"\>\<\/i\>"
+	    	 }
+ 		    });
 
 	  updateRespondantsTable();
 }
@@ -51,21 +66,30 @@ function updateRespondantsTable() {
            async: true,
            url: url,
            data: $('#refine_query').serialize(),
+           beforeSend: function() {
+        	   $("#spinner").addClass("fa-spin");
+ 			  rTable = $('#respondants').DataTable();
+			  rTable.clear();
+			  $('#respondants').dataTable().fnProcessingIndicator(true);
+           },
            success: function(data)
            {
               response = JSON.parse(data);
-			  rTable = $('#respondants').DataTable();
-			  rTable.clear();
-			  $('#respondants').dataTable().fnAddData(response);
+ 			  rTable = $('#respondants').DataTable();
+			  $('#respondants').dataTable().fnProcessingIndicator(false);
+ 			  $('#respondants').dataTable().fnAddData(response);
 			  rTable.$('tr').click(function (){
 		          rTable.$('tr.selected').removeClass('selected');
 		          $(this).addClass('selected');
 				  var respondant = $('#respondants').dataTable().fnGetData(this);
 				  showApplicantScoring(respondant);
 			  });
+           },
+           complete: function() {
+        	   $("#spinner").removeClass("fa-spin");
            }
          });
-
+    
     return response;
 }
 function updatePositionsSelect() {

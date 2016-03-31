@@ -40,8 +40,25 @@ public class Respondant extends PersistantObject implements Serializable {
 	private int respondantStatus;
 
 	@ManyToOne
-	@JoinColumn(name="respondant_survey_id")
+	@JoinColumn(name="respondant_survey_id",insertable=false,updatable=false)
 	private Survey survey;
+
+	@Column(name="respondant_survey_id",insertable=true,updatable=false)
+	private BigInteger respondantSurveyId;
+	
+	@ManyToOne
+	@JoinColumn(name="respondant_position_id",insertable=false,updatable=false)
+	private Position position;
+
+	@Column(name="respondant_position_id",insertable=true,updatable=false)
+	private BigInteger respondantPositionId;
+
+	@ManyToOne
+	@JoinColumn(name="respondant_location_id",insertable=false,updatable=false)
+	private Location location;
+
+	@Column(name="respondant_location_id",insertable=true,updatable=false)
+	private BigInteger respondantLocationId;
 
 	//bi-directional many-to-one association to Person
 	@ManyToOne
@@ -76,6 +93,20 @@ public class Respondant extends PersistantObject implements Serializable {
 	public void setAccount(Account account) {
 		this.account = account;
 	}
+	public BigInteger getRespondantLocationId() {
+		return this.respondantLocationId;
+	}
+	
+	public void setRespondantLocationId(BigInteger locationId) {
+		this.respondantLocationId = locationId;
+	}
+	public BigInteger getRespondantPositionId() {
+		return this.respondantPositionId;
+	}
+	
+	public void setRespondantPositionId(BigInteger positionId) {
+		this.respondantPositionId = positionId;
+	}
 
 	public Timestamp getRespondantCreatedDate() {
 		return this.respondantCreatedDate;
@@ -92,7 +123,14 @@ public class Respondant extends PersistantObject implements Serializable {
 	public void setRespondantStatus(int respondantStatus) {
 		this.respondantStatus = respondantStatus;
 	}
-
+	
+	public BigInteger getRespondantSurveyId() {
+		return this.respondantSurveyId;
+	}
+	
+	public void setRespondantSurveyId(BigInteger surveyId) {
+		this.respondantSurveyId = surveyId;
+	}
 	public Survey getSurvey() {
 		return this.survey;
 	}
@@ -135,7 +173,13 @@ public class Respondant extends PersistantObject implements Serializable {
 		json.put("respondant_id", this.respondantId);
 		if (this.account != null) json.put("respondant_account_id", this.account.getAccountId());
 		json.put("respondant_created_date", this.respondantCreatedDate);
-		if (this.person != null) json.put("respondant_survey_id", this.survey.getSurveyId());
+		if (this.survey != null) json.put("respondant_survey_id", this.survey.getSurveyId());
+		if (this.survey != null) json.put("respondant_survey_name", this.survey.getSurveyName());
+		if (this.location != null) json.put("respondant_location_id", this.location.getLocationId());
+		if (this.location != null) json.put("respondant_location_name", this.location.getLocationName());
+		if (this.position != null) json.put("respondant_position_id", this.position.getPositionId());
+		if (this.position != null) json.put("respondant_position_name", this.position.getPositionName());
+
 		json.put("respondant_status", this.respondantStatus);
 		if (this.person != null) {
 			json.put("respondant_person_fname", this.person.getPersonFname());

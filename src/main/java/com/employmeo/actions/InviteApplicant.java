@@ -10,9 +10,10 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 
 import com.employmeo.EmpFormResponse;
+import com.employmeo.objects.Account;
 import com.employmeo.objects.Person;
 import com.employmeo.objects.Respondant;
-import com.employmeo.objects.Survey;
+import com.employmeo.objects.User;
 import com.employmeo.util.EmailServletResponse;
 import com.employmeo.util.EmailUtility;
 
@@ -24,10 +25,19 @@ public class InviteApplicant extends MPFormAction {
 		  String to = req.getParameter("email");
 		  String fname = req.getParameter("fname");
 		  String lname = req.getParameter("lname");
+		  String street1 = req.getParameter("street1");
+		  String street2 = req.getParameter("street2");
+		  String city = req.getParameter("city");
+		  String state = req.getParameter("state");
+		  String zip = req.getParameter("zip");
+
 		  String survey_id = req.getParameter("survey_id");
-		  String account_id = req.getParameter("account_id");
 		  BigInteger surveyId = new BigInteger(survey_id);
-		  BigInteger accountId = new BigInteger(account_id);
+		  
+		  String location_id = req.getParameter("location_id");
+		  String position_id = req.getParameter("position_id");
+		  User user = (User)sess.getAttribute("User");
+		  Account account = user.getAccount();
 		  
 		  // Validate input fields
 		  /* Todo: complete validation */
@@ -38,12 +48,19 @@ public class InviteApplicant extends MPFormAction {
 		  applicant.setPersonEmail(to);
 		  applicant.setPersonFname(fname);
 		  applicant.setPersonLname(lname);
+		  applicant.setPersonCity(city);
+		  applicant.setPersonState(state);
+		  applicant.setPersonStreet1(street1);
+		  applicant.setPersonStreet2(street2);
+		  applicant.setPersonZip(zip);
 		  applicant.persistMe();
 		  
 		  Respondant respondant = new Respondant();
 		  respondant.setPerson(applicant);
-		  respondant.setRespondantAccountId(accountId);
-		  respondant.setSurvey(Survey.getSurveyById(surveyId));
+		  respondant.setRespondantAccountId(account.getAccountId());
+		  respondant.setRespondantSurveyId(surveyId);
+		  try {respondant.setRespondantLocationId(new BigInteger(location_id));} catch (Exception e) {}// ok for null location
+		  try {respondant.setRespondantPositionId(new BigInteger(position_id));} catch (Exception e) {}// ok for null location
 		  respondant.persistMe();
 		  
 		  JSONObject json = new JSONObject();
