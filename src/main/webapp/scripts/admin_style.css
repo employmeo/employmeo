@@ -63,6 +63,53 @@ div.loginpanel {
     justify-content: center;
 }
 
+
+.square {
+    float:left;
+    position: relative;
+    width: 48%;
+    padding-bottom : 48%; /* = width for a 1:1 aspect ratio */
+    margin:1%;
+}
+
+.probability {
+    position: absolute;
+    height: 90%;
+    width: 90%;
+    padding: 5%;
+    vartical-align: middle;
+    font-family: Comfortaa;
+    font-size: 3vw;
+    font-weight: bold;
+    text-align: center; /* horizontal centering */	
+}
+
+.churn {background: #ffff00;}
+.churn:hover {background: #ffff66;}
+
+.redflag {background: #ff0000;}
+.redflag:hover {background: #ff5050;}
+
+.longtimer {background: #0066ff;}
+.longtimer:hover {background: #3399ff;}
+
+.risingstar {background: #00ff00;}
+.risingstar:hover {background: #66ff99;}
+
+@media (max-width: 993px) {
+  .probability {
+    padding: 5%;
+    font-size: 6vw;
+  }
+}
+
+@media (max-width: 767px) {
+  .probability {
+    padding: 5%;
+    font-size: 15vw;
+  }
+}
+
 @media (max-width: 600px) {
   div.loginpanel {
     position: relative;
@@ -75,6 +122,7 @@ div.loginpanel {
   div.loginpanel {
     width: 100%;
   }
+
 }
 
 }

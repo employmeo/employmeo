@@ -1,6 +1,8 @@
 package com.employmeo.objects;
 
 import java.io.Serializable;
+import java.util.List;
+
 import javax.persistence.*;
 
 import org.json.JSONObject;
@@ -14,7 +16,9 @@ import org.json.JSONObject;
 @Table(name="corefactors")
 @NamedQuery(name="Corefactor.findAll", query="SELECT c FROM Corefactor c")
 public class Corefactor extends PersistantObject implements Serializable {
+
 	private static final long serialVersionUID = 1L;
+    private static List<Corefactor> corefactors = null;
 
 	@Id
 	@Column(name="corefactor_id")
@@ -60,6 +64,34 @@ public class Corefactor extends PersistantObject implements Serializable {
 		json.put("corefactor_id", this.corefactorId);
 		json.put("corefactor_description", this.corefactorDescription);
 		return json;
+	}
+
+	public static List<Corefactor> getAllCorefactors() {
+
+		if (corefactors == null) {
+			EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
+			EntityManager em = emf.createEntityManager();
+			TypedQuery<Corefactor> q = em.createQuery("SELECT c FROM Corefactor c", Corefactor.class);
+			try {
+				corefactors = q.getResultList();
+			} catch (NoResultException nre) {}
+		}
+		
+		return corefactors;
+	}
+
+	public static Corefactor getCorefactorById(int lookupId) {
+		
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
+		EntityManager em = emf.createEntityManager();
+		TypedQuery<Corefactor> q = em.createQuery("SELECT c FROM Corefactor c WHERE c.corefactorId = :corefactorId", Corefactor.class);
+        q.setParameter("corefactorId", lookupId);
+        Corefactor corefactor = null;
+        try {
+      	  corefactor = q.getSingleResult();
+        } catch (NoResultException nre) {}
+        
+		return corefactor;
 	}
 
 }

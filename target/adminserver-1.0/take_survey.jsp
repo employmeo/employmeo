@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<title>Employmeo | <%=LocaleHelper.getMessage(locale, "Take Survey")%></title>
+<title>Employmeo | Take Survey</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width"/>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -229,7 +229,7 @@ if (type==1) {
 					<h4>Thank You</h4>
 				</div>       
                 <div class="qpanel-footer text-center">
-                    <button type="button">Finish</button>
+                    <button type="button" onclick="submitCompleteSurvey();">Finish</button>
 				</div>
 			</div>
 		</div>

@@ -14,6 +14,8 @@
 		<class>com.employmeo.objects.User</class>
 		<class>com.employmeo.objects.PayrollEntry</class>
 		<class>com.employmeo.objects.PayrollSummary</class>
+		<class>com.employmeo.objects.Corefactor</class>
+		<class>com.employmeo.objects.Location</class>
       <properties>
          <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
          <property name="javax.persistence.jdbc.user" value="rcxzyapqgrcncf"/>

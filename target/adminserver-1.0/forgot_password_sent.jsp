@@ -12,5 +12,4 @@
        <div class="row"><div class="pane"><%=LocaleHelper.getMessage(locale, "An email has been sent with a link to reset your password. Please check your email")%></div></div>
     </div>
 </div>
-<%@ include file="/WEB-INF/includes/inc_footer.jsp" %>
 </html>

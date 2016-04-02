@@ -39,14 +39,22 @@ function getUserFname() {
 
 function initRespondantsTable() {
 	  rTable = $('#respondants').DataTable( {
-	    	order: [[ 0, 'desc' ]],
+            //responsive: true,
+		    order: [[ 0, 'desc' ]],
 	    	columns: [
-	    	     { title: 'Completed At', data: 'respondant_created_date', 'type' : 'date'},
-	    	     { title: 'Respondant ID', data: 'respondant_id'},
-	    	     { title: 'First Name', data: 'respondant_person_fname'},
-	    	     { title: 'Last Name', data: 'respondant_person_lname'},
-	    	     { title: 'Email', data: 'respondant_person_email'}
-	    	     ],
+	 		     { title: 'ID', data: 'respondant_id'},
+	 	    	 { title: 'First Name', data: 'respondant_person_fname'},
+		    	 { title: 'Last Name', data: 'respondant_person_lname'},
+		    	 { title: 'Email', data: 'respondant_person_email'},
+	    	     { title: 'Completed At', data: 'respondant_created_date', 'type' : 'date'}
+	    	],
+	    	columnDefs: [
+	    		{ responsivePriority: 2, targets: 1},
+	    		{ responsivePriority: 4, targets: 2},
+	    		{ responsivePriority: 6, targets: 3},
+	    		{ responsivePriority: 8, targets: 0},
+	    		{ responsivePriority: 10, targets: 4},	    		
+	    	],
     	    bProcessing: true,
 	    	language: {
 	    	    loadingRecords : "\<i class=\"fa fa-spinner fa-3x fa-spin\"\>\<\/i\>",
@@ -76,7 +84,6 @@ function updateRespondantsTable() {
            {
               response = JSON.parse(data);
  			  rTable = $('#respondants').DataTable();
-			  $('#respondants').dataTable().fnProcessingIndicator(false);
  			  $('#respondants').dataTable().fnAddData(response);
 			  rTable.$('tr').click(function (){
 		          rTable.$('tr.selected').removeClass('selected');
@@ -86,12 +93,13 @@ function updateRespondantsTable() {
 			  });
            },
            complete: function() {
-        	   $("#spinner").removeClass("fa-spin");
+        	   $('#respondants').dataTable().fnProcessingIndicator(false);
            }
          });
     
     return response;
 }
+
 function updatePositionsSelect() {
 	var url = "/mp";
     $.ajax({
@@ -289,8 +297,8 @@ function updatePositionProfile(pos_id) {
 }
 
 function refreshPositionProfile(dataPositionTenure) {
-	var positionTenure = $("#positionProfile").get(0).getContext("2d");
-	new Chart(positionTenure).Radar(dataPositionTenure, { 
+	var positionProfile = $("#positionProfile").get(0).getContext("2d");
+	new Chart(positionProfile).Radar(dataPositionTenure, { 
 			showScale: true,
 			responsive : true
 		});	
@@ -323,6 +331,104 @@ function uploadPayroll(e) {
 	})
 }
 
+function processRespondant(respondantId) {
+    $.ajax({
+           type: "POST",
+           async: true,
+           url: "/mp",
+           data: {
+           	"respondant_id" : respondantId,
+        	"formname" : "processrespondant",
+        	"noRedirect" : true        	
+           },
+           success: function(data)
+           {
+              var jResp = JSON.parse(data);
+              console.log(jResp);
+              refreshRespondantProfile(jResp);
+           }
+         });    
+ }
+
+function refreshRespondantProfile(dataScores) {
+	
+	var scores = dataScores.scores;
+	var respondant = dataScores.respondant;
+	var labels = new Array();
+	var data = new Array();
+	var scorecount=0;
+	
+	for (var key in scores) {
+		  if (scores.hasOwnProperty(key)) {
+			  labels[scorecount] = key;
+			  data[scorecount] = scores[key];
+			  scorecount++;
+		  }
+	}
+	
+	var respondantData = {
+			labels: labels,
+			datasets: [
+		        {
+		            label: "Applicant",
+		            fillColor: "rgba(220,220,220,0.3)",
+		            strokeColor: "rgba(220,220,220,1)",
+		            pointColor: "rgba(220,220,220,1)",
+		            pointStrokeColor: "#fff",
+		            pointHighlightFill: "#fff",
+		            pointHighlightStroke: "rgba(220,220,220,1)",
+		            data: data
+		        },
+		        {
+			            label: "Red Flag",
+			            fillColor: "rgba(191, 63, 63,0.0)",
+			            strokeColor: "rgba(191, 63, 63,1)",
+			            pointColor: "rgba(191, 63, 63,1)",
+			            pointStrokeColor: "#BF3F3F",
+			            pointHighlightFill: "#BF3F3F",
+			            pointHighlightStroke: "rgba(191, 63, 63,1)",
+			            data: [ 3, 2, 4, 4, 1]
+		        },
+		        {
+			            label: "Churner",
+			            fillColor: "rgba(191, 191, 63, 0.0)",
+			            strokeColor: "rgba(191, 191, 63, 1)",
+			            pointColor: "rgba(191, 191, 63, 1)",
+			            pointStrokeColor: "#BFBF3F",
+			            pointHighlightFill: "#BFBF3F",
+			            pointHighlightStroke: "rgba(191, 191, 63, 1)",
+			            data: [ 10, 8, 8, 7, 5]
+		        },
+		        {
+			            label: "Long Timer",
+			            fillColor: "rgba(63, 127, 191, 0.0)",
+			            strokeColor: "rgba(63, 127, 191, 1)",
+			            pointColor: "rgba(63, 127, 191, 1)",
+			            pointStrokeColor: "#3F7FBF",
+			            pointHighlightFill: "#3F7FBF",
+			            pointHighlightStroke: "rgba(63, 127, 191, 1)",
+			            data: [ 13, 14, 12, 10, 10]
+		        },
+		        {
+			            label: "Rising Star",
+			            fillColor: "rgba(61,191,63,0.0)",
+			            strokeColor: "rgba(61,191,63,1)",
+			            pointColor: "rgba(61,191,63,1)",
+			            pointStrokeColor: "#3FBF3F",
+			            pointHighlightFill: "#3FBF3F",
+			            pointHighlightStroke: "rgba(61,191,63,1)",
+			            data: [ 15, 15, 15, 15, 14]
+		        }]
+	};
+		
+	var respondantProfile = $("#respondantProfile").get(0).getContext("2d");
+	new Chart(respondantProfile).Radar(respondantData, { 
+			showScale: true,
+			responsive : true
+		});	
+	
+    refreshPositionTenure(getPositionTenureData()); //use stub code	
+}
 
 // Stub Functions to be removed
 function getApplicantData(){

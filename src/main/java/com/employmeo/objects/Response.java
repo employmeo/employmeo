@@ -21,7 +21,7 @@ public class Response extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="response_id")
-	private String responseId;
+	private BigInteger responseId;
 	
 	//bi-directional many-to-one association to Respondant
 	@ManyToOne
@@ -40,17 +40,20 @@ public class Response extends PersistantObject implements Serializable {
 	
 	//bi-directional many-to-one association to Question
 	@ManyToOne
-	@JoinColumn(name="response_question_id")
+	@JoinColumn(name="response_question_id",insertable=false,updatable=false)
 	private Question question;
 
+	@Column(name="response_question_id",insertable=true,updatable=false)
+	private BigInteger responseQuestionId;
+	
 	public Response() {
 	}
 
-	public String getResponseId() {
+	public BigInteger getResponseId() {
 		return this.responseId;
 	}
 
-	public void setResponseId(String responseId) {
+	public void setResponseId(BigInteger responseId) {
 		this.responseId = responseId;
 	}
 
@@ -69,9 +72,22 @@ public class Response extends PersistantObject implements Serializable {
 	public void setResponseRespondantId(String respondantId) {
 		this.responseRespondantId = new BigInteger(respondantId);
 	}
+	
 	public void setResponseRespondantId(BigInteger respondantId) {
 		this.responseRespondantId = respondantId;
 	}
+	
+	public BigInteger getResponseQuestionId() {
+		return responseQuestionId;
+	}
+
+	public void setResponseQuestionId(String quesId) {
+		this.responseRespondantId = new BigInteger(quesId);
+	}
+	
+	public void setResponseQuestionId(BigInteger quesId) {
+		this.responseQuestionId = quesId;
+	}	
 	
 	public String getResponseText() {
 		return this.responseText;
@@ -100,9 +116,9 @@ public class Response extends PersistantObject implements Serializable {
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
 		json.put("response_id", this.responseId);
-		if (this.getRespondant() != null) json.put("response_respondant_id", this.respondant.getRespondantId());
-		if (this.getQuestion() != null) json.put("response_question_id", this.question.getQuestionId());
-		json.put("response__value", this.responseValue);
+		json.put("response_respondant_id", this.responseRespondantId);
+		json.put("response_question_id", this.responseQuestionId);
+		json.put("response_value", this.responseValue);
 		json.put("response_text", this.getResponseText());
 		
 		return json;

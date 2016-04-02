@@ -105,7 +105,7 @@ public class Question extends PersistantObject implements Serializable {
 		this.questionType = questionType;
 	}
 
-	public int getQuestionCorefactorID() {
+	public int getQuestionCorefactorId() {
 		return this.questionCorefactorId;
 	}
 

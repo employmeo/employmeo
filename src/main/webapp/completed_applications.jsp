@@ -11,10 +11,8 @@
 		<div class="row content">
 			<div class="col-sm-3 sidenav hidden-xs">
 				<ul class="nav nav-pills nav-stacked">
-					<li><a href="/index.jsp">Dashboard</a></li>
-					<li><a href="/candidates.jsp">Candidates</a></li>
+					<li><a href="/index.jsp">Candidates</a></li>
 						<li class="active"><a href="#">-- Completed Applications</a></li>
-						<li><a href="/incomplete_applications.jsp">-- In-Process Applications</a></li>
 						<li><a href="/invite_applicant.jsp">-- Invite Candidate</a></li>
 					<li><a href="/positions.jsp">Positions</a></li>
 					<li><a href="/surveys.jsp">Assessments</a></li>
@@ -59,9 +57,32 @@
 							<div class="col-xs-12 hidden-xs">
 								<hr>
 							</div>
-										<table id="respondants" class="table table-hover table-condensed"></table>
-									
-									</div>
+							<table id="respondants" class="table table-hover display compact responsive nowrap" cellspacing="0" width="100%"></table>
+<div id="applicantprofile" class="row content">
+		<div class="col-xs-12 hidden-xs"><hr></div>
+            <div class="col-sm-12 col-md-6">
+			<div class="panel panel-info">
+					<div class="panel-heading">
+						<span class="text-left">Applicant Profile<i class="fa fa-line-chart pull-right"></i></span>
+					</div>
+					<div class="panel-body text-center">
+						<div><canvas id="positionProfile" style="width: 100%, height: auto;"></canvas></div>
+					</div>
+				</div>
+				</div>
+			<div class="col-sm-12 col-md-6">
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<span class="text-left">Similar Applicants<i class="fa fa-line-chart pull-right"></i></span>
+					</div>
+					<div class="panel-body text-center">
+						<div class="col-sm-6 col-md-9">
+							<canvas id="positionTenure" style="width: 100%, height: auto;"></canvas>
+						</div>
+					</div>
+				</div>				
+</div>
+</div>									</div>
 								</div>
 							</div>
 				</div>

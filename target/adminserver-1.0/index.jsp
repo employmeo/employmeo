@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/includes/inc_all.jsp"%>
 <html>
 <head>
-<title>employmeo | <%=LocaleHelper.getMessage(locale, "Dashboard")%></title>
+<title>employmeo | "Dashboard"</title>
 <%@ include file="/WEB-INF/includes/inc_head.jsp"%>
 </head>
 <body>
@@ -12,10 +12,10 @@
 			<div class="col-sm-3 sidenav hidden-xs">
 				<ul class="nav nav-pills nav-stacked">
 					<li class="active"><a href="#section1">Dashboard</a></li>
-					<li><a href="/positions.jsp">Job Definitions</a></li>
-					<li><a href="/applications.jsp">Current Applications</a></li>
-					<li><a href="/analytics.jsp">Analytics</a></li>
-					<li><a href="/data_admin.jsp">Data Administration</a></li>
+					<li><a href="/candidates.jsp">Candidates</a></li>
+					<li><a href="/positions.jsp">Positions</a></li>
+					<li><a href="/surveys.jsp">Assessments</a></li>
+					<li><a href="/data_admin.jsp">Administration</a></li>
 				</ul>
 				<br>
 			</div>
@@ -29,7 +29,7 @@
 
 						<div class="panel-body">
 							<div class="col-sm-12 hidden-xs small">
-								<form class="form-inline pull-right" role="form" action="">
+								<form class="form-inline pull-right" role="form" action="" id="refine_query">
 
 									<div class="form-group">
 										<label for="from_date">From:</label> <input type="date"
@@ -40,25 +40,23 @@
 											class="form-control" id="to_date" name="to_date">
 									</div>
 									<div class="form-group">
-										<label for="location">Location:</label> <select
-											class="form-control" id="location" name="location">
-											<option>all</option>
-											<option>store 1</option>
-											<option>store 2</option>
-											<option>store 3</option>
+										<select	class="form-control" id="location_id" name="location_id">
+											<option>all locations</option>
 										</select>
 									</div>
 									<div class="form-group">
-										<label for="position">Position:</label> <select
-											class="form-control" id="position" name="position">
-											<option>all</option>
-											<option>clerk</option>
-											<option>cook</option>
-											<option>manager</option>
+										<select class="form-control" id="position_id" name="position_id">
+											<option>all positions</option>
 										</select>
+									</div>
+									<div class="form-group">
+										 <select class="form-control" id="survey_id" name="survey_id">
+											<option>all surveys</option>
+										 </select>
 									</div>
 									<button type="button" class="btn btn-default" onClick='updateDash()'><i
 											class="fa fa-refresh"></i></button>
+									<input type=hidden name="formname" value="updatedashboard"><input type="hidden" name="noRedirect" value=true>
 								</form>
 							</div>
 							<div class="col-xs-12 hidden-xs">
@@ -147,11 +145,13 @@
 	var month = ("0" + (now.getMonth() + 1)).slice(-2);
 	var toDate = now.getFullYear()+"-"+(month)+"-"+(day) ;
 	$("#to_date").val(toDate);
+	updatePositionsSelect();
+	updateLocationsSelect();
+	updateSurveysSelect();
 
 	updateDash();
 	updateHistory();
 	</script>
 
-	<%@ include file="/WEB-INF/includes/inc_footer.jsp"%>
 </body>
 </html>

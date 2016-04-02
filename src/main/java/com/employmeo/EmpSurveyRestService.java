@@ -39,7 +39,7 @@ public class EmpSurveyRestService {
 		  if ((val != null) && (val != "")) {
 			  switch (paramname) {
 			  	case "response_id":
-			  		response.setResponseId(val);
+			  		response.setResponseId(new BigInteger(val));
 			  		break;
 			  	case "response_respondant_id":
 		  			response.setResponseRespondantId(new BigInteger(val));

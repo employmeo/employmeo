@@ -13,13 +13,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import com.employmeo.objects.Question;
 import com.employmeo.objects.Response;
 import com.employmeo.util.FaceBookHelper;
-import com.employmeo.util.ImageManagementUtil;
 
 public class EmpSurveyResponseServlet extends HttpServlet {
 
@@ -45,16 +41,17 @@ public class EmpSurveyResponseServlet extends HttpServlet {
 	  while (parameters.hasMoreElements()) {
 		  String paramname = parameters.nextElement();
 		  String val = req.getParameter(paramname);
+		  System.out.println(paramname +": "+ val);
 		  if ((val != null) && (val != "")) {
 			  switch (paramname) {
 			  	case "response_id":
-			  		response.setResponseId(val);
+			  		response.setResponseId(new BigInteger(val));
 			  		break;
 			  	case "response_respondant_id":
 			  		response.setResponseRespondantId(new BigInteger(val));
 			  		break;
 			  	case "response_question_id":
-			  		response.setQuestion(Question.getQuestionById(val));
+			  		response.setResponseQuestionId(new BigInteger(val));
 			  		break;
 			  	case "response_value":
 			  		response.setResponseValue(new Integer(val));
@@ -69,7 +66,11 @@ public class EmpSurveyResponseServlet extends HttpServlet {
 	  }
 
 	  System.out.println(response.getJSON());
-	  response.persistMe();
+	  if (response.getResponseId() == null) {
+		  response.persistMe();
+	  } else {
+		  response.mergeMe();
+	  }
 	  
 	  out.print(response.getJSON());
   }
@@ -85,45 +86,18 @@ public class EmpSurveyResponseServlet extends HttpServlet {
 		   surveyConfig = dBuilder.parse(configFile);
 		   surveyConfig.getDocumentElement().normalize();
 
-		   NodeList forms = surveyConfig.getElementsByTagName("Form");
 		   NamedNodeMap facebookAtts = null;
-		   NamedNodeMap appAtts = null;
-		   String reqtagname = null;
 
 		   try {
-			   reqtagname = "Application";
-			   appAtts = surveyConfig.getElementsByTagName(reqtagname).item(0).getAttributes();	   
-			   reqtagname = "facebook";
-			   facebookAtts = surveyConfig.getElementsByTagName(reqtagname).item(0).getAttributes();
+			   facebookAtts = surveyConfig.getElementsByTagName("facebook").item(0).getAttributes();
+			   String appID = facebookAtts.getNamedItem("appID").getNodeValue(); 
+			   String appSecret = facebookAtts.getNamedItem("appSecret").getNodeValue(); 
+			   FaceBookHelper.staticInit(appID, appSecret);
 		   } catch (Exception e) {
-			   throw new Exception("Missing required config tag: " + reqtagname);
+			   throw new Exception("Missing required facebook config");
 		   }
 		   
-		   for (int i = 0; i < forms.getLength(); i++) {
-			   Node node = forms.item(i);
-			   NamedNodeMap atts = node.getAttributes();
-			   Node formname = atts.getNamedItem("name");
-			   if (formname != null) {
-				   //String name = formname.getNodeValue();
-				   for (int x = 0; x < atts.getLength(); x++) {
-					   //Node att = atts.item(x);
-				   }
-			   }
-		   }
-
-		   String appID = facebookAtts.getNamedItem("appID").getNodeValue(); 
-		   String appSecret = facebookAtts.getNamedItem("appSecret").getNodeValue(); 
-		   FaceBookHelper.staticInit(appID, appSecret);
-		   
-		   ImageManagementUtil.staticInit(config.getServletContext().getRealPath(ImageManagementUtil.AVATARPATH));   
-		   
-		   StringBuffer initParams = new StringBuffer("AppInfo: ");
-		   for (int i = 0; i < appAtts.getLength(); i++) {
-			   Node att = appAtts.item(i);
-			   initParams.append(att.getNodeName() +"=" + att.getNodeValue() + " ");
-		   }
-		   logger.info(initParams.toString());
-		   
+		   		   
 	  } catch (Exception e) {
 		  throw new ServletException(e);
 	  }  

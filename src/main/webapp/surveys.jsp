@@ -11,8 +11,7 @@
   <div class="row content">
     <div class="col-sm-3 sidenav hidden-xs">
 				<ul class="nav nav-pills nav-stacked">
-					<li><a href="/index.jsp">Dashboard</a></li>
-					<li><a href="/candidates.jsp">Candidates</a></li>
+					<li><a href="/index.jsp">Candidates</a></li>
 					<li><a href="/positions.jsp">Positions</a></li>
 					<li><a href="/surveys.jsp">Assessments</a></li>
 					<li><a href="/data_admin.jsp">Administration</a></li>

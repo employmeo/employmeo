@@ -15,18 +15,18 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/my_account.jsp"><i class="fa fa-user"></i>&nbsp;<span id="user_fname"></span></a></li>
-        <li><a href="/settings.jsp"><i class="fa fa-cog"></i></a></li>
+        <li><a href="#"><i class="fa fa-user"></i>&nbsp;<span id="user_fname"></span></a></li>
+        <li><a href="#"><i class="fa fa-cog"></i></a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Menu<span class="caret"></span></a>
           <ul class="dropdown-menu">
-        	<li><a href="#section1">Dashboard</a></li>
-        	<li><a href="/positions.jsp">Job Definitions</a></li>
-        	<li><a href="/applications.jsp">Current Applications</a></li>
-        	<li><a href="/analytics.jsp">Analytics</a></li>
-        	<li><a href="/data_admin.jsp">Data Administration</a></li>
+        	<li><a href="/index.jsp">Candidates</a></li>
+        	<li><a href="/completed_applications.jsp">Current Applications</a></li>
+        	<li><a href="/invite_applicant.jsp">Invite Candidate</a></li>
+        	<li><a href="/positions.jsp">Positions</a></li>
+        	<li><a href="/surveys.jsp">Assessments</a></li>
             <li role="separator" class="divider"></li>
-            <li><a href="#">Sign out</a></li>
+            <!-->li><a href="#">Sign out</a></li-->
           </ul>
         </li>
       </ul>

@@ -107,7 +107,14 @@ public class Respondant extends PersistantObject implements Serializable {
 	public void setRespondantPositionId(BigInteger positionId) {
 		this.respondantPositionId = positionId;
 	}
+	
+	public Position getPosition() {
+		return this.position;
+	}
 
+	public void setPosition(Position position) {
+		this.position = position;
+	}
 	public Timestamp getRespondantCreatedDate() {
 		return this.respondantCreatedDate;
 	}
@@ -145,6 +152,10 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+	
+	public List<Response> getResponses() {
+		return this.responses;
 	}
 	
 	

@@ -141,4 +141,8 @@ public class Position extends PersistantObject implements Serializable {
 		return json;
 	}
 
+	public List<Corefactor> getCorefactors() {
+		return Corefactor.getAllCorefactors();
+	}
+
 }

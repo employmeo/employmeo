@@ -20,16 +20,14 @@
 	<Form name="getsurveylist" class="com.employmeo.actions.GetSurveyList" success="/index.jsp"/>
 	<Form name="getpositionlist" class="com.employmeo.actions.GetPositionList" success="/index.jsp"/>
 	<Form name="getrespondants" class="com.employmeo.actions.GetRespondants" success="/index.jsp"/>
+	<Form name="processrespondant" class="com.employmeo.actions.ProcessRespondant" success="/index.jsp"/>
 	<Form name="forgotpassword" class="com.employmeo.actions.ForgotPasswordEmail" success="/forgot_password_sent.jsp"/>
 	<Form name="resetpassword" class="com.employmeo.actions.ResetPassword" success="/change_password.jsp"/>
 	<Form name="changepassword" class="com.employmeo.actions.ChangePassword" success="/change_password_success.jsp"/>
-	<Form name="updateuser" class="com.employmeo.actions.UpdateUser" loginrequired="true" success="/scoreboard.jsp"/>
-	<Form name="newparent" class="com.employmeo.actions.InviteFamilyMember" loginrequired="true" success="/invitation_sent.jsp"/>
 	<Form name="contactus" class="com.employmeo.actions.ContactUs" success="/contact_sent.jsp"/>
 	<Form name="inviteapplicant" class="com.employmeo.actions.InviteApplicant" success="/invitation_sent.jsp"/>
 	<Form name="changelocale" class="com.employmeo.actions.ChangeLocale" success="/index.jsp"/>
 	<Form name="settimezone" class="com.employmeo.actions.SetDefaultTimeZone" success="/index.jsp"/>
-	<Form name="joinfamily" class="com.employmeo.actions.JoinFamily" success="/edit_user.jsp"/>
 	<facebook appID="632766126762351" appSecret="a849f7f7eb3124e45110ab6f3d710ba4"/>
 	<googlemaps apiKey="AIzaSyA2bSTr1nfJEneqGPFjpJTASqy8P7cVyrc"/>
 	<amazon awsAccessID="AKIAJV5LNHMMOG63C4XA" associateTag="merit06-20" secretKey="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"/>	

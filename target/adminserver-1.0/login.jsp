@@ -41,6 +41,4 @@ if (deniedPage != null) title = LocaleHelper.getMessage(locale, "Login Required"
 </form>
     </div>
 </div>
-
-<%@ include file="/WEB-INF/includes/inc_footer.jsp" %>
 </html>

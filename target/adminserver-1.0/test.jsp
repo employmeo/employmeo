@@ -11,13 +11,13 @@
 <div class="container-fluid">
   <div class="row content">
     <div class="col-sm-3 sidenav hidden-xs">
-      <ul class="nav nav-pills nav-stacked">
-        <li class="active"><a href="#section1">Dashboard</a></li>
-        <li><a href="/positions.jsp">Job Definitions</a></li>
-        <li><a href="/applications.jsp">Current Applications</a></li>
-        <li><a href="/analytics.jsp">Analytics</a></li>
-        <li><a href="/data_admin.jsp">Data Administration</a></li>
-      </ul><br>
+				<ul class="nav nav-pills nav-stacked">
+					<li><a href="/index.jsp">Dashboard</a></li>
+					<li><a href="/candidates.jsp">Candidates</a></li>
+					<li><a href="/positions.jsp">Positions</a></li>
+					<li><a href="/surveys.jsp">Assessments</a></li>
+					<li><a href="/data_admin.jsp">Administration</a></li>
+				</ul>
     </div>  
     <div class="col-sm-9">
       <div class="col-sm-12 col-md-12 col-lg-12">
@@ -35,25 +35,16 @@
   </div>
   <div class="form-group form-inline">
     <label for="location">Location:</label>
-    <select class="form-control" id="location">
+    <select class="form-control" id="location_id">
         <option>all</option>
-        <option>store 1</option>
-        <option>store 2</option>
-        <option>store 3</option>
     </select>
         <label for="position">Position:</label>
     <select class="form-control" id="position_id">
         <option>all</option>
-        <option>clerk</option>
-        <option>cook</option>
-        <option>manager</option>
     </select>
         <label for="position">Survey:</label>
     <select class="form-control" id="survey_id" name="survey_id">
-        <option>one</option>
-        <option value="2">two</option>
-        <option value="3">three</option>
-        <option>four</option>
+        <option>all</option>
     </select>
   </div>
   <div class="form-group form-inline">
@@ -114,6 +105,10 @@
   </div>
 </div>
 
+<script>
+  updatePositionsSelect();
+  updateLocationsSelect();
+  updateSurveysSelect();
+</script>
 
-<%@ include file="/WEB-INF/includes/inc_footer.jsp" %>
 </html>

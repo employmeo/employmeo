@@ -11,13 +11,13 @@
 		<div class="row content">
 			<div class="col-sm-3 sidenav hidden-xs">
 				<ul class="nav nav-pills nav-stacked">
-					<li class="active"><a href="#section1">Dashboard</a></li>
-					<li><a href="/candidates.jsp">Candidates</a></li>
+					<li class="active"><a href="#section1">Candidates</a></li>
+						<li><a href="/completed_applications.jsp">-- Completed Applications</a></li>
+						<li><a href="/invite_applicant.jsp">-- Invite Candidate</a></li>
 					<li><a href="/positions.jsp">Positions</a></li>
 					<li><a href="/surveys.jsp">Assessments</a></li>
 					<li><a href="/data_admin.jsp">Administration</a></li>
 				</ul>
-				<br>
 			</div>
 			<div class="col-sm-9">
 				<div class="row content">
