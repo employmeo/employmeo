@@ -24,7 +24,11 @@
       <div class="col-sm-12 col-md-12 col-lg-12">
         <div class="panel panel-primary">
         	<div class="panel-heading"><h4>Applicant Invitation</h4></div>
-        	<div class="panel-body">
+        	<div class="panel-body hidden" id="invitationsent">
+        		<h4>Invitation Sent</h4>
+    			<button type="button" class="btn btn-block btn-default" onclick='resetInvitation();'>Invite Another</button> 
+        	</div>
+        	<div class="panel-body" id="invitationform">
         	<form name="inviteapplicant" action="/mp" method="post" class="form">
 			<div class="col-sm-12 col-md-4">
 			<h4>Contact Info</h4><hr>
@@ -64,7 +68,10 @@
 	<hr>
     <input type="hidden" id="formname" name="formname" value="inviteapplicant">
     <input type="hidden" name="noRedirect" value="true">
-    <button type="button" class="btn btn-block btn-default" onclick='postToAction(this.form)'>Send Invitation</button>   
+    <button type="button" class="btn btn-block btn-default" onclick='inviteApplicant(this.form);'>
+    	Send Invitation 
+    	<i id="spinner" class="fa fa-spinner fa-spin hidden"></i>
+    	</button>   
   </div>
         	</form>
         	</div>

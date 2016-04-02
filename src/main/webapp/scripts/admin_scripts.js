@@ -26,6 +26,40 @@ function postToAction(e) {
     return response;
 }
 
+function inviteApplicant(e) {
+	// todo: validate form
+    var url = "/mp";
+    var response = "failed";
+    $.ajax({
+           type: "POST",
+           async: true,
+           url: url,
+           data: $(e).serialize(),
+           beforeSend: function(data) {
+        	   $("#inviteapplicant :input").prop('readonly', true);
+        	   $("#spinner").removeClass('hidden');
+           },
+           success: function(data)
+           {
+        	   e.reset();
+        	   $('#invitationform').addClass('hidden');
+        	   $('#invitationsent').removeClass('hidden');
+              response = JSON.parse(data);
+           },
+           complete: function(data) {
+        	   $("#inviteapplicant :input").prop('readonly', false);
+        	   $("#spinner").addClass('hidden');
+           }
+         });
+
+    return response;
+}
+
+function resetInvitation() {
+	   $('#invitationsent').addClass('hidden');
+	   $('#invitationform').removeClass('hidden');	
+}
+
 function getUserFname() {
     var name = "user_fname=";
     var ca = document.cookie.split(';');
