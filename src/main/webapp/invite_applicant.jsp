@@ -32,14 +32,21 @@
         	<form name="inviteapplicant" action="/mp" method="post" class="form">
 			<div class="col-sm-12 col-md-4">
 			<h4>Contact Info</h4><hr>
-    <label for="fname">First Name:</label> <input required class="form-control" id="fname" name="fname" placeholder="first" required>
-    <label for="lname">Last Name:</label> <input class="form-control" id="lname" name="lname" placeholder="last">
+	<label for="fname">First Name:</label> 
+	<div class="input-group has-success has-feedback">
+	<input required class="form-control" id="fname" name="fname" placeholder="first" required>
+	</div>
+	<label for="lname">Last Name:</label>
+	<div class="input-group has-success has-feedback">
+	<input class="form-control" id="lname" name="lname" placeholder="last">
+	</div>
 	<label for="email">Email:</label>
-	<div class="input-group margin-bottom-sm">
+	<div class="input-group">
 	  <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
 	  <input required class="form-control" type="email" name="email" required placeholder="email">
+	  <span class="form-control-feedback" aria-hidden="true"><i class="fa fa-remove form- fa-fw"></i></span>
 	</div>
-  </div>
+</div>
 <div class="col-sm-12 col-md-4">
 			<h4>Address</h4><hr>
     <label for="street1">Street:</label>
