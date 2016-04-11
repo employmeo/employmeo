@@ -41,6 +41,9 @@ public class Question extends PersistantObject implements Serializable {
 	
 	@Column(name="QUESTION_COREFACTOR_ID")
 	private int questionCorefactorId;
+	
+	@Column(name="QUESTION_DIRECTION")
+	private int questionDirection;
 
 	//bi-directional many-to-one association to Answer
 	@OneToMany(mappedBy="question")
@@ -111,6 +114,14 @@ public class Question extends PersistantObject implements Serializable {
 
 	public void setQuestionCorefactorId(int questionCorefactorId) {
 		this.questionCorefactorId = questionCorefactorId;
+	}
+
+	public int getQuestionDirection() {
+		return this.questionDirection;
+	}
+
+	public void setQuestionDirection(int questionDirection) {
+		this.questionDirection = questionDirection;
 	}
 
 	public List<Answer> getAnswers() {
@@ -208,6 +219,7 @@ public class Question extends PersistantObject implements Serializable {
 		json.put("question_text", this.questionText);
 		json.put("question_type", this.questionType);
 		json.put("question_corefactor_id", this.questionCorefactorId);
+		json.put("question_direction", this.questionDirection);
 		for (int i=0; i<this.answers.size();i++) {
 			json.accumulate("answers", this.answers.get(i).getJSON());
 		}

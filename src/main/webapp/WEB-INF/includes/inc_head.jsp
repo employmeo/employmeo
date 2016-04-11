@@ -19,4 +19,5 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js"></script>
 <script type="text/javascript" src="/scripts/bootstrap-filestyle.min.js"></script>
+<script type="text/javascript" src='/scripts/stub_scripts.js'></script>
 <script type="text/javascript" src='/scripts/admin_scripts.js'></script>

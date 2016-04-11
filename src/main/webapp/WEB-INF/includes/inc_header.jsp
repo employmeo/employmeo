@@ -26,7 +26,7 @@
         	<li><a href="/positions.jsp">Positions</a></li>
         	<li><a href="/surveys.jsp">Assessments</a></li>
             <li role="separator" class="divider"></li>
-            <!-->li><a href="#">Sign out</a></li-->
+            <li><a href="#">Sign out</a></li>
           </ul>
         </li>
       </ul>

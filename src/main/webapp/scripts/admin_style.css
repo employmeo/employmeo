@@ -70,6 +70,13 @@ div.loginpanel {
     width: 48%;
     padding-bottom : 48%; /* = width for a 1:1 aspect ratio */
     margin:1%;
+    opacity: .7;
+    border-style: hidden;
+}
+
+.selected {
+	opacity: 1;
+	outline:1px solid grey;
 }
 
 .probability {

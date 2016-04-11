@@ -133,18 +133,7 @@
 	</div>
 
 	<script type="text/javascript">
-	var now = new Date();
-	var from = new Date();
-	from.setTime(now.getTime()-1000*60*60*24*90);
-	var fromDay = ("0" + from.getDate()).slice(-2);
-	var fromMonth = ("0" + (from.getMonth() + 1)).slice(-2);
-	var fromDate = from.getFullYear()+"-"+(fromMonth)+"-"+(fromDay) ;
-	$("#from_date").val(fromDate);
-	
-	var day = ("0" + now.getDate()).slice(-2);
-	var month = ("0" + (now.getMonth() + 1)).slice(-2);
-	var toDate = now.getFullYear()+"-"+(month)+"-"+(day) ;
-	$("#to_date").val(toDate);
+	updateDateChoosers();
 	updatePositionsSelect();
 	updateLocationsSelect();
 	updateSurveysSelect();

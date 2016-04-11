@@ -33,18 +33,23 @@ public class ProcessRespondant extends MPFormAction {
 		  if (respondant != null) {
 			  List<Response> responses = respondant.getResponses();
 			  JSONObject scores = new JSONObject();
+			  int[] count = new int[20];
+			  int[] score = new int[20];
+			  
 			  for (int i=0;i<responses.size();i++) {
 				  Response response = responses.get(i);
 				  Integer cfId = Question.getQuestionById(response.getResponseQuestionId()).getQuestionCorefactorId();
-				  Corefactor corefactor = Corefactor.getCorefactorById(cfId);
-				  int score = 0;
-				  if (scores.has(corefactor.getCorefactorName())) {
-					  score = scores.getInt(corefactor.getCorefactorName()) + response.getResponseValue();
-				  } else {
-					  score = response.getResponseValue();
-				  }
-				  scores.put(corefactor.getCorefactorName(),score);				  
+				  count[cfId]++;
+				  score[cfId]+=response.getResponseValue();
 			  }
+
+			  for (int i=0; i<20; i++) {
+				  if (count[i]>0) {
+					  Corefactor corefactor = Corefactor.getCorefactorById(i);			  
+					  scores.put(corefactor.getCorefactorName(),((double)score[i]/(double)count[i]));
+				  }
+			  }
+
 			  Position position = Position.getPositionById(respondant.getRespondantPositionId());
 			  JSONObject json = new JSONObject();
 			  json.put("respondant", respondant.getJSON());

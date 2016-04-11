@@ -17,43 +17,45 @@
 					<li><a href="/data_admin.jsp">Administration</a></li>
 				</ul>
     </div>
-    <div class="col-sm-9">
-      <div class="well">
-             <p style="font-size:32px"><%=LocaleHelper.getMessage(locale, "Survey Questions")%></p>
-<%
-String surveyID = request.getParameter("survey_id");
-Survey survey = null;
-if (surveyID != null) {
-	survey = Survey.getSurveyById(surveyID);
-%>
-<table class="table table-bordered table-hover">
-<tr><th>ID</th><th>Name</th><th>Type</th><th>Status</th></tr>
-<%
-	Question question = null;
-	List<SurveyQuestion> questions = survey.getSurveyQuestions();
-	for (int j=0;j<questions.size();j++){
-		question = questions.get(j).getQuestion();
-			//System.out.println(j + ". " + question.getJSONString());
-%>
-				<tr><td colspan="2"><%=question.getQuestionId() %>. <%=question.getQuestionText() %></td><td><%=question.getQuestionDescription() %></td><td><%=question.getQuestionType() %></td></tr>
-<%			
-		List<Answer> answers = question.getAnswers();
-		for (int k=0;k<answers.size();k++) {
-			Answer answer = answers.get(k);
-%>
-				<tr class="clickable-row small"><td></td><td><i class="fa fa-square-o"></i> <%=answer.getAnswerText() %></td><td><%=answer.getAnswerDescription() %></td><td><%=answer.getAnswerValue() %></td></tr>
-<%			
-			}
-%>
-<%
-		}
-%>
-</table>
-<%
-}
-%>
-      </div>
-  </div>
-</div>
-</div>
+			<div class="col-sm-9">
+				<div class="row content">
+					<ul class="nav nav-tabs" id="surveys_nav"></ul>
+					<br>
+				</div>
+				<div class="row content">
+					<div class="col-sm-12 col-md-12 col-lg-12">
+
+						<div class="panel panel-primary">
+							<div class="panel-heading">Surveys</div>
+							<div class="panel-body">
+							<form id="updatesurveyform" class="form">
+							    Survey ID: <input class="form-control" id="surveyid" name="survey_id" disabled>
+							    Survey Name: <input class="form-control" id="surveyname" name="survey_name" disabled>
+							    Survey Question Count: <input class="form-control" id="questiontotal" disabled>
+							    Survey Type: <input class="form-control" id="surveytype" name="survey_type" disabled>
+							    Survey Status: <input class="form-control" id="surveystatus" name="survey_status" disabled>
+							</form>
+
+							</div>
+						</div>
+						<div class="row content">
+							<div class="col-sm-12 col-md-12 col-lg-12">
+
+								<div class="panel panel-primary">
+									<div class="panel-heading">Survey Questions</div>
+									<div class="panel-body">
+										<table id="questions" class="table table-hover display compact responsive nowrap" cellspacing="0" width="100%">
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		updateSurveysNav();
+	</script>
 </html>

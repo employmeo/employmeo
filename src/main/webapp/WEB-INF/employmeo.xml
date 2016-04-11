@@ -15,6 +15,7 @@
 	<Form name="fbgrant" class="com.employmeo.actions.FBGrant" success="/edit_user.jsp"/>
 	<Form name="login" class="com.employmeo.actions.Login" success="/index.jsp"/>
 	<Form name="logout" class="com.employmeo.actions.Logout" success="/index.jsp"/>
+	<Form name="testaction" class="com.employmeo.actions.TestAction" success="/index.jsp"/>
 	<Form name="getfullsurvey" class="com.employmeo.actions.GetFullSurvey" success="/index.jsp"/>
 	<Form name="getlocationlist" class="com.employmeo.actions.GetLocationList" success="/index.jsp"/>
 	<Form name="getsurveylist" class="com.employmeo.actions.GetSurveyList" success="/index.jsp"/>

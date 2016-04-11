@@ -34,18 +34,21 @@
 	<input class="form-control" type="email" name="email" required placeholder="email">
   </div>
   <div class="form-group form-inline">
-    <label for="location">Location:</label>
-    <select class="form-control" id="location_id">
-        <option>all</option>
-    </select>
-        <label for="position">Position:</label>
-    <select class="form-control" id="position_id">
-        <option>all</option>
-    </select>
-        <label for="position">Survey:</label>
-    <select class="form-control" id="survey_id" name="survey_id">
-        <option>all</option>
-    </select>
+									<div class="form-group">
+										<select	class="form-control" id="location_id" name="location_id">
+											<option>all locations</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<select class="form-control" id="position_id" name="position_id">
+											<option>all positions</option>
+										</select>
+									</div>
+									<div class="form-group">
+										 <select class="form-control" id="survey_id" name="survey_id">
+											<option>all surveys</option>
+										 </select>
+									</div>
   </div>
   <div class="form-group form-inline">
 
@@ -53,14 +56,12 @@
   <div class="form-group form-inline">
     <label for="position">Action:</label>
     <select class="form-control" id="formname" name="formname">    
-		<option value="changelocale">Change Locale</option>
+        <option value="testaction">TestAction</option>
         <option value="inviteapplicant">Invite</option>
-	   	<option value="fbsignup">FB Register</option>
-		<option value="register">Register</option>
-		<option value="fblogin">FB Login</option>
-		<option value="fbgrant" >FB Grant</option>
 		<option value="login" >Login</option>
 		<option value="logout">Logout</option>
+		<option value="getsurveylist">Get Survey List</option>
+		<option value="getlocationlist">Get Location List</option>
 		<option value="getpositionlist">Get Position List</option>
 		<option value="getfullsurvey">Get Full Survey</option>
 		<option value="getrespondants">Get Applicants</option>
