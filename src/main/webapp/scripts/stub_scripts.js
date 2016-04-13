@@ -1,90 +1,45 @@
 // Stub Functions to be removed
 function getApplicantData(){
-	return [
-            {
-                value: 100,
-                color:"#ff0000",
-                highlight: "#ff5050",
-                label: "Red Flag"
-            },
-            {
-                value: 300,
-                color: "#ffff00",
-                highlight: "#ffff66",
-                label: "Churner"
-            },
-            {
-                value: 250,
-                color: "#3399ff",
-                highlight: "#0066ff",
-                label: "Long Timer"
-            },
-            {
-                value: 20,
-                color: "#00ff00",
-                highlight: "#66ff99",
-                label: "Rising Star"
-            }
-        ];
+	var data = getDoughnutData();
+	data.datasets[0].data = [100, 300, 250, 20]
+	return data;
 }
 
 function getInterviewData(){
-	return [
-            {
-                value: 5,
-                color:"#ff0000",
-                highlight: "#ff5050",
-                label: "Red Flag"
-            },
-            {
-                value: 150,
-                color: "#ffff00",
-                highlight: "#ffff66",
-                label: "Churner"
-            },
-            {
-                value: 180,
-                color: "#3399ff",
-                highlight: "#0066ff",
-                label: "Long Timer"
-            },
-            {
-                value: 18,
-                color: "#00ff00",
-                highlight: "#66ff99",
-                label: "Rising Star"
-            }
-        ];
+	var data = getDoughnutData();
+	data.datasets[0].data = [5, 150, 180, 18]
+	return data;
 }
 
 function getHireData(){
-	return [
-            {
-                value: 2,
-                color:"#ff0000",
-                highlight: "#ff5050",
-                label: "Red Flag"
-            },
-            {
-                value: 75,
-                color: "#ffff00",
-                highlight: "#ffff66",
-                label: "Churner"
-            },
-            {
-                value: 125,
-                color: "#3399ff",
-                highlight: "#0066ff",
-                label: "Long Timer"
-            },
-            {
-                value: 15,
-                color: "#00ff00",
-                highlight: "#66ff99",
-                label: "Rising Star"
-            }
-        ];
+	var data = getDoughnutData();
+	data.datasets[0].data = [2, 75, 125, 15]
+	return data;
 }
+
+function getDoughnutData() {
+	return {
+			labels: [
+			        "Red Flag",
+			        "Churner",
+			        "Long Timer",
+			        "Rising Star"],
+			datasets: [{
+				backgroundColor: [
+				    redflagColor,
+				    churnerColor,
+				    longtimerColor,
+				    risingstarColor
+				    ],
+				hoverBackgroundColor: [
+   				    redflagHighlight,
+				    churnerHighlight,
+				    longtimerHighlight,
+				    risingstarHighlight
+                    ]
+			}]        
+	};
+}	        
 
 function getTurnoverData() {
 	return {
@@ -92,10 +47,10 @@ function getTurnoverData() {
 	    datasets: [
 	        {
 	            label: "Months",
-	            fillColor: "rgba(120,220,220,0.5)",
-	            strokeColor: "rgba(120,220,220,0.8)",
-	            highlightFill: "rgba(120,220,220,0.75)",
-	            highlightStroke: "rgba(120,220,220,1)",
+	            backgroundColor: "rgba(120,220,220,0.5)",
+	            borderColor: "rgba(120,220,220,0.8)",
+	            hoverBackgroundColor: "rgba(120,220,220,0.75)",
+	            hoverBorderColor: "rgba(120,220,220,1)",
 	            data: [8.8, 6]
 	        }
 	    ]
@@ -107,22 +62,37 @@ function getHistoryData() {
 	    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 	    datasets: [
 	        {
-	            label: "Hire Ratio",
-	            fillColor: "rgba(120,220,220,0.5)",
-	            strokeColor: "rgba(120,220,220,0.8)",
-	            highlightFill: "rgba(120,220,220,0.75)",
-	            highlightStroke: "rgba(120,220,220,1)",
-	            data: [6.1,6.0,6.0,5.8,6.1,4.5,4.3,3.9,3.5,3.2,3.1,3.2]
+	            label: "Red Flag",
+	            backgroundColor: redflagColor,
+	            borderColor: redflagColor,
+	            hoverBackgroundColor: redflagOverlay,
+	            hoverBorderColor: redflagHighlight,
+	            data: [10,2,3,2,1,2,1,2,1,0,0,1]
 	        },
 	        {
-	            label: "Projected Tenure",
-	            fillColor: "rgba(120,120,220,0.5)",
-	            strokeColor: "rgba(120,120,220,0.8)",
-	            highlightFill: "rgba(120,120,220,0.75)",
-	            highlightStroke: "rgba(120,120,220,1)",
-	            data: [6.1,6.0,6.0,5.8,6.1,7.5,7.3,7.9,7.5,8.2,8.1,2.2]
+	            label: "Churner",
+	            backgroundColor: churnerColor,
+	            borderColor: churnerColor,
+	            hoverBackgroundColor: churnerOverlay,
+	            hoverBorderColor: churnerHighlight,
+	            data: [140,150,130,110,130,102,110,90,80,85,80,75]
+	        },
+	        {
+	            label: "Long Timer",
+	            backgroundColor: longtimerColor,
+	            borderColor: longtimerColor,
+	            hoverBackgroundColor: longtimerOverlay,
+	            hoverBorderColor: longtimerHighlight,
+	            data: [50,55,65,71,86,100,104,120,112,121,118,126]
+	        },
+	        {
+	            label: "Rising Star",
+	            backgroundColor: risingstarColor,
+	            borderColor: risingstarColor,
+	            hoverBackgroundColor: risingstarOverlay,
+	            hoverBorderColor: risingstarHighlight,
+	            data: [3,5,7,8,7,12,13,17,20,21,22,21]
 	        }
-
 	    ]
 	};
 }
@@ -133,10 +103,10 @@ function getPositionTenureData() {
 	    datasets: [
 	        {
 	            label: "count",
-	            fillColor: "rgba(220,220,220,0.2)",
-	            strokeColor: "rgba(220,220,220,1)",
-	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(220,220,220,1)",
+	            backgroundColor: "rgba(120,220,220,0.2)",
+	            borderColor: "rgba(220,120,220,1)",
+	            hoverBackgroundColor: "#fff",
+	            hoverBorderColor: "rgba(220,220,120,1)",
 	            data: [45,15,25,40,45,55,65,50,40,30,20,15,13,14,11,10,9]
 	        }
 	    ]
@@ -149,22 +119,22 @@ function getApplicantProfileData() {
 	    datasets: [
 	        {
 	            label: "Applicant",
-	            fillColor: "rgba(220,220,220,0.2)",
-	            strokeColor: "rgba(220,220,220,1)",
-	            pointColor: "rgba(220,220,220,1)",
-	            pointStrokeColor: "#fff",
-	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(220,220,220,1)",
+	            backgroundColor: "rgba(220,220,220,0.2)",
+	            borderColor: "rgba(220,220,220,1)",
+	            pointBackgroundColor: "rgba(220,220,220,1)",
+	            pointBorderColor: "#fff",
+	            pointHoverBackgroundColor: "#fff",
+	            pointHoverBorderColor: "rgba(220,220,220,1)",
 	            data: [1, 3, 5, 4, 2]
 	        },
 	        {
 	            label: "Average Score",
-	            fillColor: "rgba(151,187,205,0.2)",
-	            strokeColor: "rgba(151,187,205,1)",
-	            pointColor: "rgba(151,187,205,1)",
-	            pointStrokeColor: "#fff",
-	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(151,187,205,1)",
+	            backgroundColor: "rgba(151,187,205,0.2)",
+	            borderColor: "rgba(151,187,205,1)",
+	            pointBackgroundColor: "rgba(151,187,205,1)",
+	            pointBorderColor: "#fff",
+	            pointHoverBackgroundColor: "#fff",
+	            pointHoverBorderColor: "rgba(151,187,205,1)",
 	            data: [4, 3, 4, 2, 1]
 	        }
 	    ]
@@ -180,38 +150,61 @@ function getRespondantScore() {
 			respondant_survey_name: 'Basic Application'
 		},
 		position: getPositionDetails(),
-		scores: getRandomScores()
+		scores: {
+			'Conscentiousness' : 4.5,
+			'Stability' : 4.7,
+			'Extraversion' : 4.9,
+			'Openness' : 3.7,
+			'Drive' : 5				
+		}
 	};
 	return jResp;
 }
 
-function getRandomScores() {
-	return {
-		'Conscentiousness' : 4.5,
-		'Stability' : 4.7,
-		'Extraversion' : 4.9,
-		'Openness' : 3.7,
-		'Drive' : 5				
-	};
+function getScores(scores, rank) {
+	var newscores = new Array();
+	for (var key in scores) {
+		if (scores.hasOwnProperty(key)) {
+			newscores[key] = Math.round(100*(5 + Math.random()- rank))/100;
+		}
+	}
+	return newscores;
+	
 }
 
 function getPositionDetails() {
+	var scores = {
+			'Conscentiousness' : 4.5,
+			'Stability' : 4.7,
+			'Extraversion' : 4.9,
+			'Openness' : 3.7,
+			'Drive' : 5				
+		};
+	return getPositionDetails(scores);
+}
+function getPositionDetails(scores) {
 	
+	var corefactors = new Array();
+	var index = 0;
+	
+	for (var key in scores) {
+		if (scores.hasOwnProperty(key)) {
+			corefactors[index] = key;
+			index++;
+		}
+	}
+
 	var position = {
 			position_name: 'Clerk',
-			position_corefactors: [	'Conscentiousness', 'Stability', 'Extraversion', 'Openness', 'Drive'],
+			position_corefactors: corefactors,
 			position_profiles: [{
 			    	 profile_name: 'Rising Star',
-			    	 profile_class: 'square risingstar',
-			    	 profile_color: 'rgba(61,191,63,1)',
-			    	 profile_highlight: 'rgba(61,191,63,0.5)',
-			    	 profile_scores: {
-						'Conscentiousness' : 4.9,
-						'Stability' : 4.9,
-						'Extraversion' : 5.0,
-						'Openness' : 4.7,
-						'Drive' : 5			
-			    	 },
+			    	 profile_class: 'btn-success',
+			    	 profile_color: risingstarColor,
+			    	 profile_highlight: risingstarHighlight,
+			    	 profile_overlay: risingstarOverlay,
+			    	 profile_scores: getScores(scores, 1),
+			    	 profile_probability: 3,
 			    	 profile_tenure_data: {
 			    		    labels: ["1","2","3","4","5","6","7","8","9","10","11","12","14","15","16","17","18"],
 			    		    datasets: [{ data: [2,3,1,1,2,2,3,4,4,5,10,15,25,30,33,30,25] }]
@@ -219,16 +212,12 @@ function getPositionDetails() {
 				},
 			     {
 			    	 profile_name: 'Long Timer',
-			    	 profile_class: 'square longtimer',
-			    	 profile_color: 'rgba(63, 127, 191, 1)',
-			    	 profile_highlight: 'rgba(63, 127, 191, 0.6)',
-			    	 profile_scores: {
-						'Conscentiousness' : 3.5,
-						'Stability' : 3.7,
-						'Extraversion' : 3.9,
-						'Openness' : 3.2,
-						'Drive' : 3.8				
-			    	 },
+			    	 profile_class: 'btn-info',
+			    	 profile_color: longtimerColor,
+			    	 profile_highlight: longtimerHighlight,
+			    	 profile_overlay: longtimerOverlay,
+			    	 profile_scores: getScores(scores, 2),
+			    	 profile_probability: 61,
 			    	 profile_tenure_data: {
 			    		    labels: ["1","2","3","4","5","6","7","8","9","10","11","12","14","15","16","17","18"],
 			    		    datasets: [{ data: [3,5,10,20,35,45,65,70,50,40,30,25,18,14,11,10,9] }]
@@ -236,16 +225,12 @@ function getPositionDetails() {
 			     },
 			     {
 			    	 profile_name: 'Churner',
-			    	 profile_class: 'square churn',
-			    	 profile_color: 'rgba(191, 191, 63, 1)',
-			    	 profile_highlight: 'rgba(191, 191, 63, 0.7)',
-			    	 profile_scores: {
-						'Conscentiousness' : 2.5,
-						'Stability' : 2.7,
-						'Extraversion' : 2.9,
-						'Openness' : 1.7,
-						'Drive' : 2.7				
-			    	 },
+			    	 profile_class: 'btn-warning',
+			    	 profile_color: churnerColor,
+			    	 profile_highlight: churnerHighlight,
+			    	 profile_overlay: churnerOverlay,
+			    	 profile_scores: getScores(scores, 3),
+			    	 profile_probability: 26,
 			    	 profile_tenure_data: {
 			    		    labels: ["1","2","3","4","5","6","7","8","9","10","11","12","14","15","16","17","18"],
 			    		    datasets: [{ data: [60,75,55,30,15,10,5,3,1,0,0,0,0,0,0,0,0] }]
@@ -253,16 +238,12 @@ function getPositionDetails() {
 			     },
 				{
 			    	 profile_name: 'Red Flag',
-			    	 profile_class: 'square redflag',
-			    	 profile_color: 'rgba(191, 63, 63, 1)',
-			    	 profile_highlight: 'rgba(191, 63, 63, 0.8)',
-			    	 profile_scores: {
-						'Conscentiousness' : 1.5,
-						'Stability' : 1.7,
-						'Extraversion' : 1.9,
-						'Openness' : 0.7,
-						'Drive' : 2				
-			    	 },
+			    	 profile_class: 'btn-danger',
+			    	 profile_color: redflagColor,
+			    	 profile_highlight: redflagHighlight,
+			    	 profile_overlay: redflagOverlay,
+			    	 profile_scores: getScores(scores, 4),
+			    	 profile_probability: 10,
 			    	 profile_tenure_data: {
 			    		    labels: ["1","2","3","4","5","6","7","8","9","10","11","12","14","15","16","17","18"],
 			    		    datasets: [{ data: [80,10,7,3,0,0,0,0,0,0,0,0,0,0,0,0,0] }]

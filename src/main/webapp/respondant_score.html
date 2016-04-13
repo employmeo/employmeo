@@ -17,10 +17,11 @@
 
 <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
 <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="/scripts/bootstrap-filestyle.min.js"></script>
+<script type="text/javascript" src="/scripts/Chart.min.js"></script>
+<script type="text/javascript" src='/scripts/stub_scripts.js'></script>
 <script type="text/javascript" src='/scripts/admin_scripts.js'></script>
 </head>
 <header>
@@ -77,34 +78,60 @@ $('#user_fname').text(getUserFname());
 				</ul>
 				<br>
 			</div>
-			<div class="col-sm-9">
-				<div id='wait' class="hidden text-center" style='position:absolute;width:100%;bottom:25px;z-index:99;'>
-					<span style="font-size:18px;font-family:Comfortaa;">Loading</span><br><i class="fa fa-spinner fa-5x fa-spin"></i>
+			<div class="col-xs-12 col-sm-9" >
+			<div class="col-sm-3">
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<span class="text-left">Predictive Scoring<i class="fa fa-line-chart pull-right"></i></span>
+					</div>
+					<div class="panel-body" id="profilesquares">
+					<div class="titlebox btn-default">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext" id="applicantname">Applicant Name</div></div></div></div>
+
+					<div class="square btn-success">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext center"></div></div></div></div>
+					<div class="rect btn-success">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext text-left"><i class="fa fa-rocket"></i> Rising Star</div></div></div></div>
+
+					<div class="square btn-info">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext center"></div></div></div></div>
+					<div class="rect btn-info">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext text-left"><i class="fa fa-user-plus white"></i> Long Timer</div></div></div></div>
+
+					<div class="square btn-warning">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext center"></div></div></div></div>
+					<div class="rect btn-warning">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext text-left"><i class="fa fa-gear white"></i> Churner</div></div></div></div>
+
+					<div class="square btn-danger">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext center"></div></div></div></div>
+					<div class="rect btn-danger">
+					  <div class="squarecontent"><div class="squaretable"><div class="squaretext text-left"><i class="fa fa-hand-stop-o white"></i> Red Flag</div></div></div></div>
+					</div>
 				</div>
+			</div>
+			<div class="col-sm-9">
+
 				<div class="panel panel-info">
 					<div class="panel-heading">
 						<span class="text-left">Applicant Profile<i class="fa fa-line-chart pull-right"></i></span>
 					</div>
 					<div class="panel-body text-center">
-						<div><canvas id="respondantProfile"></canvas></div>
+						<div class="col-sm-9">
+						<div><canvas id="respondantProfile"></canvas></div></div>
 					</div>
 				</div>
+			</div>
+			<div class="col-sm-12">
 				<div class="panel panel-info">
 					<div class="panel-heading">
-						<span class="text-left">Applicant Scoring<i class="fa fa-line-chart pull-right"></i></span>
+						<span class="text-left">Profile Performance (Tenure in Months)<i class="fa fa-line-chart pull-right"></i></span>
 					</div>
 					<div class="panel-body text-center">
-						<div class="col-sm-6 col-md-3" id="profilesquares">
-							<div class="square longtimer"><div class="probability">65%</div></div>
-							<div class="square risingstar"><div class="probability">3%</div></div>
-							<div class="square redflag"><div class="probability">10%</div></div>
-							<div class="square churn"><div class="probability">22%</div></div>
-						</div>
-						<div class="col-sm-6 col-md-9">
 							<canvas id="positionTenure" style="width: 100%, height: auto;"></canvas>
-						</div>
 					</div>
 				</div>
+			</div>
 			</div>
 		</div>
 	</div>

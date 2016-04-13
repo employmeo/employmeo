@@ -46,7 +46,7 @@ public class ProcessRespondant extends MPFormAction {
 			  for (int i=0; i<20; i++) {
 				  if (count[i]>0) {
 					  Corefactor corefactor = Corefactor.getCorefactorById(i);			  
-					  scores.put(corefactor.getCorefactorName(),((double)score[i]/(double)count[i]));
+					  scores.put(corefactor.getCorefactorName(),(double) Math.round(100.0 *((double)score[i]/(double)count[i]))/ 100.0);
 				  }
 			  }
 

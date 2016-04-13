@@ -1,6 +1,29 @@
 //Useful Global Variables
 var tenureChart;
 var profileChart;
+var respondantProfile;
+var historyChart;
+
+var redflagColor = "#d9534f";
+var redflagOverlay = "rgba(217, 83, 79,0.3)";
+var redflagHighlight = "#d43f3a";
+
+var churnerColor = "#f0ad4e";
+var churnerOverlay = "rgba(240, 173, 78, 0.3)";
+var churnerHighlight = "#eea236";
+
+var longtimerColor = "#5bc0de";
+var longtimerOverlay = "rgba(91, 192, 222,0.3)";
+var longtimerHighlight = "#46b8da";
+
+var risingstarColor = "#5cb85c";
+var risingstarOverlay = "rgba(92, 184, 92,0.3)";
+var risingstarHighlight = "#4cae4c";
+
+var applicantColor = "rgba(120,60,100,1)";
+var applicantOverlay = "rgba(120,60,100,0.3)";
+var applicantHighlight = "rgba(120,60,100,1)";
+
 
 //new jquery plugin for datatables;
 jQuery.fn.dataTableExt.oApi.fnProcessingIndicator = function ( oSettings, onoff )
@@ -41,7 +64,6 @@ function updatePositionsSelect() {
 		success: function(data)
 		{
 			var positions = JSON.parse(data);
-			console.log("Fetch complete:", positions);
 			$.each(positions, function (index, value) {
 				$('#position_id').append($('<option/>', { 
 					value: this.position_id,
@@ -65,7 +87,6 @@ function updateLocationsSelect() {
 		success: function(data)
 		{
 			var locations = JSON.parse(data);
-			console.log("Fetch complete:", locations);
 			$.each(locations, function (index, value) {
 				$('#location_id').append($('<option/>', { 
 					value: this.location_id,
@@ -89,7 +110,6 @@ function updateSurveysSelect() {
 		success: function(data)
 		{
 			var surveys = JSON.parse(data);
-			console.log("Fetch complete:", surveys);
 			$.each(surveys, function (index, value) {
 				$('#survey_id').append($('<option/>', { 
 					value: this.survey_id,
@@ -116,6 +136,21 @@ function updateDateChoosers() {
 	return;
 }
 
+function toggleLegend() {
+	if ($('#expander').hasClass('fa-chevron-down')) {
+		$('#expander').removeClass('fa-chevron-down');
+		$('#expander').addClass('fa-chevron-up');	
+		$('.rect').each(function() {
+			$(this).removeClass('hidden');
+		});
+	} else {
+		$('#expander').addClass('fa-chevron-down');
+		$('#expander').removeClass('fa-chevron-up');		
+		$('.rect').each(function() {
+			$(this).addClass('hidden');
+		});
+	}
+}
 
 // Section for inviting new applicants
 function inviteApplicant(e) {
@@ -231,7 +266,6 @@ function updatePositionsNav() {
 		success: function(data)
 		{
 			var positions = JSON.parse(data);
-			console.log("Fetch complete:", positions);
 			var pos_id;
 			for (var i in positions) {
 				var li = document.createElement("li");
@@ -259,7 +293,6 @@ function changePositionTo(pos_id) {
 	var items = $('#positions_nav li');
 
 	items.each(function(li) {
-		console.log($(this).attr('pos_id'));
 		$(this).attr("class","");
 		if (pos_id == $(this).attr("pos_id")) {
 			$(this).attr("class", "active");
@@ -379,9 +412,22 @@ function updateDash() {
 		dataTurnover: getTurnoverData()
 	}); // use stub code
 }
+
 function updateHistory() {
 	var dashHistory = $("#dashHistory").get(0).getContext("2d");
-	new Chart(dashHistory).Bar(getHistoryData(), { scaleShowLine:false, responsive: true });
+	historyChart = new Chart(dashHistory, {
+		type: 'bar', data: getHistoryData(),
+		options: { 
+			bar: {stacked: true},
+			scales: { 
+				xAxes: [{gridLines: {display: false}, stacked: true}],
+				yAxes: [{gridLines: {display: true}, stacked: true}]
+			},
+			responsive: true,
+			legend: { display: false }
+		}
+	});
+	return;
 }
 
 function refreshDashCharts(response) {
@@ -389,30 +435,78 @@ function refreshDashCharts(response) {
 	// Build Applicants Widget
 	var dashApplicants = $("#dashApplicants").get(0).getContext("2d");
 	var applicantTotal = 0;
-	$.each(response.dataApplicants,function() { applicantTotal += parseInt(this.value,10); });
-	$("#headerApplicants").text(applicantTotal);
-	new Chart(dashApplicants).Doughnut(response.dataApplicants, { percentageInnerCutout : 50, responsive : true });
-
+	$.each(response.dataApplicants.datasets[0].data,function() { applicantTotal += this; });
+	var appDoughnutChart = new Chart(dashApplicants, {
+		   type: 'doughnut',
+		   data: response.dataApplicants,
+		   options: {
+			   cutoutPercentage : 65,
+			   responsive : true,
+			   legend: { display: false },
+			   tooltips: {enabled: false},
+			   animation: { onComplete: function() {
+				   var canvasWidthvar = $('#dashApplicants').width();
+				   var canvasHeight = $('#dashApplicants').height();
+				   var fontsize = (canvasHeight/70).toFixed(2);
+				   dashApplicants.font=fontsize +"em Comfortaa bold";
+				   dashApplicants.textBaseline="middle"; 
+				   var textWidth = dashApplicants.measureText(applicantTotal).width;
+				   var txtPosx = Math.round((canvasWidthvar - textWidth)/2);
+				   dashApplicants.fillText(applicantTotal, txtPosx, canvasHeight/2);				   
+			   }}}});
+	
 	// Build Interviews Widget
 	var dashInterviews = $("#dashInterviews").get(0).getContext("2d");
 	var interviewTotal = 0;
-	$.each(response.dataInterviews,function() { interviewTotal += parseInt(this.value,10); });
-	$("#headerInterviews").text(interviewTotal);
-	new Chart(dashInterviews).Doughnut(response.dataInterviews, { percentageInnerCutout : 50, responsive : true });
+	$.each(response.dataInterviews.datasets[0].data,function() { interviewTotal += this; });
+	var intDoughnutChart= new Chart(dashInterviews, {
+		type: 'doughnut', 
+		data: response.dataInterviews,
+		options: {
+			   cutoutPercentage : 65,
+			   responsive : true,
+			   legend: { display: false },
+			   tooltips: {enabled: false},
+			   animation: { onComplete: function() {
+				   var canvasWidthvar = $('#dashInterviews').width();
+				   var canvasHeight = $('#dashInterviews').height();
+				   var fontsize = (canvasHeight/70).toFixed(2);
+				   dashInterviews.font=fontsize +"em Comfortaa bold";
+				   dashInterviews.textBaseline="middle"; 
+				   var textWidth = dashInterviews.measureText(interviewTotal).width;
+				   var txtPosx = Math.round((canvasWidthvar - textWidth)/2);
+				   dashInterviews.fillText(interviewTotal, txtPosx, canvasHeight/2);				   
+			   }}}});
 
 	// Build Hires Widget
 	var dashHires = $("#dashHires").get(0).getContext("2d");
 	var hireTotal = 0;
-	$.each(response.dataHires,function() { hireTotal += parseInt(this.value,10); });
-	$("#headerHires").text(hireTotal);
-	new Chart(dashHires).Doughnut(response.dataHires, { percentageInnerCutout : 50, responsive : true });
+	$.each(response.dataHires.datasets[0].data,function() {  hireTotal += this; });
+	new Chart(dashHires, {
+		type: 'doughnut', 
+		data: response.dataHires, 
+		options: {
+		   cutoutPercentage : 65,
+		   responsive : true,
+		   legend: { display: false },
+		   tooltips: {enabled: false},
+		   animation: { onComplete: function() {
+			   var canvasWidthvar = $('#dashHires').width();
+			   var canvasHeight = $('#dashHires').height();
+			   var fontsize = (canvasHeight/70).toFixed(2);
+			   dashHires.font=fontsize +"em Comfortaa bold";
+			   dashHires.textBaseline="middle"; 
+			   var textWidth = dashHires.measureText(hireTotal).width;
+			   var txtPosx = Math.round((canvasWidthvar - textWidth)/2);
+			   dashHires.fillText(hireTotal, txtPosx, canvasHeight/2);				   
+		   }}}});
+
 
 	// Build Turnover Widget
 	var dashTurnover = $("#dashTurnover").get(0).getContext("2d");
 	var turnProjection = 0;
 	$.each(response.dataTurnover,function() { turnProjection += this.value; });
-	$("#headerTurnover").text(turnProjection);
-	new Chart(dashTurnover).Bar(response.dataTurnover, { showScale:false, responsive : true });
+	new Chart(dashTurnover, {type: 'bar', data: response.dataTurnover, options: { showScale:false, responsive : true, legend: { display: false } }});
 
 }
 
@@ -428,24 +522,27 @@ function updatePositionTenure(pos_id) {
 function refreshPositionTenure(dataPositionTenure) {
 	var positionTenure = $("#positionTenure").get(0).getContext("2d");
 	if (tenureChart != null) tenureChart.destroy();
-	tenureChart = new Chart(positionTenure).Bar(dataPositionTenure, { 
+	tenureChart = new Chart(positionTenure, {type: 'bar', data: dataPositionTenure, options: { 
 		showScale: true,
 		scaleShowGridLines: false,
-		responsive : true
-	});	
+		responsive : true,
+		legend: { display: false }
+	}});	
 }
 
 function updatePositionProfile(pos_id) {
 	refreshPositionProfile(getApplicantProfileData()); // use stub code
 }
 
-function refreshPositionProfile(dataPositionTenure) {
+function refreshPositionProfile(dataPositionProfile) {
 	var positionProfile = $("#positionProfile").get(0).getContext("2d");
 	if (profileChart != null) profileChart.destroy();
-	profileChart = new Chart(positionProfile).Radar(dataPositionTenure, { 
+	profileChart = new Chart(positionProfile, {type: 'radar', data: dataPositionProfile, options: { 
 		showScale: true,
-		responsive : true
-	});	
+		responsive : true,
+		defaultFontSize: 16,
+		legend: { display: false }
+	}});	
 }
 
 
@@ -494,10 +591,9 @@ function processRespondant(respondantId) {
 		success: function(data)
 		{
 			var jResp = JSON.parse(data);
-			jResp.position = getPositionDetails();
-			jResp.scores = getRandomScores();
+			jResp.position = getPositionDetails(jResp.scores);
 			refreshRespondantProfile(jResp);
-			createProfileSquares(getRespondantScore());
+			createProfileSquares(jResp);
 		}
 	});    
 
@@ -506,53 +602,57 @@ function processRespondant(respondantId) {
 function createProfileSquares(dataScores) {
 
 	var profiles = dataScores.position.position_profiles;
-	$('#profilesquares').empty();
+	var max = 0;
 	for (var i in profiles) {
-		var square = $('<div />', {
-			'title': profiles[i].profile_name,
-			'class': profiles[i].profile_class,
-		}).append($('<div />', {'class': 'probability','text': '65%'}));
-		$(square).data('profile', profiles[i]);
-		$(square).data('index', i);
-		var profileData = new Array();
-		var index = 0;
-		for (var key in dataScores.position.position_corefactors) {
-			profileData[index] = profiles[i].profile_scores[dataScores.position.position_corefactors[key]];
-			index++;
-		}
-		$(square).on('touchstart click', function(e) {
-			console.log(e, this);
-			e.preventDefault();
-			if ($(this).hasClass('selected')) return;
-			$('.square').removeClass("selected");
-			$(this).addClass("selected");
-			var profile = $(this).data('profile');
-			var profileTenureData = profile.profile_tenure_data;
-			profileTenureData.datasets[0].label = "Applicants";
-			profileTenureData.datasets[0].fillColor = profile.profile_color;
-			profileTenureData.datasets[0].strokeColor = profile.profile_color;
-			profileTenureData.datasets[0].pointHighlightFill = profile.profile_highlight;
-			profileTenureData.datasets[0].pointHighlightStroke = profile.profile_highlight;		
-			refreshPositionTenure(profileTenureData);
+		var pname = profiles[i].profile_name;
+		$('#profilesquares > .' + profiles[i].profile_class).each(function() {
+			$(this).data('index', i);
+			var profileData = new Array();
+			$(this).data('profile', profiles[i]);							
+			var index = 0;
+			for (var key in dataScores.position.position_corefactors) {
+				profileData[index] = profiles[i].profile_scores[dataScores.position.position_corefactors[key]];
+				index++;
+			}
+			if ($(this).hasClass('square')) {
+				$(this).find('.squaretext').text(profiles[i].profile_probability+'%');
+			}
+			$(this).on('touchstart click', function(e) {
+				e.preventDefault();
+					var profile = $(this).data('profile');
+					$('.square').addClass("unselected");
+					$('.rect').addClass("unselected");
+					$('.'+profile.profile_class).removeClass("unselected");
+					
+					var profileTenureData = profile.profile_tenure_data;
+					profileTenureData.datasets[0].label = profile.profile_name;
+					profileTenureData.datasets[0].backgroundColor = profile.profile_color;
+					profileTenureData.datasets[0].borderColor = profile.profile_color;
+					profileTenureData.datasets[0].hoverBackgroundColor = profile.profile_overlay;
+					profileTenureData.datasets[0].hoverBorderColor = profile.profile_highlight;		
+					refreshPositionTenure(profileTenureData);
 
-			profileChart.datasets[0].fillColor = 'rgba(0,0,0,0)';
-			profileChart.datasets[1].fillColor = 'rgba(0,0,0,0)';
-			profileChart.datasets[2].fillColor = 'rgba(0,0,0,0)';
-			profileChart.datasets[3].fillColor = 'rgba(0,0,0,0)';
-			profileChart.datasets[$(this).data('index')].fillColor = profile.profile_highlight;
-			profileChart.update();
-		}
-		);
-
-		$('#profilesquares').append(square);
+					profileChart.config.data.datasets[0].hidden = true;
+					profileChart.config.data.datasets[1].hidden = true;
+					profileChart.config.data.datasets[2].hidden = true;
+					profileChart.config.data.datasets[3].hidden = true;
+					profileChart.config.data.datasets[$(this).data('index')].hidden = false;
+					profileChart.update();
+			});
+			if(profiles[i].profile_probability > max) {
+				max = profiles[i].profile_probability;
+				$(this).click();
+			}
+			
+		});
 	}
 }
 
 function refreshRespondantProfile(dataScores) {
-
-	var respondantProfile = $("#respondantProfile").get(0).getContext("2d");	
+	respondantProfile = $("#respondantProfile").get(0).getContext("2d");	
 	var scores = dataScores.scores;
 	var respondant = dataScores.respondant;
+	$('#applicantname').text(respondant.respondant_person_fname + ' ' + respondant.respondant_person_lname);
 	var position = dataScores.position;
 	var data = new Array();
 	var index = 0;
@@ -574,12 +674,12 @@ function refreshRespondantProfile(dataScores) {
 		}
 		dataset[profiles] = {	        
 				label: profile.profile_name,
-				fillColor: profile.profile_highlight,
-				strokeColor: profile.profile_highlight,
-				pointColor: profile.profile_color,
-				pointStrokeColor: profile.profile_color,
-				pointHighlightFill: profile.profile_highlight,
-				pointHighlightStroke: profile.profile_color,
+				backgroundColor: profile.profile_overlay,
+				borderColor: profile.profile_highlight,
+				hoverBackgroundColor: profile.profile_color,
+				hoverBorderColor: profile.profile_color,
+				pointBacgroundColor: profile.profile_highlight,
+				pointBorderColor: profile.profile_color,
 				data: profileData
 		};
 		profiles++;
@@ -587,12 +687,12 @@ function refreshRespondantProfile(dataScores) {
 	}
 	dataset[profiles] = {
 			label: respondant.respondant_person_fname,
-			fillColor: "rgba(120,60,100,0.3)",
-			strokeColor: "rgba(120,60,100,1)",
-			pointColor: "rgba(120,60,100,1)",
-			pointStrokeColor: "rgba(120,60,100,1)",
-			pointHighlightFill: "rgba(120,60,100,1)",
-			pointHighlightStroke: "rgba(120,60,100,1)",
+			backgroundColor: applicantOverlay,
+			borderColor: applicantHighlight,
+			hoverBackgroundColor: applicantColor,
+			hoverBorderColor: applicantColor,
+			pointBacgroundColor: applicantColor,
+			pointBorderColor: applicantColor,
 			data: data
 	};
 
@@ -600,12 +700,14 @@ function refreshRespondantProfile(dataScores) {
 			labels: position.position_corefactors,
 			datasets: dataset	};
 
-	profileChart = new Chart(respondantProfile).Radar(respondantData, { 
-		showScale: true,
+	profileChart = new Chart(respondantProfile, { type : 'radar', data: respondantData, options: { 
 		responsive : true,
-		datasetStrokeWidth : 2,
-	});	
-
+		legend: { display: false },
+		scale: { 
+			gridLines: {display: false},
+			scaleLabel: {display: true, fontFamily: "'Comfortaa'", fontSize: 16}, 
+			ticks: {beginAtZero: true, suggestedMax: 5}}
+	}});	
 }
 
 //Generic, always useful post form to action

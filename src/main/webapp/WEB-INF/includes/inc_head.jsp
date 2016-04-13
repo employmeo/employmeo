@@ -14,10 +14,11 @@
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.0.0-beta2/Chart.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js"></script>
 <script type="text/javascript" src="/scripts/bootstrap-filestyle.min.js"></script>
+<script type="text/javascript" src="/scripts/Chart.min.js"></script>
 <script type="text/javascript" src='/scripts/stub_scripts.js'></script>
 <script type="text/javascript" src='/scripts/admin_scripts.js'></script>
