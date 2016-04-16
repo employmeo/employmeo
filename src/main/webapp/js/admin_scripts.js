@@ -197,14 +197,14 @@ function initRespondantsTable() {
 		          { title: 'First Name', data: 'respondant_person_fname'},
 		          { title: 'Last Name', data: 'respondant_person_lname'},
 		          { title: 'Email', data: 'respondant_person_email'},
-		          { title: 'Completed At', data: 'respondant_created_date', 'type' : 'date'}
+		          { title: 'View', data: null}
 		          ],
 		          columnDefs: [
 		                       { responsivePriority: 2, targets: 1},
 		                       { responsivePriority: 4, targets: 2},
 		                       { responsivePriority: 6, targets: 3},
 		                       { responsivePriority: 8, targets: 0},
-		                       { responsivePriority: 10, targets: 4},	    		
+		                       { targets: -1, data: null, defaultContent: "<button class='btn btn-default btn-xs'><i class=\"fa fa-search\"></i></button>"}
 		                       ],
 		                       bProcessing: true,
 		                       language: {
@@ -240,7 +240,12 @@ function updateRespondantsTable() {
 				rTable.$('tr.selected').removeClass('selected');
 				$(this).addClass('selected');
 				var respondant = $('#respondants').dataTable().fnGetData(this);
+//				window.location.assign('/respondant_score.html?&respondant_id='+respondant.respondant_id);
 				showApplicantScoring(respondant);
+			});
+			rTable.on('click', 'button', function (){
+				var respondant = rTable.row($(this).parents('tr')).data();
+				window.location.assign('/respondant_score.html?&respondant_id='+respondant.respondant_id);
 			});
 		},
 		complete: function() {

@@ -89,6 +89,43 @@ body {
 	border-radius: 0px;
 	padding: 5px;	
 }
+
+
+
+/* 
+ * Custom Stuff
+ */
+
+@font-face {
+    font-family: 'employmeo';
+    src:    url('/fonts/employmeo.eot?lvf1r9');
+    src:    url('/fonts/employmeo.eot?lvf1r9#iefix') format('embedded-opentype'),
+        	url('/fonts/employmeo.ttf?lvf1r9') format('truetype'),
+        	url('/fonts/employmeo.woff?lvf1r9') format('woff'),
+        	url('/fonts/employmeo.svg?lvf1r9#employmeo') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'employmeo' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-emp-logo:before {
+    content: "\e900";
+}
+
 .square, .rect, .titlebox {
     float:left;
     position: relative;

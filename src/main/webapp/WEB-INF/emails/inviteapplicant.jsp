@@ -1,6 +1,5 @@
-<%@ include file="/WEB-INF/includes/inc_all.jsp" %>
 <%
-Person applicant = (Person) session.getAttribute("applicant");
+com.employmeo.objects.Person applicant = (com.employmeo.objects.Person) session.getAttribute("applicant");
 String link = (String) session.getAttribute("link");
 String fname = applicant.getPersonFname();
 String prefix = "http://" + request.getServerName();
@@ -251,7 +250,8 @@ table[class=full] {
 											<tr>
 												<!-- start of image -->
 												<td align="left" cellpadding="20">
-												 Dear <%=fname %>,<br><br>
+												 Dear <%=fname %>,<br/>
+												 <br/>
 												 <p>Congratulations, we are excited to invite you to complete a preliminary assessment for this position.
 												 Our assessment can be completed on your mobile device or in a browser at this link: <a href="<%=link %>"><%=link%></a></p>
 												</td>
