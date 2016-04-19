@@ -20,6 +20,7 @@
 	<Form name="getlocationlist" class="com.employmeo.actions.GetLocationList" success="/index.jsp"/>
 	<Form name="getsurveylist" class="com.employmeo.actions.GetSurveyList" success="/index.jsp"/>
 	<Form name="getpositionlist" class="com.employmeo.actions.GetPositionList" success="/index.jsp"/>
+	<Form name="getlasttenrespondants" class="com.employmeo.actions.GetLastTenRespondants" success="/index.jsp"/>
 	<Form name="getrespondants" class="com.employmeo.actions.GetRespondants" success="/index.jsp"/>
 	<Form name="processrespondant" class="com.employmeo.actions.ProcessRespondant" success="/index.jsp"/>
 	<Form name="forgotpassword" class="com.employmeo.actions.ForgotPasswordEmail" success="/forgot_password_sent.jsp"/>

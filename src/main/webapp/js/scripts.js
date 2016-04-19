@@ -1,22 +1,61 @@
-function submitAnswer(response) {
+//
+// Global Variables and actions for the survey page(s)
+//
+
+var respondant;
+var survey;
+var questions;
+var pagination;
+var totalpages;
+var responses;
+var progress;
+var urlParams; 
+(window.onpopstate = function () {
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+
+    urlParams = {};
+    while (match = search.exec(query))
+       urlParams[decode(match[1])] = decode(match[2]);
+})();
+
+
+//
+// Post and get functions
+//
+
+function submitAnswer(form) {
     $.ajax({
            type: "POST",
            async: true,
            url: "/response",
-           data: $(response).serialize(), 
+           data: $(form).serialize(), 
            success: function(data)
            {
-              var jResp = JSON.parse(data);
-              var field = '#qr' + jResp.response_question_id;
-              console.log(jResp);
-              $(field).val(jResp.response_id);
+              saveResponse(JSON.parse(data));
            }
          });    
     mySwipe.next();  
 }
 
-function getRespondantById(respondantId) {
-	var jResp;
+function submitPlainAnswer(form, pagenum) {
+    $.ajax({
+           type: "POST",
+           async: true,
+           url: "/response",
+           data: $(form).serialize(), 
+           success: function(data)
+           {
+              saveResponse(JSON.parse(data));
+              isPageComplete(pagenum);
+           }
+         });
+}
+
+function buildPlainSurveyWithRespondantId(respondantId) {
     $.ajax({
         type: "POST",
         async: true,
@@ -31,18 +70,38 @@ function getRespondantById(respondantId) {
         },
         success: function(data)
         {
-           jResp = JSON.parse(data);
-           console.log(jResp);
-           assembleSurvey(jResp);
+           assemblePlainSurvey(JSON.parse(data));
         },
         complete: function() {
         	$('#wait').addClass('hidden');
         }
       });
-    return jResp;
 }
 
-function getSurveyForNewRespondant(surveyId, accountId, locationId, positionId) {
+function buildSurveyWithRespondantId(respondantId) {
+    $.ajax({
+        type: "POST",
+        async: true,
+        url: "/mp",
+        data: {
+        	"respondant_id" : respondantId,
+        	"formname" : "getfullsurvey",
+        	"noRedirect" : true        	
+        },
+        beforeSend: function() {
+        	$('#wait').removeClass('hidden');
+        },
+        success: function(data)
+        {
+           assembleVisualSurvey(JSON.parse(data));
+        },
+        complete: function() {
+        	$('#wait').addClass('hidden');
+        }
+      });
+}
+
+function createNewRespondant(surveyId, accountId) {
     $.ajax({
         type: "POST",
         async: true,
@@ -50,25 +109,102 @@ function getSurveyForNewRespondant(surveyId, accountId, locationId, positionId) 
         data: {
         	"survey_id" : surveyId,
         	"account_id" : accountId,
-        	"location_id" : locationId,
-        	"position_id" : positionId,
         	"formname" : "getfullsurvey",
         	"noRedirect" : true
-        	
         },
         success: function(data)
         {
-           var jResp = JSON.parse(data);
+           assembleNewRespondantPage(JSON.parse(data));
            console.log(jResp);
         }
       });	
 }
 
-function assembleSurvey(collection) {
+
+//
+// Survey page buidling functions
+//
+
+function assembleNewRespondantPage(collection) {
+var jResp = JSON.parse(data);
+console.log(jResp);
+}
+
+function assemblePlainSurvey(collection) {
+
 	var deck = document.getElementById('wrapper');
-	var respondant = collection.respondant;
-	var survey = collection.survey;
-	var questions = survey.questions;
+	respondant = collection.respondant;
+	survey = collection.survey;
+	questions = survey.questions;
+	pagination = new Array();
+	$(deck).empty();
+
+	var pagecount = 1;
+	var qlimit = 5; // questions per page
+	totalpages = Math.ceil(questions.length / qlimit) + 1;
+	
+	var card = $('<div />', {});
+	
+	card.append(getHrDiv());
+	card.append($('<div />', {
+		'class' : 'col-xs-12 col-sm-12 col-md-12',
+		}).html(getSurveyDisclaimer(survey)));
+	card.append(getHrDiv());
+	card.append(getSurveyNav(pagecount, totalpages));	
+	card.appendTo(deck);
+	pagecount++;
+	
+	var qcount = 0;
+	var qpp = 0;
+	card = $('<div />', {
+		'class' : 'questionpage'
+	});
+	card.append(getHrDiv());
+	pagination[pagecount] = new Array();
+	$.each(questions, function(index, question) {
+		qcount++;
+		if (qpp == qlimit) {
+			card.append(getSurveyNav(pagecount, totalpages));	
+			card.append($('<div />', {
+				'class' : 'col-xs-12 col-sm-12 col-md-12',
+				'height' : '75px'}));
+			card.appendTo(deck);
+			pagecount++;
+			pagination[pagecount] = new Array();
+			qpp = 0;
+			card = $('<div />', {
+				'class' : 'questionpage'
+			});
+			card.append(getHrDiv());				
+		}
+		var pageqs = pagination[pagecount];
+		pageqs[qpp] = question;
+		qpp++;
+		 var questionrow = $('<div />', {
+			 'class' : 'row'
+		 }).append(getPlainResponseForm(question, respondant, qcount, pagecount));
+		 var widerow = $('<div />', {
+			 'class' : 'col-xs-12 col-sm-12 col-md-12'
+		 }).append(questionrow);
+		 card.append(widerow);
+		 card.append(getHrDiv());
+	});
+	
+	card.append(getSurveyNav(pagecount, totalpages));	
+	card.append($('<div />', {
+		'class' : 'col-xs-12 col-sm-12 col-md-12',
+		'height' : '75px'}));
+	card.appendTo(deck);
+
+	prepSurvey();
+	responses = new Array();
+}
+
+function assembleVisualSurvey(collection) {
+	var deck = document.getElementById('wrapper');
+	respondant = collection.respondant;
+	survey = collection.survey;
+	questions = survey.questions;
 
 	var card = $('<div />', {});
 	var qpanel = $('<div />', {
@@ -77,7 +213,7 @@ function assembleSurvey(collection) {
 	});
 	var header = $('<div />', {
 		 'class' : "qpanel-header text-center",
-	}).append($('<h4/>', {	'text': 'Welcome' }));
+	}).append($('<h4/>', {	'html': 'Welcome' }));
 	var footer = $('<div />', {
 		 'class' : "qpanel-footer text-center",
 	}).append($('<h4/>', {	'text': 'Swipe Left to Begin  ' }).append($('<i/>',{
@@ -123,7 +259,7 @@ function assembleSurvey(collection) {
 		'style' : 'font-family: Comfortaa;font-size: 24px;',
 		'type': 'button',
 		'text': 'Click to Submit',
-		'onClick':'window.location.assign(\"'+'/respondant_score.html?&respondant_id='+respondant.respondant_id+'\");'
+		'onClick':'window.location.assign(\"'+'/respondant_score.jsp?&respondant_id='+respondant.respondant_id+'\");'
 		}));
 	
 	qpanel.append(header);
@@ -132,12 +268,14 @@ function assembleSurvey(collection) {
 	card.appendTo(deck);
 
 	prepSurvey();
+	responses = new Array();
 }
 
 function prepSurvey() {
 	var elem = document.getElementById('survey');
 	window.mySwipe = Swipe(elem, {
 		callback: function() {
+			
 		}	
 	});
 }
@@ -257,4 +395,221 @@ function getResponseForm(question, respondant) {
 		break;
 	}	
 	return form;
+}
+
+
+function getPlainResponseForm(question, respondant, qcount, pagecount) {
+	var form =  $('<form />', {
+		 'name' : 'question_'+question.question_id,
+		 'action' : "/response"
+	 });
+	form.append($('<input/>', {
+		name : 'response_id',
+		type : 'hidden',
+		id : 'qr'+question.question_id,
+		value : ''
+	}));
+	form.append($('<input/>', {
+		name : 'response_respondant_id',
+		type : 'hidden',
+		value : respondant.respondant_id
+	}));
+	form.append($('<input/>', {
+		name : 'response_question_id',
+		type : 'hidden',
+		value : question.question_id
+	}));
+	var qtextdiv = $('<div />', {
+		'class' : 'col-xs-12 col-sm-8 col-md-8'
+	});
+	var questionlist = $('<ol />', {
+		'start' : qcount,
+		'class' : 'questiontext'
+	}).append($('<li />', {
+		'text' : question.question_text
+	}));
+	
+	qtextdiv.append(questionlist);
+	form.append(qtextdiv);
+	
+	switch (question.question_type) {
+	default:
+		var qrespdiv = $('<div />', {
+			'class' : 'col-xs-12 col-sm-4 col-md-4'
+		});
+		var leftdiv = $('<div />', {
+			'class' : 'col-xs-4 yesnoleft'
+		});
+		var yesbox = $('<input />', {
+			'class': 'yesbox',
+			'id'   : 'yesbox-' + question.question_id,
+			'type' : 'radio',
+			'name' : 'response_value',
+			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
+			'value' : 1
+		});
+		var yesboxlabel = $('<label />', {
+			'class' : 'yesbox',
+			'for'   : 'yesbox-' + question.question_id
+		});
+		yesboxlabel.append($('<i />', {
+			'class' : 'fa fa-check-circle'			
+		}));
+		yesboxlabel.append($('<br/>'));
+		yesboxlabel.append($('<span />', {
+			'style' : 'font-size:10px;',
+			'text'   : 'Yes'
+		}));
+		
+		leftdiv.append(yesbox);
+		leftdiv.append(yesboxlabel);
+
+		var centerdiv = $('<div />', {
+			'class' : 'col-xs-4 yesnocenter'
+		});
+		var sometimesbox = $('<input />', {
+			'class': 'sometimesbox',
+			'id'   : 'sometimesbox-' + question.question_id,
+			'type' : 'radio',
+			'name' : 'response_value',
+			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
+			'value' : 0
+		});
+		var sometimesboxlabel = $('<label />', {
+			'class' : 'sometimesbox',
+			'for'   : 'sometimesbox-' + question.question_id
+		});
+		sometimesboxlabel.append($('<i />', {
+			'class' : 'fa fa-question-circle'			
+		}));
+		sometimesboxlabel.append($('<br/>'));
+		sometimesboxlabel.append($('<span />', {
+			'style' : 'font-size:10px;',
+			'text'   : 'Sometimes'
+		}));
+		
+		centerdiv.append(sometimesbox);
+		centerdiv.append(sometimesboxlabel);
+
+		var rightdiv = $('<div />', {
+			'class' : 'col-xs-4 yesnoright'
+		});
+		var nobox = $('<input />', {
+			'class': 'nobox',
+			'id'   : 'nobox-' + question.question_id,
+			'type' : 'radio',
+			'name' : 'response_value',
+			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
+			'value' : -1
+		});
+		var noboxlabel = $('<label />', {
+			'class' : 'nobox',
+			'for'   : 'nobox-' + question.question_id
+		});
+		noboxlabel.append($('<i />', {
+			'class' : 'fa fa-times-circle'			
+		}));
+		noboxlabel.append($('<br/>'));
+		noboxlabel.append($('<span />', {
+			'style' : 'font-size:10px;',
+			'text'   : 'No'
+		}));
+		
+		rightdiv.append(nobox);
+		rightdiv.append(noboxlabel);	
+
+		qrespdiv.append(leftdiv);
+		qrespdiv.append(centerdiv);
+		qrespdiv.append(rightdiv);
+		form.append(qrespdiv);
+		break;
+	}
+	return form;
+}
+
+function getHrDiv () {
+	return $('<div />', {
+		'class': 'col-xs-12 col-sm-12 col-md-12',
+		'html': '<hr>'
+	});
+}
+
+function getSurveyNav(pagecount, totalpages) {
+	var navigation = $('<div />', {
+		'class': 'col-xs-12 col-sm-12 col-md-12',		
+	});
+	var leftnav = $('<div />', {
+		'class': 'col-xs-4 col-sm-4 col-md-4 text-center',		
+	});
+	if (pagecount > 1) {
+		leftnav.append($('<button />', {
+			'id' : 'prevbtn-' + pagecount, 
+			'class' : 'btn btn-primary',
+			'text' : "<< Back",
+			'onClick':'mySwipe.prev();'
+		}));
+	}
+	var centernav = $('<div />', {
+		'class': 'col-xs-4 col-sm-4 col-md-4 text-center',
+		'text' : 'Page '+ pagecount + ' of ' + totalpages
+	});
+	var rightnav = $('<div />', {
+		'class': 'col-xs-4 col-sm-4 col-md-4 text-center',		
+	});
+	var nextbutton = $('<button />', {
+		'id' : 'nextbtn-' + pagecount, 
+		'class' : 'btn btn-primary',
+		'text' : "Next >>",
+		'onClick':'mySwipe.next();'
+	});
+	if (pagecount == totalpages) {
+		nextbutton.attr('disabled', true);
+		$(nextbutton).text('Finished');
+		nextbutton.attr('onClick','mySwipe.next();');
+	} else if (pagecount > 1) {
+		nextbutton.attr('disabled', true);
+	}
+	rightnav.append(nextbutton);
+	
+	navigation.append(leftnav);
+	navigation.append(centernav);
+	navigation.append(rightnav);
+	
+	return navigation;
+}
+
+
+function isPageComplete(pagenum) {
+	var qlist = pagination[pagenum];
+	var complete = true;
+	for (var key in qlist ) {
+		if (responses[qlist[key].question_id] == null) complete = false;
+	}
+	if (complete) {
+		var button = '#nextbtn-' + pagenum;
+		$(button).attr('disabled', false);
+	}
+	return complete;
+}
+
+function isSurveyComplete() {
+	var complete = true;
+	for (var key in questions ) {
+		if (responses[questions[key].question_id] == null) complete = false;
+	}
+	return complete;
+}
+
+function saveResponse(response) {
+	responses[response.response_question_id] = response;
+    var field = '#qr' + response.response_question_id;
+    $(field).val(response.response_id);
+    var totalresponses = 0;
+    for (var i in responses) {
+    	totalresponses ++;
+    }
+    progress = 100* totalresponses / questions.length;
+    $('.progress-bar').attr('style','width:'+progress+'%;');
+    $('.progress-bar').attr('aria-valuenow',progress);
+    return;
 }

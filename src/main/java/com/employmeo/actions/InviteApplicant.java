@@ -25,12 +25,10 @@ public class InviteApplicant extends MPFormAction {
 		  String to = req.getParameter("email");
 		  String fname = req.getParameter("fname");
 		  String lname = req.getParameter("lname");
-		  String street1 = req.getParameter("street1");
-		  String street2 = req.getParameter("street2");
-		  String city = req.getParameter("city");
-		  String state = req.getParameter("state");
-		  String zip = req.getParameter("zip");
-
+		  String address = req.getParameter("address");
+		  String formattedAddress = req.getParameter("address");
+		  Double personLat = Double.valueOf(req.getParameter("lat"));
+		  Double personLong = Double.valueOf(req.getParameter("lng"));;
 		  String survey_id = req.getParameter("survey_id");
 		  BigInteger surveyId = new BigInteger(survey_id);
 		  
@@ -41,18 +39,16 @@ public class InviteApplicant extends MPFormAction {
 		  
 		  // Validate input fields
 		  /* Todo: complete validation */
-		
 		  
 		  // Perform business logic  
 		  Person applicant = new Person();
 		  applicant.setPersonEmail(to);
 		  applicant.setPersonFname(fname);
 		  applicant.setPersonLname(lname);
-		  applicant.setPersonCity(city);
-		  applicant.setPersonState(state);
-		  applicant.setPersonStreet1(street1);
-		  applicant.setPersonStreet2(street2);
-		  applicant.setPersonZip(zip);
+		  applicant.setPersonStreet1(address);
+		  applicant.setPersonStreet2(formattedAddress);
+		  applicant.setPersonLat(personLat);
+		  applicant.setPersonLong(personLong);
 		  applicant.persistMe();
 		  
 		  Respondant respondant = new Respondant();

@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Employmeo | Take Survey</title>
+<title>Employmeo | Take Assessment</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,13 +12,14 @@
 <link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
 <link rel='stylesheet' type='text/css' href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
-<link rel='stylesheet' href='/scripts/style.css' type='text/css' media='all' />
+<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Comfortaa'>
+<link rel='stylesheet' type='text/css' href='/css/style.css' media='all' />
 
-<script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script type="text/javascript" src='/scripts/swipe.js'></script>
-<script type="text/javascript" src='/scripts/scripts.js'></script>
+<script type="text/javascript" src='/js/swipe.js'></script>
+<script type="text/javascript" src='/js/stub_scripts.js'></script>
+<script type="text/javascript" src='/js/scripts.js'></script>
 
 </head>
 <body>
@@ -42,10 +43,13 @@ var urlParams;
     while (match = search.exec(query))
        urlParams[decode(match[1])] = decode(match[2]);
 })();
-var collection;
-var respondantId = urlParams.respondant_id;
-if (respondantId != null) {
-  collection = getRespondantById(respondantId);
+
+if (urlParams.respondant_id != null) {
+    buildSurveyWithRespondantId(urlParams.respondant_id);
+} else {
+	var surveyId = urlParams.survey_id;
+	var accountId = urlParams.account_id;
+	createNewRespondant(surveyId, accountId);
 }
 </script>
 </html>

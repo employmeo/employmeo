@@ -47,6 +47,20 @@
     left: 20px;
     right: 20px; }
 .row .legend {font-size:18px;}
+
+.questionpage {
+	overflow-y: scroll;
+}
+
+.questiontext {
+	font-family: Comfortaa,Arial,Verdana,sans-serif;
+	font-size: 22px;
+	color: #34495e;
+}
+
+ol.questiontext {
+	min-height: 47px;
+}
 /**
  * 2.0 Stars
  * ----------------------------------------------------------------------------
@@ -104,6 +118,39 @@ input.thumbs-up:checked+label.thumbs-up:before { content: '\f164'; padding-right
 label.thumbs-down:before { content: '\f088'; padding-right: 10px; }
 input.thumbs-down:checked+label.thumbs-down:before { content: '\f165'; padding-right: 10px; color: #0080ff;}
 input.thumbs-up:checked+label.thumbs-up, input.thumbs-down:checked+label.thumbs-down { color: #0080ff;}
+
+/**
+ * 3.1 yesno
+ * ----------------------------------------------------------------------------
+ */
+
+.yesnoleft, .yesnoright, .yesnocenter {
+}
+
+.yesnocenter {
+	border: #AAAAAA;
+    border-style: none;
+    border-width: 1px;
+	border-right-style: solid;
+	border-left-style: solid;
+}
+
+input.yesbox, input.nobox, input.sometimesbox, input.unknownbox { display: none; }
+label.yesbox, label.nobox, label.sometimesbox, label.unknownbox {
+  padding-top: 3px;
+  font-family: Comfortaa,FontAwesome;
+  text-align: center;
+  display: block;
+  width: 100%;
+  font-size: 30px;
+  color: #444;
+  transition: all .2s;
+}
+
+input.yesbox:checked+label.yesbox { color: green;}
+input.nobox:checked+label.nobox { color: red; }
+input.sometimesbox:checked+label.sometimesbox { color: blue;}
+input.unknownbox:checked+label.unknownbox { color: blue;}
 
 /**
  * 3.5 Likert Scale

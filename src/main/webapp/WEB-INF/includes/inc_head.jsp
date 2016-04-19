@@ -10,21 +10,23 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 
 <link rel="shortcut icon" type="image/gif" href="/images/favico.gif">
-<link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-<link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-<link rel='stylesheet' type='text/css' href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<link rel="stylesheet" type='text/css' href="https://cdn.datatables.net/1.10.11/css/jquery.dataTables.css">
-<link rel='stylesheet' type='text/css' href='/css/admin_style.css' media='all' />
+<link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap-theme.min.css">
+<link rel='stylesheet' type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.1/css/font-awesome.min.css">
+<link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.11/css/jquery.dataTables.min.css">
 <link rel='stylesheet' type='text/css' href='/css/custom.css' media='all' />
+<link rel='stylesheet' type='text/css' href='/css/admin_style.css' media='all' />
 
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
-<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.3/jquery.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?&key=AIzaSyA2bSTr1nfJEneqGPFjpJTASqy8P7cVyrc&libraries=places"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/geocomplete/1.7.0/jquery.geocomplete.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.0.1/Chart.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.11/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap-filestyle.min.js"></script>
-<script type="text/javascript" src="/js/Chart.min.js"></script>
 <script type="text/javascript" src='/js/stub_scripts.js'></script>
 <script type="text/javascript" src='/js/admin_scripts.js'></script>
 <script type="text/javascript" src='/js/custom.js'></script>
@@ -44,18 +46,18 @@
           <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
               <ul class="nav side-menu">
-                <li class="active"><a href="/index.jsp"><i class="fa fa-home"></i> Dashboard</a>
+                <li class="active"><a href="/index.jsp"><i class="fa fa-tachometer"></i> Dashboard</a>
                 </li>
-                <li><a><i class="fa fa-edit"></i> Candidates <span class="fa fa-chevron-down"></span></a>
+                <li><a><i class="fa fa-users"></i> Candidates <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu" style="display: block;">
                     <li><a href="/invite_applicant.jsp">Send Assessment</a></li>
                     <li><a href="/completed_applications.jsp">Candidate Search</a></li>
-                    <li><a href="/respondant_score.html">Candidate Results</a></li>                    
+                    <li><a href="/respondant_score.jsp">Candidate Results</a></li>                    
                   </ul>
-                <li><a href="/positions.jsp"><i class="fa fa-desktop"></i> Positions</a></li>
-                  <li><a href="/surveys.jsp"><i class="fa fa-table"></i> Assessments</a>
+                <li><a href="/positions.jsp"><i class="fa fa-briefcase"></i> Positions</a></li>
+                  <li><a href="/surveys.jsp"><i class="fa fa-edit"></i> Assessments</a>
                   </li>
-                  <li><a><i class="fa fa-bar-chart-o"></i> Administration <span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-gears"></i> Administration <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="display: none;">
 						<li><a href="/data_admin.jsp">User Administration</a></li>
 						<li><a href="/data_admin.jsp">Payroll Administration</a></li>

@@ -98,7 +98,7 @@ function Swipe(container, options) {
 
   function next() {
 
-    if (options.continuous) slide(index+1);
+	if (options.continuous) slide(index+1);
     else if (index < slides.length - 1) slide(index+1);
 
   }
@@ -496,7 +496,8 @@ function Swipe(container, options) {
       // cancel slideshow
       stop();
 
-      next();
+      next();    	  
+
 
     },
     stop: function() {

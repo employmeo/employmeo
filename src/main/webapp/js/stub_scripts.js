@@ -41,22 +41,6 @@ function getDoughnutData() {
 	};
 }	        
 
-function getTurnoverData() {
-	return {
-	    labels: ["Projection", "Target"],
-	    datasets: [
-	        {
-	            label: "Months",
-	            backgroundColor: "rgba(120,220,220,0.5)",
-	            borderColor: "rgba(120,220,220,0.8)",
-	            hoverBackgroundColor: "rgba(120,220,220,0.75)",
-	            hoverBorderColor: "rgba(120,220,220,1)",
-	            data: [8.8, 6]
-	        }
-	    ]
-	};
-}
-
 function getHistoryData() {
 	return {
 	    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -253,4 +237,83 @@ function getPositionDetails(scores) {
 	
 	return position;
 	
+}
+
+
+function getLastTenCandidates() {
+	return [{
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-user-plus',
+        		respondant_profile_class: 'btn-info'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',
+        		respondant_profile_icon : 'fa-rocket',
+        		respondant_profile_class: 'btn-success'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-user-plus',
+        		respondant_profile_class: 'btn-info'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-gear',
+        		respondant_profile_class: 'btn-warning'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-user-plus',
+        		respondant_profile_class: 'btn-info'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-gear',
+        		respondant_profile_class: 'btn-warning'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-user-plus',
+        		respondant_profile_class: 'btn-info'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-gear',
+        		respondant_profile_class: 'btn-warning'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-user-plus',
+        		respondant_profile_class: 'btn-info'
+	        },
+	        {
+	        	respondant_id : 1,
+	        	respondant_person_fname : 'joe',
+	        	respondant_person_lname : 'johnson',	
+        		respondant_profile_icon : 'fa-gear',
+        		respondant_profile_class: 'btn-warning'
+	        }
+	];
+}
+
+function getSurveyDisclaimer(survey) {
+	return "<h3>Welcome</h3><p>In an effort to ensure that applicants meet position requirements, this employer uses a pre-employment assessment administered by employmeo.com for the job you have recently applied to. Please complete the following test to the best of your ability.</p><p>All candidates are tested according to Equal Employment Opportunity Commission (EEOC) testing guidelines. For further information, contact the hiring mangaer responsible for this role.</p>";
 }

@@ -193,6 +193,8 @@ public class Person extends PersistantObject implements Serializable {
 		json.put("person_city", this.personCity);
 		json.put("person_state", this.personState);
 		json.put("person_zip", this.personZip);
+		json.put("person_lat", this.personLat);
+		json.put("person_long", this.personLong);
 		
 		return json;
 	}

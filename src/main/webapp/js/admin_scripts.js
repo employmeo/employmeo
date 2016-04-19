@@ -24,6 +24,7 @@ var applicantColor = "rgba(120,60,100,1)";
 var applicantOverlay = "rgba(120,60,100,0.3)";
 var applicantHighlight = "rgba(120,60,100,1)";
 
+var respondant;
 
 //new jquery plugin for datatables;
 jQuery.fn.dataTableExt.oApi.fnProcessingIndicator = function ( oSettings, onoff )
@@ -240,7 +241,6 @@ function updateRespondantsTable() {
 				rTable.$('tr.selected').removeClass('selected');
 				$(this).addClass('selected');
 				var respondant = $('#respondants').dataTable().fnGetData(this);
-//				window.location.assign('/respondant_score.html?&respondant_id='+respondant.respondant_id);
 				showApplicantScoring(respondant);
 			});
 			rTable.on('click', 'button', function (){
@@ -252,8 +252,6 @@ function updateRespondantsTable() {
 			$('#respondants').dataTable().fnProcessingIndicator(false);
 		}
 	});
-
-	return response;
 }
 
 
@@ -409,19 +407,89 @@ function updateSurveyQuestions(survey) {
 }
 
 // Section for updating the dashboard
-function updateDash() {   
-	refreshDashCharts({
-		dataApplicants: getApplicantData(),
-		dataInterviews: getInterviewData(),
-		dataHires: getHireData(),
-		dataTurnover: getTurnoverData()
-	}); // use stub code
+function updateDash() {
+	
+	var form = $('#refinequery');
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/mp",
+		data: $('#refinequery'),
+		success: function(data)
+		{
+			//console.log(data);
+		}
+	});
+	
+	refreshDashApplicants(getApplicantData());
+	refreshDashHires(getHireData());
+	refreshProgressBars(getApplicantData(), getHireData())
+	updateHistory(getHistoryData());
 }
 
-function updateHistory() {
+
+function refreshDashApplicants(dataApplicants) {
+	// Build Applicants Widget
+	var dashApplicants = $("#dashApplicants").get(0).getContext("2d");
+	var applicantTotal = 0;
+	$.each(dataApplicants.datasets[0].data,function() { applicantTotal += this; });
+	var appDoughnutChart = new Chart(dashApplicants, {
+		   type: 'doughnut',
+		   data: dataApplicants,
+		   options: {
+			   cutoutPercentage : 35,
+			   responsive : true,
+			   legend: { display: false }
+		   }});
+	$('#completedcount').html(applicantTotal);
+	$('#scoredcount').html(applicantTotal);	
+}
+
+function refreshDashHires(dataHires) {
+	// Build Hires Widget
+	var dashHires = $("#dashHires").get(0).getContext("2d");
+	var hireTotal = 0;
+	$.each(dataHires.datasets[0].data,function() {  hireTotal += this; });
+	new Chart(dashHires, {
+		type: 'doughnut', 
+		data: dataHires, 
+		options: {
+		   cutoutPercentage : 35,
+		   responsive : true,
+		   legend: { display: false }
+		}});
+	$('#hiredcount').html(hireTotal);
+}
+
+function refreshProgressBars(dataApplicants, dataHires) {
+	var rate;
+
+	rate = Math.round(100*dataHires.datasets[0].data[3] / dataApplicants.datasets[0].data[3]);
+	$('#risingstarbar').attr('aria-valuenow',rate);
+	$('#risingstarbar').attr('style','width:'+rate+'%;');
+	$('#risingstarrate').html(rate + '%');
+	
+	rate = Math.round(100*dataHires.datasets[0].data[2] / dataApplicants.datasets[0].data[2]);
+	$('#longtimerbar').attr('aria-valuenow',rate);
+	$('#longtimerbar').attr('style','width:'+rate+'%;');
+	$('#longtimerrate').html(rate + '%');
+
+	rate = Math.round(100*dataHires.datasets[0].data[1] / dataApplicants.datasets[0].data[1]);
+	$('#churnerbar').attr('aria-valuenow',rate);
+	$('#churnerbar').attr('style','width:'+rate+'%;');
+	$('#churnerrate').html(rate + '%');
+
+	rate = Math.round(100*dataHires.datasets[0].data[0] / dataApplicants.datasets[0].data[0]);
+	$('#redflagbar').attr('aria-valuenow',rate);
+	$('#redflagbar').attr('style','width:'+rate+'%;');
+	$('#redflagrate').html(rate + '%');
+	
+}
+
+function updateHistory(historyData) {
 	var dashHistory = $("#dashHistory").get(0).getContext("2d");
 	historyChart = new Chart(dashHistory, {
-		type: 'bar', data: getHistoryData(),
+		type: 'bar', data: historyData,
 		options: { 
 			bar: {stacked: true},
 			scales: { 
@@ -433,86 +501,6 @@ function updateHistory() {
 		}
 	});
 	return;
-}
-
-function refreshDashCharts(response) {
-
-	// Build Applicants Widget
-	var dashApplicants = $("#dashApplicants").get(0).getContext("2d");
-	var applicantTotal = 0;
-	$.each(response.dataApplicants.datasets[0].data,function() { applicantTotal += this; });
-	var appDoughnutChart = new Chart(dashApplicants, {
-		   type: 'doughnut',
-		   data: response.dataApplicants,
-		   options: {
-			   cutoutPercentage : 65,
-			   responsive : true,
-			   legend: { display: false },
-			   tooltips: {enabled: false},
-			   animation: { onComplete: function() {
-				   var canvasWidthvar = $('#dashApplicants').width();
-				   var canvasHeight = $('#dashApplicants').height();
-				   var fontsize = (canvasHeight/70).toFixed(2);
-				   dashApplicants.font=fontsize +"em Comfortaa bold";
-				   dashApplicants.textBaseline="middle"; 
-				   var textWidth = dashApplicants.measureText(applicantTotal).width;
-				   var txtPosx = Math.round((canvasWidthvar - textWidth)/2);
-				   dashApplicants.fillText(applicantTotal, txtPosx, canvasHeight/2);				   
-			   }}}});
-	
-	// Build Interviews Widget
-	var dashInterviews = $("#dashInterviews").get(0).getContext("2d");
-	var interviewTotal = 0;
-	$.each(response.dataInterviews.datasets[0].data,function() { interviewTotal += this; });
-	var intDoughnutChart= new Chart(dashInterviews, {
-		type: 'doughnut', 
-		data: response.dataInterviews,
-		options: {
-			   cutoutPercentage : 65,
-			   responsive : true,
-			   legend: { display: false },
-			   tooltips: {enabled: false},
-			   animation: { onComplete: function() {
-				   var canvasWidthvar = $('#dashInterviews').width();
-				   var canvasHeight = $('#dashInterviews').height();
-				   var fontsize = (canvasHeight/70).toFixed(2);
-				   dashInterviews.font=fontsize +"em Comfortaa bold";
-				   dashInterviews.textBaseline="middle"; 
-				   var textWidth = dashInterviews.measureText(interviewTotal).width;
-				   var txtPosx = Math.round((canvasWidthvar - textWidth)/2);
-				   dashInterviews.fillText(interviewTotal, txtPosx, canvasHeight/2);				   
-			   }}}});
-
-	// Build Hires Widget
-	var dashHires = $("#dashHires").get(0).getContext("2d");
-	var hireTotal = 0;
-	$.each(response.dataHires.datasets[0].data,function() {  hireTotal += this; });
-	new Chart(dashHires, {
-		type: 'doughnut', 
-		data: response.dataHires, 
-		options: {
-		   cutoutPercentage : 65,
-		   responsive : true,
-		   legend: { display: false },
-		   tooltips: {enabled: false},
-		   animation: { onComplete: function() {
-			   var canvasWidthvar = $('#dashHires').width();
-			   var canvasHeight = $('#dashHires').height();
-			   var fontsize = (canvasHeight/70).toFixed(2);
-			   dashHires.font=fontsize +"em Comfortaa bold";
-			   dashHires.textBaseline="middle"; 
-			   var textWidth = dashHires.measureText(hireTotal).width;
-			   var txtPosx = Math.round((canvasWidthvar - textWidth)/2);
-			   dashHires.fillText(hireTotal, txtPosx, canvasHeight/2);				   
-		   }}}});
-
-
-	// Build Turnover Widget
-	var dashTurnover = $("#dashTurnover").get(0).getContext("2d");
-	var turnProjection = 0;
-	$.each(response.dataTurnover,function() { turnProjection += this.value; });
-	new Chart(dashTurnover, {type: 'bar', data: response.dataTurnover, options: { showScale:false, responsive : true, legend: { display: false } }});
-
 }
 
 function showApplicantScoring(applicantData) {
@@ -625,9 +613,8 @@ function createProfileSquares(dataScores) {
 			$(this).on('touchstart click', function(e) {
 				e.preventDefault();
 					var profile = $(this).data('profile');
-					$('.square').addClass("unselected");
-					$('.rect').addClass("unselected");
-					$('.'+profile.profile_class).removeClass("unselected");
+					$('.square').removeClass("selected");
+					$(this).addClass("selected");
 					
 					var profileTenureData = profile.profile_tenure_data;
 					profileTenureData.datasets[0].label = profile.profile_name;
@@ -656,8 +643,15 @@ function createProfileSquares(dataScores) {
 function refreshRespondantProfile(dataScores) {
 	respondantProfile = $("#respondantProfile").get(0).getContext("2d");	
 	var scores = dataScores.scores;
-	var respondant = dataScores.respondant;
-	$('#applicantname').text(respondant.respondant_person_fname + ' ' + respondant.respondant_person_lname);
+	respondant = dataScores.respondant;
+	$('#candidatename').text(respondant.respondant_person_fname + ' ' + respondant.respondant_person_lname);
+	$('#candidateemail').text(respondant.respondant_person_email);
+	$('#candidateaddress').text(respondant.respondant_person_street1);
+	$('#candidateposition').text(respondant.respondant_position_name);
+	$('#candidatelocation').text(respondant.respondant_location_name);
+	$('#candidateicon').html('<i class="fa fa-user-plus"></i>');
+	$('#candidateicon').addClass('btn-info');
+
 	var position = dataScores.position;
 	var data = new Array();
 	var index = 0;
@@ -733,4 +727,59 @@ function postToAction(e) {
 	});
 
 	return response;
+}
+
+
+function lookupLastTenCandidates() {
+
+	var url = "/mp";
+	var response = "failed";
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: url,
+		data: {
+			"formname" : "getlasttenrespondants",
+			"noRedirect" : true
+		},
+		success: function(data)
+		{
+			refreshLastTenCandidates(JSON.parse(data));
+		}
+	});
+}
+
+function refreshLastTenCandidates(respondants) {
+	$('#recentcandidates').empty();
+	for (var i = 0; i < respondants.length; i++ ) {
+		var li = $('<li />', { 'class' : 'media event' });
+
+		var div = $('<div />', {
+			'class' : respondants[i].respondant_profile_class + ' profilebadge' 
+		}).append($('<i />', {'class' : "fa " + respondants[i].respondant_profile_icon }));
+
+		var ico = $('<a />', {
+			 'class' : "pull-left",
+			 'href' : '/respondant_score.jsp?&respondant_id=' + respondants[i].respondant_id
+		}).append(div);
+		
+		var badge = $('<div />', { 'class' : 'media-body' });
+		$('<a />', {
+			'class' : 'title',
+			'href' : '/respondant_score.jsp?&respondant_id=' + respondants[i].respondant_id,
+			'text' : respondants[i].respondant_person_fname + ' ' + respondants[i].respondant_person_lname
+		}).appendTo(badge);
+		$('<p />', {
+			'text' : 'Postion'
+		}).appendTo(badge);
+		$('<p />', {
+			'html' : '\<small\>Location\<\/small\>'
+		}).appendTo(badge);
+		
+		li.append(ico);
+		li.append(badge);
+		$('#recentcandidates').append(li);
+	}
+	
+
 }

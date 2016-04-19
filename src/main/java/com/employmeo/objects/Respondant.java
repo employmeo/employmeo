@@ -196,6 +196,7 @@ public class Respondant extends PersistantObject implements Serializable {
 			json.put("respondant_person_fname", this.person.getPersonFname());
 			json.put("respondant_person_lname", this.person.getPersonLname());
 			json.put("respondant_person_email", this.person.getPersonEmail());			
+			json.put("respondant_person_street1", this.person.getPersonStreet1());			
 		} 	
 		return json;
 	}
