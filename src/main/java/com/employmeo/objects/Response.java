@@ -5,7 +5,6 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
-import java.math.BigInteger;
 
 
 /**
@@ -21,7 +20,7 @@ public class Response extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="response_id")
-	private BigInteger responseId;
+	private Long responseId;
 	
 	//bi-directional many-to-one association to Respondant
 	@ManyToOne
@@ -29,7 +28,7 @@ public class Response extends PersistantObject implements Serializable {
 	private Respondant respondant;
 
 	@Column(name="response_respondant_id",insertable=true,updatable=false)
-	private BigInteger responseRespondantId;
+	private Long responseRespondantId;
 	
 	@Column(name="response_text")
 	private String responseText;
@@ -44,16 +43,16 @@ public class Response extends PersistantObject implements Serializable {
 	private Question question;
 
 	@Column(name="response_question_id",insertable=true,updatable=false)
-	private BigInteger responseQuestionId;
+	private Long responseQuestionId;
 	
 	public Response() {
 	}
 
-	public BigInteger getResponseId() {
+	public Long getResponseId() {
 		return this.responseId;
 	}
 
-	public void setResponseId(BigInteger responseId) {
+	public void setResponseId(Long responseId) {
 		this.responseId = responseId;
 	}
 
@@ -65,27 +64,27 @@ public class Response extends PersistantObject implements Serializable {
 		return this.respondant;
 	}
 	
-	public BigInteger getResponseRespondantId() {
+	public Long getResponseRespondantId() {
 		return responseRespondantId;
 	}
 
 	public void setResponseRespondantId(String respondantId) {
-		this.responseRespondantId = new BigInteger(respondantId);
+		this.responseRespondantId = new Long(respondantId);
 	}
 	
-	public void setResponseRespondantId(BigInteger respondantId) {
+	public void setResponseRespondantId(Long respondantId) {
 		this.responseRespondantId = respondantId;
 	}
 	
-	public BigInteger getResponseQuestionId() {
+	public Long getResponseQuestionId() {
 		return responseQuestionId;
 	}
 
 	public void setResponseQuestionId(String quesId) {
-		this.responseRespondantId = new BigInteger(quesId);
+		this.responseRespondantId = new Long(quesId);
 	}
 	
-	public void setResponseQuestionId(BigInteger quesId) {
+	public void setResponseQuestionId(Long quesId) {
 		this.responseQuestionId = quesId;
 	}	
 	

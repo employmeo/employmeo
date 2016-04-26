@@ -4,36 +4,16 @@ var profileChart;
 var respondantProfile;
 var historyChart;
 
-var redflagColor = "#d9534f";
-var redflagOverlay = "rgba(217, 83, 79,0.3)";
-var redflagHighlight = "#d43f3a";
-
-var churnerColor = "#f0ad4e";
-var churnerOverlay = "rgba(240, 173, 78, 0.3)";
-var churnerHighlight = "#eea236";
-
-var longtimerColor = "#5bc0de";
-var longtimerOverlay = "rgba(91, 192, 222,0.3)";
-var longtimerHighlight = "#46b8da";
-
-var risingstarColor = "#5cb85c";
-var risingstarOverlay = "rgba(92, 184, 92,0.3)";
-var risingstarHighlight = "#4cae4c";
-
 var applicantColor = "rgba(120,60,100,1)";
 var applicantOverlay = "rgba(120,60,100,0.3)";
 var applicantHighlight = "rgba(120,60,100,1)";
 
 var respondant;
+var surveyList;
+var positionList;
+var locationList;
+var qTable;
 
-//new jquery plugin for datatables;
-jQuery.fn.dataTableExt.oApi.fnProcessingIndicator = function ( oSettings, onoff )
-{
-	if ( onoff === undefined ) {
-		onoff = true;
-	}
-	this.oApi._fnProcessingDisplay( oSettings, onoff );
-};
 
 //basic user / account functions (login/logout/etc)
 function getUserFname() {
@@ -47,121 +27,141 @@ function getUserFname() {
 	return "";
 }
 
-function timeZoneDetect(){
-	return new Date().getTimezoneOffset()/-60;
-}
-
 // section for updating selectors
 function updatePositionsSelect() {
-	var url = "/mp";
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: url,
+		url: "/mp",
 		data: {
 			"formname" : "getpositionlist",
 			"noRedirect" : true
 		},
 		success: function(data)
 		{
-			var positions = JSON.parse(data);
-			$.each(positions, function (index, value) {
+			positionList = JSON.parse(data);
+			$.each(positionList, function (index, value) {
 				$('#position_id').append($('<option/>', { 
 					value: this.position_id,
 					text : this.position_name 
 				}));
-			});   
+			});
+			if ($('#position_id').val() != -1) changePositionTo($('#position_id').val());
 		}
 	});
 }
 
 function updateLocationsSelect() {
-	var url = "/mp";
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: url,
+		url: "/mp",
 		data: {
 			"formname" : "getlocationlist",
 			"noRedirect" : true
 		},
 		success: function(data)
 		{
-			var locations = JSON.parse(data);
-			$.each(locations, function (index, value) {
+			locationList = JSON.parse(data);
+			$.each(locationList, function (index, value) {
 				$('#location_id').append($('<option/>', { 
 					value: this.location_id,
 					text : this.location_name 
 				}));
-			});   
+			});
+//			if ($('#location_id').val() != -1) changeLocationTo($('#location_id').val());
 		}
 	});
 }
 
 function updateSurveysSelect() {
-	var url = "/mp";
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: url,
+		url: "/mp",
 		data: {
 			"formname" : "getsurveylist",
 			"noRedirect" : true
 		},
 		success: function(data)
 		{
-			var surveys = JSON.parse(data);
-			$.each(surveys, function (index, value) {
-				$('#survey_id').append($('<option/>', { 
+			surveyList = JSON.parse(data);
+			$.each(surveyList, function (index, value) {
+				$('#survey_id').append($('<option />', { 
 					value: this.survey_id,
-					text : this.survey_name 
+					text : this.survey_name
 				}));
-			});   
+			});
+			if ($('#survey_id').val() != -1) {
+				changeSurveyTo($('#survey_id').val());
+			}
 		}
 	});
 }
 
-function updateDateChoosers() {
-	var now = new Date();
-	var from = new Date();
-	from.setTime(now.getTime()-1000*60*60*24*90);
-	var fromDay = ("0" + from.getDate()).slice(-2);
-	var fromMonth = ("0" + (from.getMonth() + 1)).slice(-2);
-	var fromDate = from.getFullYear()+"-"+(fromMonth)+"-"+(fromDay) ;
-	$("#from_date").val(fromDate);
+function initializeDatePicker() {
 
-	var day = ("0" + now.getDate()).slice(-2);
-	var month = ("0" + (now.getMonth() + 1)).slice(-2);
-	var toDate = now.getFullYear()+"-"+(month)+"-"+(day) ;
-	$("#to_date").val(toDate);
+	var cb = function(start, end, label) {
+      $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+      $('#fromdate').val(start.format('YYYY-MM-DD'));
+      $('#todate').val(end.format('YYYY-MM-DD'));
+      updateDash();
+    }
+
+    var optionSet1 = {
+      startDate: moment().subtract(29, 'days'),
+      endDate: moment(),
+      minDate: '01/01/2012',
+      maxDate: moment().format('MM/DD/YYYY'),
+      dateLimit: {
+        days: 60
+      },
+      showDropdowns: true,
+      showWeekNumbers: true,
+      timePicker: false,
+      timePickerIncrement: 1,
+      timePicker12Hour: true,
+      ranges: {
+        'Today': [moment(), moment()],
+        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+      },
+      opens: 'left',
+      buttonClasses: ['btn btn-default'],
+      applyClass: 'btn-small btn-primary',
+      cancelClass: 'btn-small',
+      format: 'MM/DD/YYYY',
+      separator: ' to ',
+      locale: {
+        applyLabel: 'Submit',
+        cancelLabel: 'Clear',
+        fromLabel: 'From',
+        toLabel: 'To',
+        customRangeLabel: 'Custom',
+        daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        firstDay: 1
+      }
+    };
+    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+    $('#fromdate').val(moment().subtract(29, 'days').format('YYYY-MM-DD'));
+    $('#todate').val(moment().format('YYYY-MM-DD'));
+
+    $('#reportrange').daterangepicker(optionSet1, cb);
+
 	return;
 }
 
-function toggleLegend() {
-	if ($('#expander').hasClass('fa-chevron-down')) {
-		$('#expander').removeClass('fa-chevron-down');
-		$('#expander').addClass('fa-chevron-up');	
-		$('.rect').each(function() {
-			$(this).removeClass('hidden');
-		});
-	} else {
-		$('#expander').addClass('fa-chevron-down');
-		$('#expander').removeClass('fa-chevron-up');		
-		$('.rect').each(function() {
-			$(this).addClass('hidden');
-		});
-	}
-}
 
 // Section for inviting new applicants
 function inviteApplicant(e) {
-	// todo: validate form
-	var url = "/mp";
-	var response = "failed";
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: url,
+		url: "/mp",
 		data: $(e).serialize(),
 		beforeSend: function(data) {
 			$("#inviteapplicant :input").prop('readonly', true);
@@ -179,8 +179,6 @@ function inviteApplicant(e) {
 			$("#spinner").addClass('hidden');
 		}
 	});
-
-	return response;
 }
 
 function resetInvitation() {
@@ -191,46 +189,37 @@ function resetInvitation() {
 //Section for search respondants / build respondants table
 function initRespondantsTable() {
 	var rTable = $('#respondants').DataTable( {
-		// responsive: true,
+		responsive: true,
 		order: [[ 0, 'desc' ]],
 		columns: [
-		          { title: 'ID', data: 'respondant_id'},
-		          { title: 'First Name', data: 'respondant_person_fname'},
-		          { title: 'Last Name', data: 'respondant_person_lname'},
-		          { title: 'Email', data: 'respondant_person_email'},
-		          { title: 'View', data: null}
-		          ],
-		          columnDefs: [
-		                       { responsivePriority: 2, targets: 1},
-		                       { responsivePriority: 4, targets: 2},
-		                       { responsivePriority: 6, targets: 3},
-		                       { responsivePriority: 8, targets: 0},
-		                       { targets: -1, data: null, defaultContent: "<button class='btn btn-default btn-xs'><i class=\"fa fa-search\"></i></button>"}
-		                       ],
-		                       bProcessing: true,
-		                       language: {
-		                    	   loadingRecords : "\<i class=\"fa fa-spinner fa-3x fa-spin\"\>\<\/i\>",
-		                    	   processing : "\<i class=\"fa fa-spinner fa-3x fa-spin\"\>\<\/i\>"
-		                       }
+		          { className: 'text-center', responsivePriority: 1, title: 'Score', 
+			        	data: 'respondant_profile_icon', 
+			        	render : function ( data, type, row ) {
+			        		return '<div class="profilemini ' + row.respondant_profile_class +
+			        		       '"><i class="fa '+ data + '"></i></div>';
+			        	}
+			      },
+		          { responsivePriority: 2, className: 'text-left', title: 'First Name', data: 'respondant_person_fname'},
+		          { responsivePriority: 3, className: 'text-left', title: 'Last Name', data: 'respondant_person_lname'},
+		          { responsivePriority: 6, className: 'text-left', title: 'Email', data: 'respondant_person_email'},
+		          { responsivePriority: 7, className: 'text-left', title: 'Position', data: 'respondant_position_name'},
+		          { responsivePriority: 8, className: 'text-left', title: 'Location', data: 'respondant_location_name'}
+		          ]
 	});
-
 	updateRespondantsTable();
 }
 
 function updateRespondantsTable() {
 
-	var url = "/mp";
-	var response = "failed";
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: url,
+		url: "/mp",
 		data: $('#refine_query').serialize(),
 		beforeSend: function() {
-			$("#spinner").addClass("fa-spin");
+			$("#waitingmodal").removeClass("hidden");
 			rTable = $('#respondants').DataTable();
 			rTable.clear();
-			$('#respondants').dataTable().fnProcessingIndicator(true);
 		},
 		success: function(data)
 		{
@@ -243,13 +232,13 @@ function updateRespondantsTable() {
 				var respondant = $('#respondants').dataTable().fnGetData(this);
 				showApplicantScoring(respondant);
 			});
-			rTable.on('click', 'button', function (){
+			rTable.on('click', 'i', function (){
 				var respondant = rTable.row($(this).parents('tr')).data();
-				window.location.assign('/respondant_score.html?&respondant_id='+respondant.respondant_id);
+				window.location.assign('/respondant_score.jsp?&respondant_id='+respondant.respondant_id);
 			});
 		},
 		complete: function() {
-			$('#respondants').dataTable().fnProcessingIndicator(false);
+			$("#waitingmodal").addClass("hidden");
 		}
 	});
 }
@@ -308,68 +297,24 @@ function changePositionTo(pos_id) {
 
 
 //Section for looking at / manipulating surveys
-function updateSurveysNav() {
-	var url = "/mp";
-	$.ajax({
-		type: "POST",
-		async: true,
-		url: url,
-		data: {
-			"formname" : "getsurveylist",
-			"noRedirect" : true
-		},
-		success: function(data)
-		{
-			var surveys = JSON.parse(data);
-			var survey_id;
-			for (var i in surveys) {
-				var li = document.createElement("li");
-				var a = document.createElement('a');
-				var linkText = document.createTextNode(surveys[i].survey_name);
-				a.appendChild(linkText);
-				a.title = surveys[i].survey_name;
-				a.href = "#";
-				a.setAttribute("onClick", "changeSurveyTo("+surveys[i].survey_id+")");
-				if (i==0) {
-					li.setAttribute("class","active");
-					survey_id = surveys[i].survey_id;
-				}
-				li.appendChild(a);
-				li.setAttribute("survey_id", surveys[i].survey_id);
-				$(li).data('survey',surveys[i]);
-				$('#surveys_nav').append(li);
-			}
-			updateSurveyForm(surveys[0]);
-			initSurveyQuestionsTable(surveys[0]);
-		}
-	});
-}
 
 function changeSurveyTo(survey_id) {
-	var items = $('#surveys_nav li');
-
-	items.each(function(li) {
-		$(this).attr("class","");
-		if (survey_id == $(this).attr("survey_id")) {
-			$(this).attr("class", "active");
-			var survey = $(this).data('survey');
-			updateSurveyForm(survey);
-			updateSurveyQuestions(survey);
+	$(surveyList).each(function(li) {
+		if (survey_id == this.survey_id) {
+			updateSurveyFields(this);
+			updateSurveyQuestions(this);
 		}		
 	});
 }
 
-function updateSurveyForm(survey) {
-	$('#surveyid').val(survey.survey_id);
-	$('#surveyname').val(survey.survey_name);
-	$('#questiontotal').val(survey.questions.length);
-	$('#surveytype').val(survey.survey_type);
-	$('#surveystatus').val(survey.survey_status);
+function updateSurveyFields(survey) {
+	$('#surveyname').text(survey.survey_name);
+	$('#questiontotal').text(survey.questions.length);
 }
 
 function initSurveyQuestionsTable(survey) {
-	var qTable = $('#questions').DataTable( {
-		// responsive: true,
+	qTable = $('#questions').DataTable( {
+		responsive: true,
 		order: [[ 0, 'desc' ]],
 		columns: [
 		          { title: 'ID', data: 'question_id'},
@@ -392,11 +337,10 @@ function initSurveyQuestionsTable(survey) {
 		                       }
 	});
 
-	updateSurveyQuestions(survey);
 }	
 
 function updateSurveyQuestions(survey) {
-	var qTable = $('#questions').DataTable();
+	if (qTable == null) initSurveyQuestionsTable();
 	qTable.clear();
 	$('#questions').dataTable().fnAddData(survey.questions);
 	qTable.$('tr').click(function (){
@@ -406,33 +350,32 @@ function updateSurveyQuestions(survey) {
 	return
 }
 
-// Section for updating the dashboard
 function updateDash() {
-	
-	var form = $('#refinequery');
 	$.ajax({
-		type: "POST",
+	    type: "POST",
 		async: true,
-		url: "/mp",
-		data: $('#refinequery'),
+		url: "/rest/updatedash",
+		data: $('#refinequery').serialize(),
 		success: function(data)
 		{
-			//console.log(data);
+			$('#invitecount').html(data.totalinvited);
+			$('#completedcount').html(data.totalcompleted);
+			$('#scoredcount').html(data.totalscored);	
+			$('#hiredcount').html(data.totalhired);
+
+			refreshDashApplicants(data.applicantData);
+			refreshDashHires(data.hireData);
+			refreshProgressBars(data.applicantData, data.hireData);
+			updateHistory(getHistoryData());
 		}
 	});
 	
-	refreshDashApplicants(getApplicantData());
-	refreshDashHires(getHireData());
-	refreshProgressBars(getApplicantData(), getHireData())
-	updateHistory(getHistoryData());
 }
 
 
 function refreshDashApplicants(dataApplicants) {
 	// Build Applicants Widget
 	var dashApplicants = $("#dashApplicants").get(0).getContext("2d");
-	var applicantTotal = 0;
-	$.each(dataApplicants.datasets[0].data,function() { applicantTotal += this; });
 	var appDoughnutChart = new Chart(dashApplicants, {
 		   type: 'doughnut',
 		   data: dataApplicants,
@@ -441,15 +384,11 @@ function refreshDashApplicants(dataApplicants) {
 			   responsive : true,
 			   legend: { display: false }
 		   }});
-	$('#completedcount').html(applicantTotal);
-	$('#scoredcount').html(applicantTotal);	
 }
 
 function refreshDashHires(dataHires) {
 	// Build Hires Widget
 	var dashHires = $("#dashHires").get(0).getContext("2d");
-	var hireTotal = 0;
-	$.each(dataHires.datasets[0].data,function() {  hireTotal += this; });
 	new Chart(dashHires, {
 		type: 'doughnut', 
 		data: dataHires, 
@@ -458,13 +397,12 @@ function refreshDashHires(dataHires) {
 		   responsive : true,
 		   legend: { display: false }
 		}});
-	$('#hiredcount').html(hireTotal);
 }
 
 function refreshProgressBars(dataApplicants, dataHires) {
 	var rate;
 
-	rate = Math.round(100*dataHires.datasets[0].data[3] / dataApplicants.datasets[0].data[3]);
+	rate = Math.round(100*dataHires.datasets[0].data[1] / dataApplicants.datasets[0].data[1]);
 	$('#risingstarbar').attr('aria-valuenow',rate);
 	$('#risingstarbar').attr('style','width:'+rate+'%;');
 	$('#risingstarrate').html(rate + '%');
@@ -474,12 +412,12 @@ function refreshProgressBars(dataApplicants, dataHires) {
 	$('#longtimerbar').attr('style','width:'+rate+'%;');
 	$('#longtimerrate').html(rate + '%');
 
-	rate = Math.round(100*dataHires.datasets[0].data[1] / dataApplicants.datasets[0].data[1]);
+	rate = Math.round(100*dataHires.datasets[0].data[3] / dataApplicants.datasets[0].data[3]);
 	$('#churnerbar').attr('aria-valuenow',rate);
 	$('#churnerbar').attr('style','width:'+rate+'%;');
 	$('#churnerrate').html(rate + '%');
 
-	rate = Math.round(100*dataHires.datasets[0].data[0] / dataApplicants.datasets[0].data[0]);
+	rate = Math.round(100*dataHires.datasets[0].data[4] / dataApplicants.datasets[0].data[4]);
 	$('#redflagbar').attr('aria-valuenow',rate);
 	$('#redflagbar').attr('style','width:'+rate+'%;');
 	$('#redflagrate').html(rate + '%');
@@ -493,8 +431,12 @@ function updateHistory(historyData) {
 		options: { 
 			bar: {stacked: true},
 			scales: { 
-				xAxes: [{gridLines: {display: false}, stacked: true}],
-				yAxes: [{gridLines: {display: true}, stacked: true}]
+				xAxes: [{
+					gridLines: {color : "rgba(0, 0, 0, 0)"},
+					stacked: true,
+					categoryPercentage: 0.5
+				}],
+				yAxes: [{gridLines: {display: true}, scaleLabel: {fontSize: '18px'}, stacked: true}]
 			},
 			responsive: true,
 			legend: { display: false }
@@ -504,8 +446,35 @@ function updateHistory(historyData) {
 }
 
 function showApplicantScoring(applicantData) {
+	var mydata = new Array();
+	var mylabels = new Array();
+	var scores = applicantData.scores;
+	var i=0;
+	for (var key in scores) {
+		if (scores.hasOwnProperty(key)) {
+			mylabels[i] = key;
+			mydata[i] = applicantData.scores[key];
+			i++;
+		}
+	}
+
+	refreshPositionProfile({
+		labels: mylabels,
+		datasets: [
+		        {
+		            label: applicantData.respondant_person_fname + ' ' + applicantData.respondant_person_lname,
+		            backgroundColor: applicantOverlay,
+		            borderColor: applicantColor,
+		            pointBackgroundColor: applicantHighlight,
+		            pointBorderColor: applicantColor,
+		            pointHoverBackgroundColor: applicantColor,
+		            pointHoverBorderColor: applicantHighlight,
+		            data: mydata
+		        }
+		    ]
+		});
+
 	refreshPositionTenure(getPositionTenureData()); // use stub code
-	refreshPositionProfile(getApplicantProfileData()); // use stub code
 }
 
 function updatePositionTenure(pos_id) {
@@ -548,6 +517,7 @@ function uploadPayroll(e) {
 			dynamicTyping: true,
 			complete: function(results, file) {
 				$('#payroll').DataTable( {
+					responsive: true,
 					data: results.data,
 					columns : [
 					           { title: 'Employee ID', data: 'employee'},
@@ -646,11 +616,11 @@ function refreshRespondantProfile(dataScores) {
 	respondant = dataScores.respondant;
 	$('#candidatename').text(respondant.respondant_person_fname + ' ' + respondant.respondant_person_lname);
 	$('#candidateemail').text(respondant.respondant_person_email);
-	$('#candidateaddress').text(respondant.respondant_person_street1);
+	$('#candidateaddress').text(respondant.respondant_person_address);
 	$('#candidateposition').text(respondant.respondant_position_name);
 	$('#candidatelocation').text(respondant.respondant_location_name);
-	$('#candidateicon').html('<i class="fa fa-user-plus"></i>');
-	$('#candidateicon').addClass('btn-info');
+	$('#candidateicon').html('<i class="fa ' + respondant.respondant_profile_icon +'"></i>');
+	$('#candidateicon').addClass(respondant.respondant_profile_class);
 
 	var position = dataScores.position;
 	var data = new Array();
@@ -711,33 +681,26 @@ function refreshRespondantProfile(dataScores) {
 
 //Generic, always useful post form to action
 function postToAction(e) {
-	var url = "/mp";
 	var response = "failed";
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: url,
+		url: "/mp",
 		data: $(e).serialize(), 
 		success: function(data)
 		{
-			response = JSON.parse(data);
-			console.log(response);
+			console.log(JSON.parse(data));
 			$("#form_response").html(data);
 		}
 	});
 
-	return response;
 }
 
-
 function lookupLastTenCandidates() {
-
-	var url = "/mp";
-	var response = "failed";
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: url,
+		url: "/mp",
 		data: {
 			"formname" : "getlasttenrespondants",
 			"noRedirect" : true
@@ -770,10 +733,10 @@ function refreshLastTenCandidates(respondants) {
 			'text' : respondants[i].respondant_person_fname + ' ' + respondants[i].respondant_person_lname
 		}).appendTo(badge);
 		$('<p />', {
-			'text' : 'Postion'
+			'text' : respondants[i].respondant_position_name
 		}).appendTo(badge);
 		$('<p />', {
-			'html' : '\<small\>Location\<\/small\>'
+			'html' : '\<small\>' + respondants[i].respondant_location_name + '\<\/small\>'
 		}).appendTo(badge);
 		
 		li.append(ico);

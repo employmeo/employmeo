@@ -29,10 +29,11 @@
 		<div class="row content">
 			<div class="col-sm-12">
 								<div class="x_panel">
+									<div class="waiting hidden" id="waitingmodal"><i class="fa fa-spinner fa-spin"></i></div>
 									<div class="x_title"><h4>Scored Candidates</h4>
 									</div>
 									<div class="x_content" id="respondant_list">
-							<table id="respondants" class="table table-hover display compact responsive nowrap" cellspacing="0" width="100%"></table>
+							<table id="respondants" class="table display table-condensed nowrap" width="100%"></table>
 </div>
 </div>
 <div id="applicantprofile" class="row content">

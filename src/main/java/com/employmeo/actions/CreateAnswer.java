@@ -1,7 +1,5 @@
 package com.employmeo.actions;
 
-import java.math.BigInteger;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -35,7 +33,7 @@ public class CreateAnswer extends MPFormAction {
 			  answer.setAnswerValue(new Integer(answerValue));			  
 		  }
 		  if (answerDisplayId != null) {
-			  answer.setAnswerDisplayId(new BigInteger(answerDisplayId));
+			  answer.setAnswerDisplayId(new Long(answerDisplayId));
 		  }
 		  fRes.setValid(true);
 		  

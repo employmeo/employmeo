@@ -15,18 +15,16 @@ body.coverpage {
  * Custom Stuff
  */
 
-.square, .rect, .titlebox {
+.square  {
     float:left;
     position: relative;
+    width: 23%;
     padding-bottom : 23%; /* = width for a 1:1 aspect ratio */
     margin:1%;
     opacity: 1;
     overflow: hidden;
     outline: 1px solid;
 }
-.square { width: 23%; }
-.rect {	width: 73%; }
-.titlebox {	width: 98%; }
 
 .profilebadge {
   float: left;
@@ -43,6 +41,26 @@ body.coverpage {
   vertical-align:middle;
   width:45px;
   height:45px;
+  -moz-transition:.5s;
+  -webkit-transition:.5s;
+  -o-transition:.5s;
+  transition:.5s;	
+}
+
+.profilemini {
+  margin: auto;
+  font-size:13px;
+  padding:1px;
+  -webkit-border-radius:100%;
+  -moz-border-radius:100%;
+  -o-border-radius:100%;
+  border-radius:100%;
+  border:1px solid #fff;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.46);
+  text-align:center;
+  vertical-align:middle;
+  width:22px;
+  height:22px;
   -moz-transition:.5s;
   -webkit-transition:.5s;
   -o-transition:.5s;
@@ -76,17 +94,22 @@ body.coverpage {
     font-weight: bold;
 }
 
-.churn {background: #ffff00;}
-.churn:hover {background: #ffff66;}
-
-.redflag {background: #ff0000;}
-.redflag:hover {background: #ff5050;}
-
-.longtimer {background: #0066ff;}
-.longtimer:hover {background: #3399ff;}
-
-.risingstar {background: #00ff00;}
-.risingstar:hover {background: #66ff99;}
+.waiting {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+	font-size: 48px;
+    text-align: center;
+    z-index: 999;
+    background: black;
+    opacity: .5;
+    color: white;
+    margin-left: -17px;
+    margin-top: -12px;
+}
 
 @media (max-width: 767px) {
   .squaretext {

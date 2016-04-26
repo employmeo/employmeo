@@ -13,23 +13,28 @@
 <link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
 <link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap-theme.min.css">
 <link rel='stylesheet' type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.1/css/font-awesome.min.css">
-<link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.11/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.11/css/dataTables.bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.0.2/css/responsive.bootstrap.min.css"/>
+<link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.19/daterangepicker.min.css">
 <link rel='stylesheet' type='text/css' href='/css/custom.css' media='all' />
 <link rel='stylesheet' type='text/css' href='/css/admin_style.css' media='all' />
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.3/jquery.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?&key=AIzaSyA2bSTr1nfJEneqGPFjpJTASqy8P7cVyrc&libraries=places"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/geocomplete/1.7.0/jquery.geocomplete.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.0.1/Chart.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.11/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap-filestyle.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.0.2/js/responsive.bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.19/daterangepicker.min.js"></script>
 <script type="text/javascript" src='/js/stub_scripts.js'></script>
-<script type="text/javascript" src='/js/admin_scripts.js'></script>
 <script type="text/javascript" src='/js/custom.js'></script>
+<script type="text/javascript" src='/js/admin_scripts.js'></script>
 </head>
 
 <body class="nav-md">
@@ -55,7 +60,7 @@
                     <li><a href="/respondant_score.jsp">Candidate Results</a></li>                    
                   </ul>
                 <li><a href="/positions.jsp"><i class="fa fa-briefcase"></i> Positions</a></li>
-                  <li><a href="/surveys.jsp"><i class="fa fa-edit"></i> Assessments</a>
+                  <li><a href="/assessments.jsp"><i class="fa fa-edit"></i> Assessments</a>
                   </li>
                   <li><a><i class="fa fa-gears"></i> Administration <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="display: none;">

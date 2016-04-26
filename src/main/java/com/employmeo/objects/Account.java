@@ -5,8 +5,10 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import com.employmeo.util.DBUtil;
+
 import java.sql.Timestamp;
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,10 +25,10 @@ public class Account extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="ACCOUNT_ID")
-	private BigInteger accountId;
+	private Long accountId;
 
 	@Column(name="ACCOUNT_CREATOR")
-	private BigInteger accountCreator;
+	private Long accountCreator;
 
 	@Column(name="ACCOUNT_CURRENCY")
 	private String accountCurrency;
@@ -48,7 +50,7 @@ public class Account extends PersistantObject implements Serializable {
 
 	//bi-directional many-to-one association to Survey
 	@OneToMany(mappedBy="account", fetch = FetchType.EAGER)
-	private List<Survey> surveys;
+	private List<AccountSurvey> accountSurveys;
 
 	//bi-directional many-to-one association to User
 	@OneToMany(mappedBy="account")
@@ -70,19 +72,19 @@ public class Account extends PersistantObject implements Serializable {
 	public Account() {
 	}
 
-	public BigInteger getAccountId() {
+	public Long getAccountId() {
 		return this.accountId;
 	}
 
-	public void setAccountId(BigInteger accountId) {
+	public void setAccountId(Long accountId) {
 		this.accountId = accountId;
 	}
 
-	public BigInteger getAccountCreator() {
+	public Long getAccountCreator() {
 		return this.accountCreator;
 	}
 
-	public void setAccountCreator(BigInteger accountCreator) {
+	public void setAccountCreator(Long accountCreator) {
 		this.accountCreator = accountCreator;
 	}
 
@@ -135,25 +137,9 @@ public class Account extends PersistantObject implements Serializable {
 	}
 
 	public List<Survey> getSurveys() {
-		return this.surveys;
-	}
-
-	public void setSurveys(List<Survey> surveys) {
-		this.surveys = surveys;
-	}
-
-	public Survey addSurvey(Survey survey) {
-		getSurveys().add(survey);
-		survey.setAccount(this);
-
-		return survey;
-	}
-
-	public Survey removeSurvey(Survey survey) {
-		getSurveys().remove(survey);
-		survey.setAccount(null);
-
-		return survey;
+		List<Survey> surveyset = new ArrayList<Survey>();
+		for (int i=0;i<this.accountSurveys.size();i++) surveyset.add(accountSurveys.get(i).getSurvey());
+		return surveyset;
 	}
 
 	public List<User> getUsers() {
@@ -237,14 +223,13 @@ public class Account extends PersistantObject implements Serializable {
 	
 	public static Account getAccountById(String lookupId) {
 		
-		return getAccountById(new BigInteger(lookupId));
+		return getAccountById(new Long(lookupId));
 		
 	}
 	
-	public static Account getAccountById(BigInteger lookupId) {
+	public static Account getAccountById(Long lookupId) {
 
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Account> q = em.createQuery("SELECT a FROM Account a WHERE a.accountId = :accountId", Account.class);
         q.setParameter("accountId", lookupId);
         Account account = null;
@@ -256,17 +241,25 @@ public class Account extends PersistantObject implements Serializable {
 	}
 	
 	public List<Respondant> getRespondants() {
-		return getRespondants(100);
+		return getRespondants(Respondant.STATUS_SCORED, Respondant.STATUS_SCORED,100);
 	}
 
 	public List<Respondant> getRespondants(int maxResults) {
+		return getRespondants(-1, 99, maxResults);
+	}
+	public List<Respondant> getRespondants(int status, int maxResults) {
+		return getRespondants(status, status, maxResults);
+	}
 
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-		EntityManager em = emf.createEntityManager();		  
-		TypedQuery<Respondant> q = em.createQuery("SELECT r FROM Respondant r WHERE r.respondantAccountId = :account_id ORDER BY r.respondantCreatedDate DESC", Respondant.class);
+	public List<Respondant> getRespondants(int statusMin, int statusMax, int maxResults) {
+		
+		EntityManager em = DBUtil.getEntityManager();
+		TypedQuery<Respondant> q = em.createQuery("SELECT r FROM Respondant r WHERE r.respondantAccountId = :account_id and r.respondantStatus >= :statusMin and r.respondantStatus <= :statusMax ORDER BY r.respondantCreatedDate DESC", Respondant.class);
         q.setParameter("account_id", this.accountId);
+        q.setParameter("statusMin", statusMin);
+        q.setParameter("statusMax", statusMax);
         q.setMaxResults(maxResults);
         return q.getResultList();
 	}
-
+	
 }

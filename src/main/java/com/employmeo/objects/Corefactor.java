@@ -7,6 +7,8 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import com.employmeo.util.DBUtil;
+
 
 /**
  * The persistent class for the corefactors database table.
@@ -69,8 +71,7 @@ public class Corefactor extends PersistantObject implements Serializable {
 	public static List<Corefactor> getAllCorefactors() {
 
 		if (corefactors == null) {
-			EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-			EntityManager em = emf.createEntityManager();
+			EntityManager em = DBUtil.getEntityManager();		  
 			TypedQuery<Corefactor> q = em.createQuery("SELECT c FROM Corefactor c", Corefactor.class);
 			try {
 				corefactors = q.getResultList();
@@ -82,8 +83,7 @@ public class Corefactor extends PersistantObject implements Serializable {
 
 	public static Corefactor getCorefactorById(int lookupId) {
 		
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = DBUtil.getEntityManager();		  
 		TypedQuery<Corefactor> q = em.createQuery("SELECT c FROM Corefactor c WHERE c.corefactorId = :corefactorId", Corefactor.class);
         q.setParameter("corefactorId", lookupId);
         Corefactor corefactor = null;

@@ -45,11 +45,11 @@
 					</div>
 				    <label for="location">Location:</label>
 					<div class="form-group has-feedback">
-				    	<select class="form-control" id="location_id"></select>
+				    	<select class="form-control" id="location_id" name="location_id"></select>
 					</div>
 				    <label for="position">Position:</label>
 					<div class="form-group has-feedback">
-				    	<select class="form-control" id="position_id"></select>
+				    	<select class="form-control" id="position_id" name="position_id"></select>
 					</div>
 				</div>
 				 <div class="col-sm-12 col-lg-12">

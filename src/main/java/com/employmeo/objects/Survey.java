@@ -5,8 +5,9 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import com.employmeo.util.DBUtil;
+
 import java.sql.Timestamp;
-import java.math.BigInteger;
 import java.util.List;
 
 
@@ -23,7 +24,7 @@ public class Survey extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="SURVEY_ID")
-	private BigInteger surveyId;
+	private Long surveyId;
 
 	@Column(name="MODIFIED_DATE")
 	private Timestamp modifiedDate;
@@ -44,23 +45,23 @@ public class Survey extends PersistantObject implements Serializable {
 	private String surveyRedirectPage;
 
 	//bi-directional many-to-one association to SurveyQuestion
-	@OneToMany(mappedBy="survey")
+	@OneToMany(mappedBy="survey",fetch=FetchType.EAGER)
 	private List<SurveyQuestion> surveyQuestions;
 
 	//bi-directional many-to-one association to Account
-	@ManyToOne
-	@JoinColumn(name="SURVEY_ACCOUNT_ID")
-	private Account account;
+//	@ManyToOne
+//	@JoinColumn(name="SURVEY_ACCOUNT_ID")
+//	private Account account;
 
 	//bi-directional many-to-one association to User
 	@ManyToOne
 	@JoinColumn(name="SURVEY_CREATOR")
 	private User user;
 
-	//bi-directional many-to-one association to Position
-	@ManyToOne
-	@JoinColumn(name="SURVEY_POSITION")
-	private Position position;
+//	//bi-directional many-to-one association to Position
+//	@ManyToOne
+//	@JoinColumn(name="SURVEY_POSITION")
+//	private Position position;
 	
 	//bi-directional many-to-one association to Respondant
 	@OneToMany(mappedBy="survey")
@@ -69,16 +70,16 @@ public class Survey extends PersistantObject implements Serializable {
 	public Survey() {
 	}
 
-	public BigInteger getSurveyId() {
+	public Long getSurveyId() {
 		return this.surveyId;
 	}
 
-	public void setSurveyId(BigInteger surveyId) {
+	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
 	}
 
 	public void setSurveyId(String surveyId) {
-		this.surveyId = new BigInteger(surveyId);
+		this.surveyId = new Long(surveyId);
 	}	
 	
 	public Timestamp getModifiedDate() {
@@ -151,13 +152,13 @@ public class Survey extends PersistantObject implements Serializable {
 		return surveyQuestion;
 	}
 
-	public Account getAccount() {
-		return this.account;
-	}
+//	public Account getAccount() {
+//		return this.account;
+//	}
 
-	public void setAccount(Account account) {
-		this.account = account;
-	}
+//	public void setAccount(Account account) {
+//		this.account = account;
+//	}
 
 	public User getUser() {
 		return this.user;
@@ -167,13 +168,13 @@ public class Survey extends PersistantObject implements Serializable {
 		this.user = user;
 	}
 
-	public Position getPosition() {
-		return this.position;
-	}
+//	public Position getPosition() {
+//		return this.position;
+//	}
 
-	public void setPosition(Position position) {
-		this.position = position;
-	}
+//	public void setPosition(Position position) {
+//		this.position = position;
+//	}
 
 	public List<Respondant> getSurveyRespondants() {
 		return this.respondants;
@@ -181,14 +182,13 @@ public class Survey extends PersistantObject implements Serializable {
 
 	public static Survey getSurveyById(String lookupId) {
 		
-		return getSurveyById(new BigInteger(lookupId));
+		return getSurveyById(new Long(lookupId));
 		
 	}
 	
-	public static Survey getSurveyById(BigInteger lookupId) {
+	public static Survey getSurveyById(Long lookupId) {
 
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Survey> q = em.createQuery("SELECT s FROM Survey s WHERE s.surveyId = :surveyId", Survey.class);
         q.setParameter("surveyId", lookupId);
         Survey survey = null;
@@ -209,8 +209,6 @@ public class Survey extends PersistantObject implements Serializable {
 		json.put("survey_render_page", this.surveyRenderPage);
 		json.put("survey_redirect_page", this.surveyRedirectPage);
 		if (this.user != null) json.put("survey_creator", this.user.getJSON());
-		if (this.account != null) json.put("survey_account", this.account.getJSON());
-		if (this.position != null) json.put("survey_position", this.position.getJSON());
 		
 		for (int i=0; i<this.surveyQuestions.size();i++) {
 			json.accumulate("questions", this.surveyQuestions.get(i).getQuestion().getJSON());

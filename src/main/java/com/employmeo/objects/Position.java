@@ -5,8 +5,10 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import com.employmeo.util.DBUtil;
+
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,7 +25,7 @@ public class Position extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="position_id")
-	private BigInteger positionId;
+	private Long positionId;
 
 	@Column(name="position_name")
 	private String positionName;
@@ -39,18 +41,19 @@ public class Position extends PersistantObject implements Serializable {
 	@JoinColumn(name="position_account")
 	private Account account;
 
-	//bi-directional many-to-one association to Survey
-	@OneToMany(mappedBy="position")
-	private List<Survey> surveys;
 
+	//bi-directional many-to-one association to Account
+	@OneToMany(mappedBy="position",fetch=FetchType.EAGER)
+	private List<PredictiveModel> pmFactors;
+	
 	public Position() {
 	}
 
-	public BigInteger getPositionId() {
+	public Long getPositionId() {
 		return this.positionId;
 	}
 
-	public void setPositionId(BigInteger positionId) {
+	public void setPositionId(Long positionId) {
 		this.positionId = positionId;
 	}
 
@@ -86,38 +89,15 @@ public class Position extends PersistantObject implements Serializable {
 		this.account = account;
 	}
 
-	public List<Survey> getSurveys() {
-		return this.surveys;
-	}
-
-	public void setSurveys(List<Survey> surveys) {
-		this.surveys = surveys;
-	}
-
-	public Survey addSurvey(Survey survey) {
-		getSurveys().add(survey);
-		survey.setPosition(this);
-
-		return survey;
-	}
-
-	public Survey removeSurvey(Survey survey) {
-		getSurveys().remove(survey);
-		survey.setPosition(null);
-
-		return survey;
-	}
-
 	public static Position getPositionById(String lookupId) {
 		
-		return getPositionById(new BigInteger(lookupId));
+		return getPositionById(new Long(lookupId));
 		
 	}
 	
-	public static Position getPositionById(BigInteger lookupId) {
+	public static Position getPositionById(Long lookupId) {
 
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = DBUtil.getEntityManager();		  
 		TypedQuery<Position> q = em.createQuery("SELECT p FROM Position p WHERE p.positionId = :positionId", Position.class);
         q.setParameter("positionId", lookupId);
         Position position = null;
@@ -127,6 +107,19 @@ public class Position extends PersistantObject implements Serializable {
         
         return position;
 	}
+
+	public List<PredictiveModel> getPmFactors() {
+		return this.pmFactors;
+	}
+	
+	public List<Corefactor> getCorefactors() {
+		List<Corefactor> corefactors = new ArrayList<Corefactor>();
+		for (int i=0;i<this.pmFactors.size();i++) {
+			corefactors.add(pmFactors.get(i).getCorefactor());
+		}
+		return corefactors;
+	}
+	
 	
 	@Override
 	public JSONObject getJSON() {
@@ -137,12 +130,17 @@ public class Position extends PersistantObject implements Serializable {
 		json.put("position_target_tenure", this.positionTargetTenure);
 		
 		if (this.account != null) json.put("position_account", this.account.getJSON());
-		
+		List<Corefactor> corefactors = getCorefactors();
+		if (!corefactors.isEmpty()) {
+			for (int i=0;i<corefactors.size();i++) {
+				json.accumulate("position_corefactors", corefactors.get(i).getCorefactorName());
+			}
+			json.accumulate("position_profiles", PositionProfile.getProfileA(this));
+			json.accumulate("position_profiles", PositionProfile.getProfileB(this));
+			json.accumulate("position_profiles", PositionProfile.getProfileC(this));
+			json.accumulate("position_profiles", PositionProfile.getProfileD(this));			
+		}
 		return json;
-	}
-
-	public List<Corefactor> getCorefactors() {
-		return Corefactor.getAllCorefactors();
 	}
 
 }

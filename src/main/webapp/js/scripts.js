@@ -10,6 +10,7 @@ var totalpages;
 var responses;
 var progress;
 var urlParams; 
+
 (window.onpopstate = function () {
     var match,
         pl     = /\+/g,  // Regex for replacing addition symbol with a space
@@ -31,11 +32,11 @@ function submitAnswer(form) {
     $.ajax({
            type: "POST",
            async: true,
-           url: "/response",
+           url: "/rest/response",
            data: $(form).serialize(), 
            success: function(data)
            {
-              saveResponse(JSON.parse(data));
+              saveResponse(data);
            }
          });    
     mySwipe.next();  
@@ -45,11 +46,11 @@ function submitPlainAnswer(form, pagenum) {
     $.ajax({
            type: "POST",
            async: true,
-           url: "/response",
+           url: "/rest/response",
            data: $(form).serialize(), 
            success: function(data)
            {
-              saveResponse(JSON.parse(data));
+              saveResponse(data);
               isPageComplete(pagenum);
            }
          });
@@ -59,10 +60,9 @@ function buildPlainSurveyWithRespondantId(respondantId) {
     $.ajax({
         type: "POST",
         async: true,
-        url: "/mp",
+        url: "/rest/getsurvey",
         data: {
         	"respondant_id" : respondantId,
-        	"formname" : "getfullsurvey",
         	"noRedirect" : true        	
         },
         beforeSend: function() {
@@ -70,7 +70,7 @@ function buildPlainSurveyWithRespondantId(respondantId) {
         },
         success: function(data)
         {
-           assemblePlainSurvey(JSON.parse(data));
+           assemblePlainSurvey(data);
         },
         complete: function() {
         	$('#wait').addClass('hidden');
@@ -82,10 +82,9 @@ function buildSurveyWithRespondantId(respondantId) {
     $.ajax({
         type: "POST",
         async: true,
-        url: "/mp",
+        url: "/rest/getsurvey",
         data: {
         	"respondant_id" : respondantId,
-        	"formname" : "getfullsurvey",
         	"noRedirect" : true        	
         },
         beforeSend: function() {
@@ -93,7 +92,7 @@ function buildSurveyWithRespondantId(respondantId) {
         },
         success: function(data)
         {
-           assembleVisualSurvey(JSON.parse(data));
+           assembleVisualSurvey(data);
         },
         complete: function() {
         	$('#wait').addClass('hidden');
@@ -101,25 +100,191 @@ function buildSurveyWithRespondantId(respondantId) {
       });
 }
 
-function createNewRespondant(surveyId, accountId) {
+function getPlainSurveyForNewRespondant(form) {
     $.ajax({
         type: "POST",
         async: true,
-        url: "/mp",
-        data: {
-        	"survey_id" : surveyId,
-        	"account_id" : accountId,
-        	"formname" : "getfullsurvey",
-        	"noRedirect" : true
+        url: "/rest/order",
+        data: $(form).serialize(),
+        beforeSend: function() {
+        	$('#wait').removeClass('hidden');
         },
         success: function(data)
         {
-           assembleNewRespondantPage(JSON.parse(data));
-           console.log(jResp);
+            console.log(data);
+            assemblePlainSurvey(data);
+        },
+        complete: function() {
+        	$('#wait').addClass('hidden');
         }
       });	
 }
 
+function getVisualSurveyForNewRespondant(form) {
+    $.ajax({
+        type: "POST",
+        async: true,
+        url: "/rest/order",
+        data: $(form).serialize(),
+        beforeSend: function() {
+        	$('#wait').removeClass('hidden');
+        },
+        success: function(data)
+        {
+            console.log(data);
+            assembleVisualSurvey(data);
+        },
+        complete: function() {
+        	$('#wait').addClass('hidden');
+        }
+      });	
+}
+
+//
+function createPlainNewRespondant(surveyId, accountId) {
+  // code to create a form to fill out for a new survey respondant	
+	var deck = document.getElementById('wrapper');
+	$(deck).empty();
+	var infopage = $('<div />', {});
+	
+	infopage.append(getHrDiv());
+	infopage.append($('<div />', {
+		'class' : 'col-xs-12 col-sm-12 col-md-12',
+		}).html("<h3>Applicant Info</h3>"));
+	infopage.append(getHrDiv());
+
+	var form = $('<form />',{
+		'class' : 'form'
+	});
+	form.append($('<input />', {
+		'type' : 'hidden',
+		'name' : 'account_id',
+		'value' : accountId
+	}));
+	form.append($('<input />', {
+		'type' : 'hidden',
+		'name' : 'survey_id',
+		'value' : surveyId		
+	}));
+
+	/* First Name */
+	form.append($('<label />', {
+		'for' : 'fname',
+		'text' : 'First Name:'
+	}));
+	
+	var row = $('<div />', {
+		'class' : 'input-group has-feedback'
+	});
+	row.append($('<span />', {
+		'class' : 'input-group-addon'}).html("<i class='fa fa-user fa-fw'></i>"));
+	row.append($('<input />', {
+		'class' : 'form-control',
+		'type' : 'text',
+		'name' : 'fname',
+		'placeholder' : 'First Name',
+		'required' : true				
+	}));
+	form.append(row);
+
+	/* Last Name */
+	form.append($('<label />', {
+		'for' : 'lname',
+		'text' : 'Last Name:'
+	}));
+    row = $('<div />', {
+			'class' : 'input-group has-feedback'
+		});
+	row.append($('<span />', {
+		'class' : 'input-group-addon'}).html("<i class='fa fa-user fa-fw'></i>"));
+	row.append($('<input />', {
+		'class' : 'form-control',
+		'type' : 'text',
+		'name' : 'lname',
+		'placeholder' : 'Last Name',
+		'required' : true				
+	}));
+	form.append(row);
+
+	/* Email */	
+	form.append($('<label />', {
+		'for' : 'email',
+		'text' : 'E-mail Address:'
+	}));
+	row = $('<div />', {
+		'class' : 'input-group has-feedback'
+	});
+	row.append($('<span />', {
+	'class' : 'input-group-addon'}).html("<i class='fa fa-envelope fa-fw'></i>"));
+	row.append($('<input />', {
+		'class' : 'form-control',
+		'type' : 'email',
+		'name' : 'email',
+		'placeholder' : 'email',
+		'required' : true		
+	}));
+	form.append(row);
+
+	/* Home Address */
+	form.append($('<label />', {
+		'for' : 'address',
+		'text' : 'Home Address:'
+	}));
+	row = $('<div />', {
+		'class' : 'input-group has-feedback'
+	});
+	row.append($('<span />', {
+	'class' : 'input-group-addon'}).html("<i class='fa fa-home fa-fw'></i>"));
+	row.append($('<input />', {
+		'class' : 'form-control',
+		'type' : 'text',
+		'name' : 'address',
+		'id' : 'address',
+		'required' : true				
+	}));
+	form.append(row);
+	
+	/* Button */
+	form.append(getHrDiv());
+	form.append($('<input />', {
+		'type' : 'hidden',
+		'name' : 'lat',
+		'id' : 'lat'
+	}));
+	form.append($('<input />', {
+		'type' : 'hidden',
+		'name' : 'lng',
+		'id' : 'lng'				
+	}));
+	form.append($('<input />', {
+		'type' : 'hidden',
+		'name' : 'formatted_address',
+		'id' : 'formatted_address'				
+	}));
+	form.append($('<input />', {
+		'type' : 'hidden',
+		'name' : 'country_short',
+		'id' : 'country_short'				
+	}));
+	form.append($('<button />', {
+		'type' : 'button',
+		'class' : 'btn btn-primary',
+		'onClick' : 'getPlainSurveyForNewRespondant(this.form);',
+		'text' : 'Submit'
+	}));
+
+	infopage.append($('<div />', {
+		'class' : 'col-xs-12 col-sm-12 col-md-12',
+		}).append(form));
+	infopage.appendTo(deck);
+	
+	prepSurvey();
+	$('#address').geocomplete({details:'form'});
+}
+
+function createVisualNewRespondant(surveyId, accountId) {
+	  // code to create a form to fill out for a new survey respondant	
+}
 
 //
 // Survey page buidling functions
@@ -315,7 +480,7 @@ function getResponseForm(question, respondant) {
 			'type': "radio",
 			'name': "response_value",
 			'onclick': 'submitAnswer(this.form)',
-			'value': 1
+			'value': 11
 		}));
 		thumbs.append($('<label/>', {
 			'class': 'thumbs-up',
@@ -328,7 +493,7 @@ function getResponseForm(question, respondant) {
 			'type': "radio",
 			'name': "response_value",
 			'onclick': 'submitAnswer(this.form)',
-			'value': 2
+			'value': 1
 		}));
 		thumbs.append($('<label/>', {
 			'class': 'thumbs-down',
@@ -347,7 +512,7 @@ function getResponseForm(question, respondant) {
 			'class' : 'stars'
 		});
 
-		for (var i = 1; i <=5; i+= 1) {
+		for (var i = 1; i <=11; i+= 2) {
 			stars.append($('<input/>',{
 				'class' : 'star star-' + i,
 				'id' : 'star-' + i + '-' + question.question_id,
@@ -373,7 +538,7 @@ function getResponseForm(question, respondant) {
 			'class' : 'likert'
 		});
 
-		for (var i = 1; i <=5; i+= 1) {
+		for (var i = 1; i <=11; i+= 2) {
 			likert.append($('<input/>',{
 				'class' : 'likert likert-' + i,
 				'id' : 'likert-' + i + '-' + question.question_id,
@@ -446,7 +611,7 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 			'type' : 'radio',
 			'name' : 'response_value',
 			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : 1
+			'value' : 11
 		});
 		var yesboxlabel = $('<label />', {
 			'class' : 'yesbox',
@@ -473,7 +638,7 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 			'type' : 'radio',
 			'name' : 'response_value',
 			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : 0
+			'value' : 6
 		});
 		var sometimesboxlabel = $('<label />', {
 			'class' : 'sometimesbox',
@@ -500,7 +665,7 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 			'type' : 'radio',
 			'name' : 'response_value',
 			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : -1
+			'value' : 1
 		});
 		var noboxlabel = $('<label />', {
 			'class' : 'nobox',

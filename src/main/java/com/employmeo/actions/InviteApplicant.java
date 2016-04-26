@@ -1,6 +1,5 @@
 package com.employmeo.actions;
 
-import java.math.BigInteger;
 import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,14 +25,13 @@ public class InviteApplicant extends MPFormAction {
 		  String fname = req.getParameter("fname");
 		  String lname = req.getParameter("lname");
 		  String address = req.getParameter("address");
-		  String formattedAddress = req.getParameter("address");
 		  Double personLat = Double.valueOf(req.getParameter("lat"));
 		  Double personLong = Double.valueOf(req.getParameter("lng"));;
 		  String survey_id = req.getParameter("survey_id");
-		  BigInteger surveyId = new BigInteger(survey_id);
+		  Long surveyId = new Long(survey_id);
 		  
-		  String location_id = req.getParameter("location_id");
-		  String position_id = req.getParameter("position_id");
+		  Long locationId = Long.valueOf(req.getParameter("location_id"));
+		  Long positionId = Long.valueOf(req.getParameter("position_id"));
 		  User user = (User)sess.getAttribute("User");
 		  Account account = user.getAccount();
 		  
@@ -45,8 +43,7 @@ public class InviteApplicant extends MPFormAction {
 		  applicant.setPersonEmail(to);
 		  applicant.setPersonFname(fname);
 		  applicant.setPersonLname(lname);
-		  applicant.setPersonStreet1(address);
-		  applicant.setPersonStreet2(formattedAddress);
+		  applicant.setPersonAddress(address);
 		  applicant.setPersonLat(personLat);
 		  applicant.setPersonLong(personLong);
 		  applicant.persistMe();
@@ -55,8 +52,8 @@ public class InviteApplicant extends MPFormAction {
 		  respondant.setPerson(applicant);
 		  respondant.setRespondantAccountId(account.getAccountId());
 		  respondant.setRespondantSurveyId(surveyId);
-		  try {respondant.setRespondantLocationId(new BigInteger(location_id));} catch (Exception e) {}// ok for null location
-		  try {respondant.setRespondantPositionId(new BigInteger(position_id));} catch (Exception e) {}// ok for null location
+		  respondant.setRespondantLocationId(locationId);// ok for null location
+		  respondant.setRespondantPositionId(positionId);// ok for null location
 		  respondant.persistMe();
 		  
 		  JSONObject json = new JSONObject();

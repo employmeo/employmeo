@@ -6,7 +6,6 @@ import javax.persistence.*;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Date;
 
 
@@ -22,7 +21,7 @@ public class PayrollSummary extends PersistantObject implements Serializable {
 
 	@Id
 	@Column(name="payroll_person_id")
-	private BigInteger payrollPersonId;
+	private Long payrollPersonId;
 
 	@Column(name="payroll_bonus_wages")
 	private BigDecimal payrollBonusWages;
@@ -60,11 +59,11 @@ public class PayrollSummary extends PersistantObject implements Serializable {
 	public PayrollSummary() {
 	}
 
-	public BigInteger getPayrollPersonId() {
+	public Long getPayrollPersonId() {
 		return this.payrollPersonId;
 	}
 
-	public void setPayrollPersonId(BigInteger payrollPersonId) {
+	public void setPayrollPersonId(Long payrollPersonId) {
 		this.payrollPersonId = payrollPersonId;
 	}
 

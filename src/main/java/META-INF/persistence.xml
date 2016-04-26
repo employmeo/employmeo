@@ -16,11 +16,16 @@
 		<class>com.employmeo.objects.PayrollSummary</class>
 		<class>com.employmeo.objects.Corefactor</class>
 		<class>com.employmeo.objects.Location</class>
+		<class>com.employmeo.objects.AccountSurvey</class>
+		<class>com.employmeo.objects.PredictiveModel</class>
+		<class>com.employmeo.objects.RespondantScore</class>
+		<class>com.employmeo.objects.RespondantScorePK</class>
+		<class>com.employmeo.objects.PredictiveModelPK</class>
       <properties>
          <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-         <property name="javax.persistence.jdbc.user" value="rcxzyapqgrcncf"/>
+         <!--property name="javax.persistence.jdbc.user" value="rcxzyapqgrcncf"/>
          <property name="javax.persistence.jdbc.password" value="QvKLIqbL3hR7Hazq1YhxYNd8IA"/>
-         <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://ec2-54-225-199-108.compute-1.amazonaws.com:5432/d69d4tsc1nrle9?currentSchema=employmeo&amp;sslmode=require"/>
+         <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://ec2-54-225-199-108.compute-1.amazonaws.com:5432/d69d4tsc1nrle9?currentSchema=employmeo&amp;sslmode=require"/-->
       </properties>
 	</persistence-unit>
 </persistence>

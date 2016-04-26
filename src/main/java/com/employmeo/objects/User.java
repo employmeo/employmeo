@@ -1,12 +1,12 @@
 package com.employmeo.objects;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import com.employmeo.util.DBUtil;
 import com.employmeo.util.SecurityUtil;
 
 import java.sql.Timestamp;
@@ -26,7 +26,7 @@ public class User extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="USER_ID")
-	private BigInteger userId;
+	private Long userId;
 
 	@Column(name="MODIFIED_DATE")
 	private Timestamp modifiedDate;
@@ -70,11 +70,11 @@ public class User extends PersistantObject implements Serializable {
 	public User() {
 	}
 	
-	public BigInteger getUserId() {
+	public Long getUserId() {
 		return this.userId;
 	}
 
-	public void setUserId(BigInteger userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
@@ -195,8 +195,7 @@ public class User extends PersistantObject implements Serializable {
 	
 	public static User loginHashword(String email, String hashword) {
 
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.userEmail = :email AND u.userPassword = :password", User.class);
         q.setParameter("email", email);
         q.setParameter("password", hashword);
@@ -213,8 +212,7 @@ public class User extends PersistantObject implements Serializable {
 	
 	public static User lookupByEmail(String email) {
 
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.userEmail = :email", User.class);
         q.setParameter("email", email);
         User user = null;

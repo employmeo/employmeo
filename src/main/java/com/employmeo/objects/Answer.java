@@ -5,8 +5,6 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
-import java.math.BigInteger;
-
 
 /**
  * The persistent class for the answers database table.
@@ -27,7 +25,7 @@ public class Answer extends PersistantObject implements Serializable {
 	private String answerDescription;
 
 	@Column(name="ANSWER_DISPLAY_ID")
-	private BigInteger answerDisplayId;
+	private Long answerDisplayId;
 
 	@Column(name="ANSWER_TEXT")
 	private String answerText;
@@ -59,11 +57,11 @@ public class Answer extends PersistantObject implements Serializable {
 		this.answerDescription = answerDescription;
 	}
 
-	public BigInteger getAnswerDisplayId() {
+	public Long getAnswerDisplayId() {
 		return this.answerDisplayId;
 	}
 
-	public void setAnswerDisplayId(BigInteger answerDisplayId) {
+	public void setAnswerDisplayId(Long answerDisplayId) {
 		this.answerDisplayId = answerDisplayId;
 	}
 

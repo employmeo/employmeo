@@ -23,9 +23,6 @@ public class Person extends PersistantObject implements Serializable {
 	@Column(name="person_id")
 	private Integer personId;
 
-	@Column(name="person_city")
-	private String personCity;
-
 	@Column(name="person_email")
 	private String personEmail;
 
@@ -38,18 +35,9 @@ public class Person extends PersistantObject implements Serializable {
 	@Column(name="person_ssn")
 	private String personSsn;
 
-	@Column(name="person_state")
-	private String personState;
+	@Column(name="person_address")
+	private String personAddress;
 
-	@Column(name="person_street1")
-	private String personStreet1;
-
-	@Column(name="person_street2")
-	private String personStreet2;
-
-	@Column(name="person_zip")
-	private String personZip;
-	
 	@Column(name="person_lat")
 	private double personLat;
 	
@@ -71,12 +59,12 @@ public class Person extends PersistantObject implements Serializable {
 		this.personId = personId;
 	}
 
-	public String getPersonCity() {
-		return this.personCity;
+	public String getPersonAddress() {
+		return this.personAddress;
 	}
 
-	public void setPersonCity(String personCity) {
-		this.personCity = personCity;
+	public void setPersonAddress(String address) {
+		this.personAddress = address;
 	}
 
 	public String getPersonEmail() {
@@ -109,38 +97,6 @@ public class Person extends PersistantObject implements Serializable {
 
 	public void setPersonSsn(String personSsn) {
 		this.personSsn = personSsn;
-	}
-
-	public String getPersonState() {
-		return this.personState;
-	}
-
-	public void setPersonState(String personState) {
-		this.personState = personState;
-	}
-
-	public String getPersonStreet1() {
-		return this.personStreet1;
-	}
-
-	public void setPersonStreet1(String personStreet1) {
-		this.personStreet1 = personStreet1;
-	}
-
-	public String getPersonStreet2() {
-		return this.personStreet2;
-	}
-
-	public void setPersonStreet2(String personStreet2) {
-		this.personStreet2 = personStreet2;
-	}
-
-	public String getPersonZip() {
-		return this.personZip;
-	}
-
-	public void setPersonZip(String personZip) {
-		this.personZip = personZip;
 	}
 
 	public double getPersonLat() {
@@ -188,11 +144,7 @@ public class Person extends PersistantObject implements Serializable {
 		json.put("person_email", this.personEmail);
 		json.put("person_fname", this.personFname);
 		json.put("person_lname", this.personLname);
-		json.put("person_street1", this.personStreet1);
-		json.put("person_street2", this.personStreet2);
-		json.put("person_city", this.personCity);
-		json.put("person_state", this.personState);
-		json.put("person_zip", this.personZip);
+		json.put("person_address", this.personAddress);
 		json.put("person_lat", this.personLat);
 		json.put("person_long", this.personLong);
 		

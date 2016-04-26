@@ -1,7 +1,6 @@
 package com.employmeo;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,13 +44,13 @@ public class EmpSurveyResponseServlet extends HttpServlet {
 		  if ((val != null) && (val != "")) {
 			  switch (paramname) {
 			  	case "response_id":
-			  		response.setResponseId(new BigInteger(val));
+			  		response.setResponseId(new Long(val));
 			  		break;
 			  	case "response_respondant_id":
-			  		response.setResponseRespondantId(new BigInteger(val));
+			  		response.setResponseRespondantId(new Long(val));
 			  		break;
 			  	case "response_question_id":
-			  		response.setResponseQuestionId(new BigInteger(val));
+			  		response.setResponseQuestionId(new Long(val));
 			  		break;
 			  	case "response_value":
 			  		response.setResponseValue(new Integer(val));

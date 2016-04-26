@@ -5,7 +5,8 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
-import java.math.BigInteger;
+import com.employmeo.util.DBUtil;
+
 import java.util.List;
 
 
@@ -22,7 +23,7 @@ public class Question extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="QUESTION_ID")
-	private BigInteger questionId;
+	private Long questionId;
 
 	@Column(name="MODIFIED_DATE")
 	private int modifiedDate;
@@ -31,7 +32,7 @@ public class Question extends PersistantObject implements Serializable {
 	private String questionDescription;
 
 	@Column(name="QUESTION_DISPLAY_ID")
-	private BigInteger questionDisplayId;
+	private Long questionDisplayId;
 
 	@Column(name="QUESTION_TEXT")
 	private String questionText;
@@ -46,7 +47,7 @@ public class Question extends PersistantObject implements Serializable {
 	private int questionDirection;
 
 	//bi-directional many-to-one association to Answer
-	@OneToMany(mappedBy="question")
+	@OneToMany(mappedBy="question",fetch=FetchType.EAGER)
 	private List<Answer> answers;
 
 	//bi-directional many-to-one association to Response
@@ -60,11 +61,11 @@ public class Question extends PersistantObject implements Serializable {
 	public Question() {
 	}
 
-	public BigInteger getQuestionId() {
+	public Long getQuestionId() {
 		return this.questionId;
 	}
 
-	public void setQuestionId(BigInteger questionId) {
+	public void setQuestionId(Long questionId) {
 		this.questionId = questionId;
 	}
 
@@ -84,11 +85,11 @@ public class Question extends PersistantObject implements Serializable {
 		this.questionDescription = questionDescription;
 	}
 
-	public BigInteger getQuestionDisplayId() {
+	public Long getQuestionDisplayId() {
 		return this.questionDisplayId;
 	}
 
-	public void setQuestionDisplayId(BigInteger questionDisplayId) {
+	public void setQuestionDisplayId(Long questionDisplayId) {
 		this.questionDisplayId = questionDisplayId;
 	}
 
@@ -192,14 +193,13 @@ public class Question extends PersistantObject implements Serializable {
 	
 	public static Question getQuestionById(String lookupId) {
 		
-		return getQuestionById(new BigInteger(lookupId));
+		return getQuestionById(new Long(lookupId));
 		
 	}
 	
-	public static Question getQuestionById(BigInteger lookupId) {
+	public static Question getQuestionById(Long lookupId) {
 
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("employmeo");
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Question> q = em.createQuery("SELECT q FROM Question q WHERE q.questionId = :questionId", Question.class);
         q.setParameter("questionId", lookupId);
         Question question = null;

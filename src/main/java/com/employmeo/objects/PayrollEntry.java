@@ -6,7 +6,6 @@ import javax.persistence.*;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Date;
 
 
@@ -23,7 +22,7 @@ public class PayrollEntry extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="PAYROLL_ENTRY_ID")
-	private BigInteger payrollEntryId;
+	private Long payrollEntryId;
 
 	@Column(name="PAYROLL_ENTRY_BONUS_PAY")
 	private BigDecimal payrollEntryBonusPay;
@@ -37,7 +36,7 @@ public class PayrollEntry extends PersistantObject implements Serializable {
 	private Date payrollEntryPeriodStart;
 
 	@Column(name="PAYROLL_ENTRY_PERSON_ID")
-	private java.math.BigInteger payrollEntryPersonId;
+	private Long payrollEntryPersonId;
 
 	@Column(name="PAYROLL_ENTRY_TOTAL_HOURS")
 	private BigDecimal payrollEntryTotalHours;
@@ -48,11 +47,11 @@ public class PayrollEntry extends PersistantObject implements Serializable {
 	public PayrollEntry() {
 	}
 
-	public BigInteger getPayrollEntryId() {
+	public Long getPayrollEntryId() {
 		return this.payrollEntryId;
 	}
 
-	public void setPayrollEntryId(BigInteger payrollEntryId) {
+	public void setPayrollEntryId(Long payrollEntryId) {
 		this.payrollEntryId = payrollEntryId;
 	}
 
@@ -80,11 +79,11 @@ public class PayrollEntry extends PersistantObject implements Serializable {
 		this.payrollEntryPeriodStart = payrollEntryPeriodStart;
 	}
 
-	public java.math.BigInteger getPayrollEntryPersonId() {
+	public Long getPayrollEntryPersonId() {
 		return this.payrollEntryPersonId;
 	}
 
-	public void setPayrollEntryPersonId(java.math.BigInteger payrollEntryPersonId) {
+	public void setPayrollEntryPersonId(Long payrollEntryPersonId) {
 		this.payrollEntryPersonId = payrollEntryPersonId;
 	}
 

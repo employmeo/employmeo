@@ -7,8 +7,6 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 
 import com.employmeo.EmpFormResponse;
-import com.employmeo.objects.Account;
-import com.employmeo.objects.Position;
 import com.employmeo.objects.Survey;
 import com.employmeo.objects.User;
 
@@ -21,18 +19,12 @@ public class CreateSurvey extends MPFormAction {
 
 		  // Collect expected input fields
 		  User user = (User) sess.getAttribute("User");
-		  Account account = user.getAccount();	  
-		  String positionId = req.getParameter("position_id");
 		  String surveyName = req.getParameter("survey_name");
 		  
 		  // Validate input fields
-		  if (positionId != null) {
-			  survey.setPosition(Position.getPositionById(positionId));
-		  }
 		  fRes.setValid(true);
 		  
 		  // Perform business logic  
-		  survey.setAccount(account);
 		  survey.setUser(user);
 		  survey.setSurveyName(surveyName);
 		  survey.setSurveyStatus(1);

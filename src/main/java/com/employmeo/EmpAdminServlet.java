@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import java.lang.reflect.Method;
 
 import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import javax.servlet.*;
 import javax.xml.parsers.DocumentBuilder;
@@ -21,6 +22,7 @@ import com.employmeo.util.FaceBookHelper;
 import com.employmeo.util.ImageManagementUtil;
 import com.employmeo.util.LocaleHelper;
 
+@WebServlet(value="/mp")
 @MultipartConfig(fileSizeThreshold=1024*1024, maxFileSize=1024*1024*5, maxRequestSize=1024*1024*5)
 public class EmpAdminServlet extends HttpServlet {
 

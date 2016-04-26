@@ -10,19 +10,19 @@
 									<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
 									<span>March 18, 2016 - April 16, 2016</span> <b class="caret"></b>
 									</div>
+								    <input type=hidden name="fromdate" id='fromdate'>
+								    <input type=hidden name="todate" id='todate'>
 								</div>
 								<div class="form-group">
 									<select class="form-control" id="location_id" name="location_id" onChange='updateDash()'>
-										<option>all locations</option>
+										<option value=-1>all locations</option>
 									</select>
 								</div>
                             	<div class="form-group">
 									<select class="form-control" id="position_id" name="position_id" onChange='updateDash()'>
-										<option>all positions</option>
+										<option value=-1>all positions</option>
 									</select>
 								</div>
-								<input type=hidden name="formname" value="updatedashboard">
-								<input type="hidden" name="noRedirect" value=true>
 						</form>
 							</div>
 						</div>
@@ -222,11 +222,13 @@
 <%@ include file="/WEB-INF/includes/inc_header.jsp"%>
 
 <script type="text/javascript">
-	//updateDateChoosers();
-	updatePositionsSelect();
-	updateLocationsSelect();
-	updateDash();
-	lookupLastTenCandidates();
+    $(document).ready(function() {
+    	initializeDatePicker();
+		updatePositionsSelect();
+		updateLocationsSelect();
+		updateDash();
+		lookupLastTenCandidates();
+    });
 </script>
 
 </body>

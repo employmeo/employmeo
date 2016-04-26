@@ -1,11 +1,12 @@
 package com.employmeo.objects;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 import javax.persistence.*;
 
 import org.json.JSONObject;
+
+import com.employmeo.util.DBUtil;
 
 
 /**
@@ -31,7 +32,7 @@ public class Location extends PersistantObject implements Serializable {
 	private Account account;	
 	
 	@Column(name="location_account_id",insertable=true,updatable=false)
-	private BigInteger locationAccountId;
+	private Long locationAccountId;
 	
 	
 	@Column(name="location_city")
@@ -75,11 +76,11 @@ public class Location extends PersistantObject implements Serializable {
 		this.locationId = locationId;
 	}
 
-	public BigInteger getLocationAccountId() {
+	public Long getLocationAccountId() {
 		return this.locationAccountId;
 	}
 
-	public void setLocationAccountId(BigInteger locationAccountId) {
+	public void setLocationAccountId(Long locationAccountId) {
 		this.locationAccountId = locationAccountId;
 	}
 
@@ -179,6 +180,18 @@ public class Location extends PersistantObject implements Serializable {
 		this.account = account;
 	}
 	
+	public static Location getLocationById(Long lookupId) {
+		EntityManager em = DBUtil.getEntityManager();
+		TypedQuery<Location> q = em.createQuery("SELECT l FROM Location l WHERE l.locationId = :locationId", Location.class);
+        q.setParameter("locationId", lookupId);
+        Location location = null;
+        try {
+      	  location = q.getSingleResult();
+        } catch (NoResultException nre) {}
+        
+        return location;
+	}
+
 	@Override
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
@@ -196,5 +209,6 @@ public class Location extends PersistantObject implements Serializable {
 		json.put("location_long", this.locationLong);
 		return json;
 	}
+
 
 }

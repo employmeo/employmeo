@@ -1,13 +1,25 @@
+// stub variables to be removed
+var redflagColor = "#d9534f";
+var redflagOverlay = "rgba(217, 83, 79,0.3)";
+var redflagHighlight = "#d43f3a";
+
+var churnerColor = "#f0ad4e";
+var churnerOverlay = "rgba(240, 173, 78, 0.3)";
+var churnerHighlight = "#eea236";
+
+var longtimerColor = "#5bc0de";
+var longtimerOverlay = "rgba(91, 192, 222,0.3)";
+var longtimerHighlight = "#46b8da";
+
+var risingstarColor = "#5cb85c";
+var risingstarOverlay = "rgba(92, 184, 92,0.3)";
+var risingstarHighlight = "#4cae4c";
+
+
 // Stub Functions to be removed
 function getApplicantData(){
 	var data = getDoughnutData();
 	data.datasets[0].data = [100, 300, 250, 20]
-	return data;
-}
-
-function getInterviewData(){
-	var data = getDoughnutData();
-	data.datasets[0].data = [5, 150, 180, 18]
 	return data;
 }
 
@@ -237,81 +249,6 @@ function getPositionDetails(scores) {
 	
 	return position;
 	
-}
-
-
-function getLastTenCandidates() {
-	return [{
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-user-plus',
-        		respondant_profile_class: 'btn-info'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',
-        		respondant_profile_icon : 'fa-rocket',
-        		respondant_profile_class: 'btn-success'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-user-plus',
-        		respondant_profile_class: 'btn-info'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-gear',
-        		respondant_profile_class: 'btn-warning'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-user-plus',
-        		respondant_profile_class: 'btn-info'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-gear',
-        		respondant_profile_class: 'btn-warning'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-user-plus',
-        		respondant_profile_class: 'btn-info'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-gear',
-        		respondant_profile_class: 'btn-warning'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-user-plus',
-        		respondant_profile_class: 'btn-info'
-	        },
-	        {
-	        	respondant_id : 1,
-	        	respondant_person_fname : 'joe',
-	        	respondant_person_lname : 'johnson',	
-        		respondant_profile_icon : 'fa-gear',
-        		respondant_profile_class: 'btn-warning'
-	        }
-	];
 }
 
 function getSurveyDisclaimer(survey) {

@@ -12,8 +12,10 @@ import org.json.JSONObject;
 import com.employmeo.EmpFormResponse;
 import com.employmeo.objects.Corefactor;
 import com.employmeo.objects.Position;
+import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Question;
 import com.employmeo.objects.Respondant;
+import com.employmeo.objects.RespondantScore;
 import com.employmeo.objects.Response;
 
 
@@ -31,29 +33,18 @@ public class ProcessRespondant extends MPFormAction {
 		  }
 		  
 		  if (respondant != null) {
-			  List<Response> responses = respondant.getResponses();
-			  JSONObject scores = new JSONObject();
-			  int[] count = new int[20];
-			  int[] score = new int[20];
-			  
-			  for (int i=0;i<responses.size();i++) {
-				  Response response = responses.get(i);
-				  Integer cfId = Question.getQuestionById(response.getResponseQuestionId()).getQuestionCorefactorId();
-				  count[cfId]++;
-				  score[cfId]+=response.getResponseValue();
-			  }
-
-			  for (int i=0; i<20; i++) {
-				  if (count[i]>0) {
-					  Corefactor corefactor = Corefactor.getCorefactorById(i);			  
-					  scores.put(corefactor.getCorefactorName(),(double) Math.round(100.0 *((double)score[i]/(double)count[i]))/ 100.0);
-				  }
-			  }
-
-			  Position position = Position.getPositionById(respondant.getRespondantPositionId());
 			  JSONObject json = new JSONObject();
-			  json.put("respondant", respondant.getJSON());
+			  JSONObject scores = respondant.scoreMe();
+			  if (scores == null) fRes.setValid(false);
+			  
+			  JSONObject resp = respondant.getJSON();
+			  PositionProfile profile = PositionProfile.getProfileDefaults(respondant.getRespondantProfile());
+			  resp.put("respondant_profile_icon", profile.get("profile_icon"));
+			  resp.put("respondant_profile_class", profile.get("profile_class"));
+
+			  json.put("respondant", resp);
 			  json.put("scores", scores);
+			  Position position = Position.getPositionById(respondant.getRespondantPositionId());
 			  if (position != null) json.put("position", position.getJSON());
 			  fRes.setSuccess(true);
 			  fRes.setHTML(json.toString());
@@ -63,6 +54,4 @@ public class ProcessRespondant extends MPFormAction {
 		  
 		  return;
 	  }
-
-
 }

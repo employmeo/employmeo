@@ -26,13 +26,9 @@ public class CreateQuestion extends MPFormAction {
 		  String surveyName = req.getParameter("survey_name");
 		  
 		  // Validate input fields
-		  if (positionId != null) {
-			  survey.setPosition(Position.getPositionById(positionId));
-		  }
 		  fRes.setValid(true);
 		  
 		  // Perform business logic  
-		  survey.setAccount(account);
 		  survey.setUser(user);
 		  survey.setSurveyName(surveyName);
 		  survey.setSurveyStatus(1);

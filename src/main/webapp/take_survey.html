@@ -49,7 +49,7 @@ if (urlParams.respondant_id != null) {
 } else {
 	var surveyId = urlParams.survey_id;
 	var accountId = urlParams.account_id;
-	createNewRespondant(surveyId, accountId);
+	createVisualNewRespondant(surveyId, accountId);
 }
 </script>
 </html>
