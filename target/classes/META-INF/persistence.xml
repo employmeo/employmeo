@@ -21,6 +21,7 @@
 		<class>com.employmeo.objects.RespondantScore</class>
 		<class>com.employmeo.objects.RespondantScorePK</class>
 		<class>com.employmeo.objects.PredictiveModelPK</class>
+		<class>com.employmeo.objects.Partner</class>
       <properties>
          <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
          <!--property name="javax.persistence.jdbc.user" value="rcxzyapqgrcncf"/>

@@ -32,7 +32,7 @@ function submitAnswer(form) {
     $.ajax({
            type: "POST",
            async: true,
-           url: "/rest/response",
+           url: "/survey/response",
            data: $(form).serialize(), 
            success: function(data)
            {
@@ -46,7 +46,7 @@ function submitPlainAnswer(form, pagenum) {
     $.ajax({
            type: "POST",
            async: true,
-           url: "/rest/response",
+           url: "/survey/response",
            data: $(form).serialize(), 
            success: function(data)
            {
@@ -60,7 +60,7 @@ function buildPlainSurveyWithRespondantId(respondantId) {
     $.ajax({
         type: "POST",
         async: true,
-        url: "/rest/getsurvey",
+        url: "/survey/getsurvey",
         data: {
         	"respondant_id" : respondantId,
         	"noRedirect" : true        	
@@ -82,7 +82,7 @@ function buildSurveyWithRespondantId(respondantId) {
     $.ajax({
         type: "POST",
         async: true,
-        url: "/rest/getsurvey",
+        url: "/survey/getsurvey",
         data: {
         	"respondant_id" : respondantId,
         	"noRedirect" : true        	
@@ -104,7 +104,7 @@ function getPlainSurveyForNewRespondant(form) {
     $.ajax({
         type: "POST",
         async: true,
-        url: "/rest/order",
+        url: "/survey/order",
         data: $(form).serialize(),
         beforeSend: function() {
         	$('#wait').removeClass('hidden');
@@ -124,7 +124,7 @@ function getVisualSurveyForNewRespondant(form) {
     $.ajax({
         type: "POST",
         async: true,
-        url: "/rest/order",
+        url: "/survey/order",
         data: $(form).serialize(),
         beforeSend: function() {
         	$('#wait').removeClass('hidden');

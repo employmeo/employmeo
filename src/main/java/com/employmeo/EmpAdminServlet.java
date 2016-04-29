@@ -20,7 +20,6 @@ import org.w3c.dom.NodeList;
 import com.employmeo.objects.User;
 import com.employmeo.util.FaceBookHelper;
 import com.employmeo.util.ImageManagementUtil;
-import com.employmeo.util.LocaleHelper;
 
 @WebServlet(value="/mp")
 @MultipartConfig(fileSizeThreshold=1024*1024, maxFileSize=1024*1024*5, maxRequestSize=1024*1024*5)
@@ -30,7 +29,6 @@ public class EmpAdminServlet extends HttpServlet {
   private List<String> restrictedFormList = null;
   private Document mpConfig = null;
   private final String FILENAME = "/WEB-INF/employmeo.xml";
-  private final String MESSAGESFILE = "/WEB-INF/messages.xml";
 
   private HashMap<String,String> formClasses = null;
   private HashMap<String,String> formSuccess = null;
@@ -106,6 +104,8 @@ public class EmpAdminServlet extends HttpServlet {
   }
   
   public static void login(User user, HttpSession sess, HttpServletResponse res, HttpServletRequest req) {
+	  
+	  
 	  sess.setAttribute("LoggedIn", new Boolean(true));
 	  sess.setAttribute("User", user);
 	  try {
@@ -172,7 +172,6 @@ public class EmpAdminServlet extends HttpServlet {
 		   FaceBookHelper.staticInit(appID, appSecret);
 
 		   ImageManagementUtil.staticInit(config.getServletContext().getRealPath(ImageManagementUtil.AVATARPATH));   
-		   LocaleHelper.staticInit(config.getServletContext().getRealPath(MESSAGESFILE));
 		   
 		   StringBuffer initParams = new StringBuffer("AppInfo: ");
 		   for (int i = 0; i < appAtts.getLength(); i++) {

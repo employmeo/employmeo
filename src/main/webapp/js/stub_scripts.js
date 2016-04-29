@@ -1,3 +1,27 @@
+var atsdata = {
+		applicant : {},
+		delivery : {}
+};
+
+function testIntegrationService(user,pass,data,url) {
+	$.ajax({
+		type: "POST",
+		async: true,
+	    headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json',
+	        'Authorization': 'Basic ' + btoa(user + ':' + pass)
+	    },
+	    dataType: 'json',
+	    url: "/integration/"+url,
+		data: JSON.stringify(data),
+		success: function(data) {console.log(data);}
+	});
+}
+
+
+
+
 // stub variables to be removed
 var redflagColor = "#d9534f";
 var redflagOverlay = "rgba(217, 83, 79,0.3)";

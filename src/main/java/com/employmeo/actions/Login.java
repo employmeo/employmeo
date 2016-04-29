@@ -7,9 +7,9 @@ import javax.servlet.http.HttpSession;
 
 import com.employmeo.EmpFormResponse;
 import com.employmeo.objects.User;
+import com.employmeo.util.SecurityUtil;
 import com.employmeo.EmpAdminServlet;
 import com.employmeo.EmpAutoLoginFilter;
-import com.employmeo.util.SecurityUtil;
 
 public class Login extends MPFormAction {
 

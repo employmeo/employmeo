@@ -1,6 +1,4 @@
 package com.employmeo.actions;
-
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -10,7 +8,6 @@ import org.json.JSONObject;
 import com.employmeo.EmpFormResponse;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Survey;
-
 
 public class GetFullSurvey extends MPFormAction {
 	
@@ -40,9 +37,7 @@ public class GetFullSurvey extends MPFormAction {
 			  fRes.setHTML(json.toString());
 		  } else {
 			  fRes.setValid(false);
-		  }
-		  
+		  }		  
 		  return;
 	  }
-
 }

@@ -5,8 +5,11 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONObject;
+
 public class SecurityUtil {
 
+	public static final long AUTH_FAILED = -1;
 	private static String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	private static Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
 	private static Matcher matcher;
@@ -47,6 +50,5 @@ public class SecurityUtil {
 		}
 		return sb.toString();
 	}
-
 
 }

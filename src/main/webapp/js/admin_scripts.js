@@ -114,7 +114,7 @@ function initializeDatePicker() {
       minDate: '01/01/2012',
       maxDate: moment().format('MM/DD/YYYY'),
       dateLimit: {
-        days: 60
+        days: 365
       },
       showDropdowns: true,
       showWeekNumbers: true,
@@ -243,44 +243,6 @@ function updateRespondantsTable() {
 	});
 }
 
-
-// Positions / roles pages functions.
-function updatePositionsNav() {
-	var url = "/mp";
-	$.ajax({
-		type: "POST",
-		async: true,
-		url: url,
-		data: {
-			"formname" : "getpositionlist",
-			"noRedirect" : true
-		},
-		success: function(data)
-		{
-			var positions = JSON.parse(data);
-			var pos_id;
-			for (var i in positions) {
-				var li = document.createElement("li");
-				var a = document.createElement('a');
-				var linkText = document.createTextNode(positions[i].position_name);
-				a.appendChild(linkText);
-				a.title = positions[i].position_name;
-				a.href = "#";
-				a.setAttribute("onClick", "changePositionTo("+positions[i].position_id+")");
-				if (i==0) {
-					li.setAttribute("class","active");
-					pos_id = positions[i].position_id;
-				}
-				li.appendChild(a);
-				li.setAttribute("pos_id", positions[i].position_id);
-				$('#positions_nav').append(li);
-			}
-			updatePositionTenure(pos_id);
-			updatePositionProfile(pos_id);
-		}
-	});
-}
-
 function changePositionTo(pos_id) {
 	var items = $('#positions_nav li');
 
@@ -297,7 +259,6 @@ function changePositionTo(pos_id) {
 
 
 //Section for looking at / manipulating surveys
-
 function changeSurveyTo(survey_id) {
 	$(surveyList).each(function(li) {
 		if (survey_id == this.survey_id) {
@@ -354,7 +315,7 @@ function updateDash() {
 	$.ajax({
 	    type: "POST",
 		async: true,
-		url: "/rest/updatedash",
+		url: "/admin/updatedash",
 		data: $('#refinequery').serialize(),
 		success: function(data)
 		{
@@ -509,7 +470,6 @@ function refreshPositionProfile(dataPositionProfile) {
 
 
 // Payroll tools section
-
 function uploadPayroll(e) {
 	$('#csvFile').parse({
 		config : {
@@ -679,70 +639,84 @@ function refreshRespondantProfile(dataScores) {
 	}});	
 }
 
-//Generic, always useful post form to action
-function postToAction(e) {
-	var response = "failed";
-	$.ajax({
-		type: "POST",
-		async: true,
-		url: "/mp",
-		data: $(e).serialize(), 
-		success: function(data)
-		{
-			console.log(JSON.parse(data));
-			$("#form_response").html(data);
-		}
-	});
-
-}
 
 function lookupLastTenCandidates() {
-	$.ajax({
-		type: "POST",
-		async: true,
-		url: "/mp",
-		data: {
+	postDataToServlet (
+		{
 			"formname" : "getlasttenrespondants",
 			"noRedirect" : true
 		},
-		success: function(data)
+		function(data)
 		{
-			refreshLastTenCandidates(JSON.parse(data));
+			var respondants = JSON.parse(data);
+			$('#recentcandidates').empty();
+			for (var i = 0; i < respondants.length; i++ ) {
+				var li = $('<li />', { 'class' : 'media event' });
+
+				var div = $('<div />', {
+					'class' : respondants[i].respondant_profile_class + ' profilebadge' 
+				}).append($('<i />', {'class' : "fa " + respondants[i].respondant_profile_icon }));
+
+				var ico = $('<a />', {
+					 'class' : "pull-left",
+					 'href' : '/respondant_score.jsp?&respondant_id=' + respondants[i].respondant_id
+				}).append(div);
+				
+				var badge = $('<div />', { 'class' : 'media-body' });
+				$('<a />', {
+					'class' : 'title',
+					'href' : '/respondant_score.jsp?&respondant_id=' + respondants[i].respondant_id,
+					'text' : respondants[i].respondant_person_fname + ' ' + respondants[i].respondant_person_lname
+				}).appendTo(badge);
+				$('<p />', {
+					'text' : respondants[i].respondant_position_name
+				}).appendTo(badge);
+				$('<p />', {
+					'html' : '\<small\>' + respondants[i].respondant_location_name + '\<\/small\>'
+				}).appendTo(badge);
+				
+				li.append(ico);
+				li.append(badge);
+				$('#recentcandidates').append(li);
+			}
+
+		});
+}
+
+//Generic, always useful post form to action
+function postToAction(e) {
+	postDataToServlet(
+		$(e).serialize(),
+		function(data) {
+			console.log(JSON.parse(data));
+			$("#form_response").html(data);
 		}
+	);
+}
+
+function postJsonData(jsondata, url, callback) {
+	$.ajax({
+		type: "POST",
+		async: true,
+	    headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+	    dataType: 'json',
+	    url: url,
+		data: JSON.stringify(jsondata),
+		success: callback
 	});
 }
 
-function refreshLastTenCandidates(respondants) {
-	$('#recentcandidates').empty();
-	for (var i = 0; i < respondants.length; i++ ) {
-		var li = $('<li />', { 'class' : 'media event' });
-
-		var div = $('<div />', {
-			'class' : respondants[i].respondant_profile_class + ' profilebadge' 
-		}).append($('<i />', {'class' : "fa " + respondants[i].respondant_profile_icon }));
-
-		var ico = $('<a />', {
-			 'class' : "pull-left",
-			 'href' : '/respondant_score.jsp?&respondant_id=' + respondants[i].respondant_id
-		}).append(div);
-		
-		var badge = $('<div />', { 'class' : 'media-body' });
-		$('<a />', {
-			'class' : 'title',
-			'href' : '/respondant_score.jsp?&respondant_id=' + respondants[i].respondant_id,
-			'text' : respondants[i].respondant_person_fname + ' ' + respondants[i].respondant_person_lname
-		}).appendTo(badge);
-		$('<p />', {
-			'text' : respondants[i].respondant_position_name
-		}).appendTo(badge);
-		$('<p />', {
-			'html' : '\<small\>' + respondants[i].respondant_location_name + '\<\/small\>'
-		}).appendTo(badge);
-		
-		li.append(ico);
-		li.append(badge);
-		$('#recentcandidates').append(li);
-	}
-	
-
+// Raw post data to mp servlet
+function postDataToServlet(data, callback) {
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/mp",
+		data: data,
+		success: callback
+	});
 }
+
