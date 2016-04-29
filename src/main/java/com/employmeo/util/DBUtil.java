@@ -12,15 +12,10 @@ import javax.persistence.PersistenceContext;
 @PersistenceContext(unitName="employmeo")
 public class DBUtil {
 
-	protected static EntityManagerFactory emf = staticInit();
+	private static EntityManagerFactory emf;
 	
-	public static EntityManager getEntityManager() {
-		return emf.createEntityManager();
-	}
+	static {
 
-
-	private static EntityManagerFactory staticInit() {
-		
 		Map properties = new HashMap();
 
 		// Get database connection details from ENV VARIABLES
@@ -31,7 +26,12 @@ public class DBUtil {
 		properties.put("javax.persistence.jdbc.password", dbpass );
 		properties.put("javax.persistence.jdbc.url", dburl);
 
-		return Persistence.createEntityManagerFactory("employmeo", properties);
+		emf = Persistence.createEntityManagerFactory("employmeo", properties);
 	}
+
+	public static EntityManager getEntityManager() {
+		return emf.createEntityManager();
+	}
+
 	
 }

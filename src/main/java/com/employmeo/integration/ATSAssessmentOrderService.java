@@ -3,9 +3,7 @@ package com.employmeo.integration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -13,21 +11,21 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONObject;
 
 import com.employmeo.objects.Person;
 import com.employmeo.objects.Respondant;
-import com.employmeo.objects.Survey;
-import com.employmeo.util.SecurityUtil;
 
 @Path("atsorder")
 public class ATSAssessmentOrderService {
 	
     @Context
     private UriInfo uriInfo;
+    @Context
+    private Response resp;
+    
     private static Logger logger = Logger.getLogger("RestService");
 
     @POST
@@ -55,7 +53,6 @@ public class ATSAssessmentOrderService {
     		throw new WebApplicationException(Response.Status.BAD_REQUEST);
     	}
 		  // Perform business logic  
-
 	
 	//	  person.persistMe();
 	//	  respondant.setPerson(person);
