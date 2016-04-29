@@ -6,7 +6,6 @@ import javax.annotation.Priority;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -33,8 +32,9 @@ public class RestAuthenticationProvider implements ContainerRequestFilter {
 
 	private static final String AUTHORIZATION_PROPERTY = "Authorization";
     private static final String AUTHENTICATION_SCHEME = "Basic";
-    private static final Response ACCESS_DENIED = Response.status(Response.Status.UNAUTHORIZED).entity("You cannot access this resource").build();
-    private static final Response ACCESS_FORBIDDEN = Response.status(Response.Status.FORBIDDEN).entity("Access blocked for all users !!").build();
+    private static final Response ACCESS_DENIED = Response.status(Response.Status.UNAUTHORIZED).entity("{ message: 'Insufficient Permission' }").build();
+    private static final Response LOGIN_FAILED = Response.status(Response.Status.UNAUTHORIZED).entity("{ message: 'Unable to Authenticate User' }").build();
+    private static final Response ACCESS_FORBIDDEN = Response.status(Response.Status.FORBIDDEN).entity("{ message: 'Access Forbidden' }").build();
 
 	@Context
     private ResourceInfo resourceInfo;  
@@ -43,7 +43,6 @@ public class RestAuthenticationProvider implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext req) throws IOException {
 
         Method method = resourceInfo.getResourceMethod();
-        System.out.println("Method Called:" + method.getName());
         //Access allowed for all
         if( ! method.isAnnotationPresent(PermitAll.class))
         {
@@ -51,7 +50,6 @@ public class RestAuthenticationProvider implements ContainerRequestFilter {
             if(method.isAnnotationPresent(DenyAll.class))
             {
                 req.abortWith(ACCESS_FORBIDDEN);
-                System.out.println("Deny Everyone");
                 return;
             }
               
@@ -63,11 +61,10 @@ public class RestAuthenticationProvider implements ContainerRequestFilter {
             //If no authorization information present; block access
             if(auth == null || auth.isEmpty())
             {
-                req.abortWith(ACCESS_DENIED);
-                System.out.println("No Auth header");
+                req.abortWith(LOGIN_FAILED);
                 return;
             }
-              
+            try {
             //Split username and password tokens
             final StringTokenizer tokenizer = decode(auth);
             final String username = tokenizer.nextToken();
@@ -75,8 +72,7 @@ public class RestAuthenticationProvider implements ContainerRequestFilter {
             Partner partner = Partner.loginPartner(username, password);
 
             if(partner == null) {
-                req.abortWith(ACCESS_DENIED);
-                System.out.println("Partner Login Failed");
+                req.abortWith(LOGIN_FAILED);
                 return;
             } else if(method.isAnnotationPresent(RolesAllowed.class))
             {
@@ -87,12 +83,14 @@ public class RestAuthenticationProvider implements ContainerRequestFilter {
                 if( ! isPartnerAllowed(partner, rolesSet))
                 {
                     req.abortWith(ACCESS_DENIED);
-                    System.out.println("Access Level Failed");
                     return;
                 }
             }
+            } catch (Exception e) {            	
+                req.abortWith(LOGIN_FAILED);
+                return;
+            }
         }
-        System.out.println("Resource Allowed:" + method.getName());        
 	}
 	
     private boolean isPartnerAllowed(Partner partner, final Set<String> rolesSet)

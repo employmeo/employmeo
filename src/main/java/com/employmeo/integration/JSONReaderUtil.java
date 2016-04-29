@@ -1,4 +1,4 @@
-package com.employmeo.util;
+package com.employmeo.integration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
-import javax.xml.ws.soap.AddressingFeature.Responses;
 
 import org.json.JSONObject;
 
@@ -30,7 +29,6 @@ public class JSONReaderUtil<T> implements MessageBodyReader<T> {
 	@Override
 	public T readFrom(Class<T> type, Type generic, Annotation[] as, MediaType mt, MultivaluedMap<String, String> map,
 			InputStream is) throws IOException, WebApplicationException {
-		System.out.println("trying to do the json conversion");
 
 		StringBuilder sb = new StringBuilder();
 	    BufferedReader br = new BufferedReader(new InputStreamReader(is));
