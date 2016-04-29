@@ -21,18 +21,17 @@ public class DBUtil {
 
 	private static EntityManagerFactory staticInit() {
 		
-	Map properties = new HashMap();
+		Map properties = new HashMap();
 
-	// Get database connection details from ENV VARIABLES
-	String dbuser = System.getenv("DB_USERNAME"); 
-	String dbpass = System.getenv("DB_PASSWORD"); 
-	String dburl = System.getenv("DB_URL")+ "?currentSchema=employmeo&sslmode=require";
+		// Get database connection details from ENV VARIABLES
+		String dbuser = System.getenv("DB_USERNAME"); 
+		String dbpass = System.getenv("DB_PASSWORD"); 
+		String dburl = System.getenv("DB_URL")+ "?currentSchema=employmeo&sslmode=require";
+		properties.put("javax.persistence.jdbc.user", dbuser);
+		properties.put("javax.persistence.jdbc.password", dbpass );
+		properties.put("javax.persistence.jdbc.url", dburl);
 
-	properties.put("javax.persistence.jdbc.user", dbuser);
-	properties.put("javax.persistence.jdbc.password", dbpass );
-	properties.put("javax.persistence.jdbc.url", dburl);
-	
-	return Persistence.createEntityManagerFactory("employmeo", properties);
+		return Persistence.createEntityManagerFactory("employmeo", properties);
 	}
 	
 }
