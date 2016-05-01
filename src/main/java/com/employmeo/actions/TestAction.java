@@ -37,7 +37,7 @@ public class TestAction extends MPFormAction {
 		  
 		  JSONArray response = new JSONArray();
 
-		  List<Respondant> respondants = account.getRespondants(Respondant.STATUS_COMPLETED,Respondant.STATUS_HIRED,250);
+		  List<Respondant> respondants = account.getRespondants(Respondant.STATUS_COMPLETED,Respondant.STATUS_HIRED,500);
 		  for (int j=0;j<respondants.size();j++) {
 			  Respondant respondant = respondants.get(j);
 			  
@@ -57,7 +57,7 @@ public class TestAction extends MPFormAction {
 				  PredictionUtil.scoreRespondant(respondant);
 			  }
 			  
-			  if (respondant.getRespondantStatus() == Respondant.STATUS_COMPLETED) {
+			  if (respondant.getRespondantStatus() == Respondant.STATUS_SCORED) {
 			  switch(respondant.getRespondantProfile()) {
 			  case PositionProfile.PROFILE_A:
 				  if (Math.random() >0.05) {

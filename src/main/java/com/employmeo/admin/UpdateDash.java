@@ -2,12 +2,10 @@ package com.employmeo.admin;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -18,8 +16,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,7 +30,7 @@ import java.util.List;
 
 @Path("updatedash")
 @PermitAll
-public class DashboardService {
+public class UpdateDash {
 	
 	  @POST
 	  @Produces(MediaType.APPLICATION_JSON)
@@ -56,10 +52,8 @@ public class DashboardService {
 		  if (user == null) {
 			  resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			  return null;
-	  	  } else if (false) { // do something with SecurityUtil.) {
-			  resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			  return null;	  		  
-	  	  }
+	  	  } // else if (false) { // {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
+		  
 		  Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
 		  Timestamp to = new Timestamp(Date.valueOf(toDate).getTime());	  // losing rest of day (need to add a day)
 
@@ -73,7 +67,7 @@ public class DashboardService {
 		  String sql = "SELECT r.respondantStatus, r.respondantProfile, COUNT(r) from Respondant r WHERE r.respondantAccountId = :accountId " +
 				  	   locationSQL + positionSQL + dateSQL +
 				       "GROUP BY r.respondantStatus, r.respondantProfile";
-		  Query query = em.createQuery(sql);
+		  TypedQuery<Object[]> query = em.createQuery(sql, Object[].class);
 		  query.setParameter("accountId", user.getAccount().getAccountId());
 		  if (locationId > -1) query.setParameter("locationId", locationId);
 		  if (positionId > -1) query.setParameter("positionId", positionId);
@@ -139,9 +133,7 @@ public class DashboardService {
 		  }
 		  hireDatasets.put("data", hiredByProfile);
 		  hireData.put("datasets", new JSONArray().put(hireDatasets));
-		  
-
-		  
+		  	  
 		  // Hiring Mix History Data
 		  
 		  
@@ -149,6 +141,7 @@ public class DashboardService {
 		  response.put("applicantData", applicantData);
 		  response.put("hireData", hireData);
 		  response.put("totalinvited", totalInvited);
+		  response.put("totalstarted", totalStarted);
 		  response.put("totalcompleted", totalCompleted);
 		  response.put("totalscored", totalScored);
 		  response.put("totalhired", totalHired);

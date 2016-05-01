@@ -1,6 +1,37 @@
 var atsdata = {
-		applicant : {},
-		delivery : {}
+		account : {
+			account_ats_id : '1234'
+		},
+		applicant : {
+			applicant_ats_id : "1234",
+			fname : "First",
+			lname : "Last",
+			email : "testuser@integration.employmeo.com",
+			address : "1234 Oak St, San Mateo CA 90066",
+			lat : 1.2,
+			lng : 1.2,
+			account_id : 1,
+			assessment_id : 2,
+			location_id : 3,
+			position_id : 4,
+		},
+		assessment : {
+			
+		},
+		delivery : {
+			email_applicant : false,
+			redirect_url : "http://employmeo.com",
+			scores_url : "http://portal.employmeo.com/integration/echo",
+			scores_email_notify : true,
+			scores_email_address : "info@employmeo.com"
+		},
+		location : {
+			location_ats_id : '1234'
+		},
+		position : {
+			position_id : 1
+		},
+		application : {}
 };
 
 function testIntegrationService(user,pass,data,url) {

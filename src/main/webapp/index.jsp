@@ -8,7 +8,7 @@
 								<div class="form-group">
 									<div id="reportrange" class="form-control" style="line-height: 1.42857143;">
 									<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-									<span>March 18, 2016 - April 16, 2016</span> <b class="caret"></b>
+									<span></span> <b class="caret"></b>
 									</div>
 								    <input type=hidden name="fromdate" id='fromdate'>
 								    <input type=hidden name="todate" id='todate'>
@@ -223,7 +223,7 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-    	initializeDatePicker();
+    	initializeDatePicker(updateDash);
 		updatePositionsSelect();
 		updateLocationsSelect();
 		updateDash();

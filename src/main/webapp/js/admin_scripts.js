@@ -32,15 +32,11 @@ function updatePositionsSelect() {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/mp",
-		data: {
-			"formname" : "getpositionlist",
-			"noRedirect" : true
-		},
+		url: "/admin/getpositions",
 		success: function(data)
 		{
-			positionList = JSON.parse(data);
-			$.each(positionList, function (index, value) {
+			positionList = data;
+			$.each(data, function (index, value) {
 				$('#position_id').append($('<option/>', { 
 					value: this.position_id,
 					text : this.position_name 
@@ -55,15 +51,11 @@ function updateLocationsSelect() {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/mp",
-		data: {
-			"formname" : "getlocationlist",
-			"noRedirect" : true
-		},
+		url: "/admin/getlocations",
 		success: function(data)
 		{
-			locationList = JSON.parse(data);
-			$.each(locationList, function (index, value) {
+			locationList = data;
+			$.each(data, function (index, value) {
 				$('#location_id').append($('<option/>', { 
 					value: this.location_id,
 					text : this.location_name 
@@ -78,15 +70,11 @@ function updateSurveysSelect() {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/mp",
-		data: {
-			"formname" : "getsurveylist",
-			"noRedirect" : true
-		},
+		url: "/admin/getassessments",
 		success: function(data)
 		{
-			surveyList = JSON.parse(data);
-			$.each(surveyList, function (index, value) {
+			surveyList = data;
+			$.each(data, function (index, value) {
 				$('#survey_id').append($('<option />', { 
 					value: this.survey_id,
 					text : this.survey_name
@@ -99,13 +87,13 @@ function updateSurveysSelect() {
 	});
 }
 
-function initializeDatePicker() {
+function initializeDatePicker(callback) {
 
 	var cb = function(start, end, label) {
       $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
       $('#fromdate').val(start.format('YYYY-MM-DD'));
       $('#todate').val(end.format('YYYY-MM-DD'));
-      updateDash();
+      callback();
     }
 
     var optionSet1 = {
@@ -122,12 +110,11 @@ function initializeDatePicker() {
       timePickerIncrement: 1,
       timePicker12Hour: true,
       ranges: {
-        'Today': [moment(), moment()],
-        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
         'This Month': [moment().startOf('month'), moment().endOf('month')],
-        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+        'Last 180 Days': [moment().subtract(179, 'days'), moment()]
       },
       opens: 'left',
       buttonClasses: ['btn btn-default'],
@@ -146,8 +133,8 @@ function initializeDatePicker() {
         firstDay: 1
       }
     };
-    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
-    $('#fromdate').val(moment().subtract(29, 'days').format('YYYY-MM-DD'));
+    $('#reportrange span').html(moment().subtract(89, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+    $('#fromdate').val(moment().subtract(89, 'days').format('YYYY-MM-DD'));
     $('#todate').val(moment().format('YYYY-MM-DD'));
 
     $('#reportrange').daterangepicker(optionSet1, cb);
@@ -214,7 +201,7 @@ function updateRespondantsTable() {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/mp",
+		url: "/admin/getrespondants",
 		data: $('#refine_query').serialize(),
 		beforeSend: function() {
 			$("#waitingmodal").removeClass("hidden");
@@ -223,9 +210,8 @@ function updateRespondantsTable() {
 		},
 		success: function(data)
 		{
-			response = JSON.parse(data);
 			rTable = $('#respondants').DataTable();
-			$('#respondants').dataTable().fnAddData(response);
+			$('#respondants').dataTable().fnAddData(data);
 			rTable.$('tr').click(function (){
 				rTable.$('tr.selected').removeClass('selected');
 				$(this).addClass('selected');
@@ -505,18 +491,15 @@ function processRespondant(respondantId) {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/mp",
+		url: "/admin/getscore",
 		data: {
-			"respondant_id" : respondantId,
-			"formname" : "processrespondant",
-			"noRedirect" : true        	
+			"respondant_id" : respondantId   	
 		},
 		success: function(data)
 		{
-			var jResp = JSON.parse(data);
-			jResp.position = getPositionDetails(jResp.scores);
-			refreshRespondantProfile(jResp);
-			createProfileSquares(jResp);
+			data.position = getPositionDetails(data.scores);
+			refreshRespondantProfile(data);
+			createProfileSquares(data);
 		}
 	});    
 

@@ -20,7 +20,7 @@ import com.employmeo.objects.Respondant;
 import com.employmeo.util.SecurityUtil;
 
 @Path("icimsorder")
-public class ICIMSAssessmentOrderService {
+public class ICIMSOrder {
     @Context
     private UriInfo uriInfo;
     private static Logger logger = Logger.getLogger("RestService");
@@ -38,8 +38,6 @@ public class ICIMSAssessmentOrderService {
 		JSONArray links	= json.getJSONArray("links"); // Specifies the exact GET request necessary to return additional information for an entity.
 		String eventType = json.getString("eventType");
 		String systemId = json.getString("systemId");
-    						
-    	
     	
 		  JSONObject applicant = json.getJSONObject("applicant");
 		  //JSONObject delivery = json.getJSONObject("delivery");

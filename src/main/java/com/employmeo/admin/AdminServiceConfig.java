@@ -9,6 +9,7 @@ public class AdminServiceConfig extends ResourceConfig {
 
 	public AdminServiceConfig () {
 		packages("com.employmeo.admin");
+		register(AdminAuthProvider.class);
 	}
 	
 }

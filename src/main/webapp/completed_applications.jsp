@@ -8,21 +8,21 @@
 								<div class="form-group">
 									<div id="reportrange" class="form-control" style="line-height: 1.42857143;">
 									<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-									<span>March 18, 2016 - April 16, 2016</span> <b class="caret"></b>
+									<span></span> <b class="caret"></b>
 									</div>
+								    <input type=hidden name="fromdate" id='fromdate'>
+								    <input type=hidden name="todate" id='todate'>
 								</div>
 								<div class="form-group">
 									<select class="form-control" id="location_id" name="location_id" onChange='updateRespondantsTable()'>
-										<option>all locations</option>
+										<option value=-1>all locations</option>
 									</select>
 								</div>
                             	<div class="form-group">
 									<select class="form-control" id="position_id" name="position_id" onChange='updateRespondantsTable()'>
-										<option>all positions</option>
+										<option value=-1>all positions</option>
 									</select>
 								</div>
-									<input type=hidden name="formname" value="getrespondants">
-									<input type="hidden" name="noRedirect" value=true>			
 						</form>
 							</div>
 						</div>
@@ -63,23 +63,12 @@
 							</div>
 				</div>
 	<%@ include file="/WEB-INF/includes/inc_header.jsp"%>
-			<script type="text/javascript">
-			var now = new Date();
-			var from = new Date();
-			from.setTime(now.getTime()-1000*60*60*24*90);
-			var fromDay = ("0" + from.getDate()).slice(-2);
-			var fromMonth = ("0" + (from.getMonth() + 1)).slice(-2);
-			var fromDate = from.getFullYear()+"-"+(fromMonth)+"-"+(fromDay) ;
-			$("#from_date").val(fromDate);
-			
-			var day = ("0" + now.getDate()).slice(-2);
-			var month = ("0" + (now.getMonth() + 1)).slice(-2);
-			var toDate = now.getFullYear()+"-"+(month)+"-"+(day) ;
-			$("#to_date").val(toDate);
-			updatePositionsSelect();
-			updateLocationsSelect();
-			updateSurveysSelect();
-			
-			initRespondantsTable();
-			</script>
+<script type="text/javascript">
+   $(document).ready(function() {
+		updatePositionsSelect();
+		updateLocationsSelect();
+		initializeDatePicker(updateRespondantsTable);
+		initRespondantsTable();
+    });
+</script>
 </html>

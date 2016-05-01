@@ -5,6 +5,8 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import com.employmeo.util.DBUtil;
+
 
 /**
  * The persistent class for the account_surveys database table.
@@ -104,6 +106,18 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 	public JSONObject getJSON() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public static Survey getSurveyByASID(long accountDefaultAsId) {
+		EntityManager em = DBUtil.getEntityManager();
+		TypedQuery<AccountSurvey> q = em.createQuery("SELECT a FROM AccountSurvey a WHERE a.asId = :asId", AccountSurvey.class);
+        q.setParameter("asId", accountDefaultAsId);
+        Survey aSurvey = null;
+        try {
+      	  aSurvey = q.getSingleResult().getSurvey();
+        } catch (NoResultException nre) {}
+        
+        return aSurvey;
 	}
 
 }

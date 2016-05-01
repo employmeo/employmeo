@@ -10,7 +10,7 @@ public class ATSIntegrationServiceConfig extends ResourceConfig {
 
 	public ATSIntegrationServiceConfig () {
 		packages("com.employmeo.integration");
-		register(RestAuthenticationProvider.class);
+		register(IntegrationAuthProvider.class);
 	}
 	
 }

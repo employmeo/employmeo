@@ -24,30 +24,42 @@ public class Account extends PersistantObject implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="ACCOUNT_ID")
+	@Column(name="account_id")
 	private Long accountId;
 
-	@Column(name="ACCOUNT_CREATOR")
+	@Column(name="account_creator")
 	private Long accountCreator;
 
-	@Column(name="ACCOUNT_CURRENCY")
+	@Column(name="account_currency")
 	private String accountCurrency;
 
-	@Column(name="ACCOUNT_NAME")
+	@Column(name="account_name")
 	private String accountName;
 
-	@Column(name="ACCOUNT_STATUS")
+	@Column(name="account_status")
 	private int accountStatus;
 
-	@Column(name="ACCOUNT_TIMEZONE")
+	@Column(name="account_timezone")
 	private String accountTimezone;
 
-	@Column(name="ACCOUNT_TYPE")
+	@Column(name="account_type")
 	private int accountType;
 
-	@Column(name="MODIFIED_DATE")
+	@Column(name="modified_date")
 	private Timestamp modifiedDate;
 
+	@Column(name="account_ats_id")
+	private String accountAtsId;
+
+	@Column(name="account_default_location_id")
+	private long accountDefaultLocationId;
+	
+	@Column(name="account_default_position_id")
+	private long accountDefaultPositionId;
+	
+	@Column(name="account_default_asid")
+	private long accountDefaultAsId;
+	
 	//bi-directional many-to-one association to Survey
 	@OneToMany(mappedBy="account", fetch = FetchType.EAGER)
 	private List<AccountSurvey> accountSurveys;
@@ -141,7 +153,45 @@ public class Account extends PersistantObject implements Serializable {
 		for (int i=0;i<this.accountSurveys.size();i++) surveyset.add(accountSurveys.get(i).getSurvey());
 		return surveyset;
 	}
+	
+	public Survey getDefaultSurvey() {
+		return AccountSurvey.getSurveyByASID(this.accountDefaultAsId);
+	}
 
+	/* At some point we'll need to create logic for setting one of the
+	 * existing account surveys as default, and logic to put a new 
+	 * survey into the account
+	 * 
+	public void setDefaultSurveyId(long surveyId) {
+		AccountSurvey as = new AccountSurvey();		
+		AccountSurvey.getSurveyByASID(this.accountDefaultAsId);
+	}
+	*/
+
+	public void setDefaultLocation(long locationId) {
+		this.accountDefaultLocationId = locationId;
+	}
+	
+	public Location getDefaultLocation() {
+		return Location.getLocationById(this.accountDefaultLocationId);
+	}
+	
+	public void setDefaultPosition(long positionId) {
+		this.accountDefaultPositionId = positionId;
+	}
+
+	public Position getDefaultPosition() {
+		return Position.getPositionById(this.accountDefaultPositionId);
+	}
+
+	public String getAccountAtsId() {
+		return this.accountAtsId;
+	}
+
+	public void setAccountAtsId(String atsId) {
+		this.accountAtsId = atsId;
+	}
+	
 	public List<User> getUsers() {
 		return this.users;
 	}

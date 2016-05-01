@@ -107,6 +107,7 @@ public class Respondant extends PersistantObject implements Serializable {
 	
 	public void setRespondantAccountId(Long accountId) {
 		this.respondantAccountId = accountId;
+		this.account = Account.getAccountById(accountId);
 	}
 	public Account getRespondantAccount() {
 		if (this.account == null) this.account = Account.getAccountById(this.respondantAccountId);
@@ -115,7 +116,9 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	public void setAccount(Account account) {
 		this.account = account;
+		this.respondantAccountId = account.getAccountId();
 	}
+	
 	public Long getRespondantLocationId() {
 		return this.respondantLocationId;
 	}
@@ -289,7 +292,7 @@ public class Respondant extends PersistantObject implements Serializable {
 		  if (this.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
 			  System.out.println("CANT SCORE INCOMPLETE ASSESSMENT FOR:\n" + this.getJSONString());
 		  } else {
-			  if (this.getRespondantStatus() == Respondant.STATUS_SCORED) {
+			  if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
 				  List<RespondantScore> rs = this.getScores();
 				  for (int i=0; i<rs.size(); i++) {
 					  Corefactor corefactor = Corefactor.getCorefactorById(rs.get(i).getRsCfId());			  

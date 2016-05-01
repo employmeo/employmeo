@@ -28,7 +28,7 @@ import com.employmeo.objects.Partner;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
-public class RestAuthenticationProvider implements ContainerRequestFilter {
+public class IntegrationAuthProvider implements ContainerRequestFilter {
 
 	private static final String AUTHORIZATION_PROPERTY = "Authorization";
     private static final String AUTHENTICATION_SCHEME = "Basic";

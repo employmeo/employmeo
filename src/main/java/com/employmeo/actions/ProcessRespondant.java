@@ -1,8 +1,5 @@
 package com.employmeo.actions;
 
-
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -10,14 +7,9 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONObject;
 
 import com.employmeo.EmpFormResponse;
-import com.employmeo.objects.Corefactor;
 import com.employmeo.objects.Position;
 import com.employmeo.objects.PositionProfile;
-import com.employmeo.objects.Question;
 import com.employmeo.objects.Respondant;
-import com.employmeo.objects.RespondantScore;
-import com.employmeo.objects.Response;
-
 
 public class ProcessRespondant extends MPFormAction {
 	
