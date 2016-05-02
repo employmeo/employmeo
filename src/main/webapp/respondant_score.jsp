@@ -97,7 +97,7 @@ var urlParams;
 })();
 var respondantId = urlParams.respondant_id;
 if (respondantId != null) {
-  processRespondant(respondantId);
+  getScore(respondantId);
 }
 </script>
 

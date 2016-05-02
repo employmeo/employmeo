@@ -17,7 +17,7 @@ import com.employmeo.objects.Response;
 import com.employmeo.objects.Survey;
 
 @Path("getsurvey")
-public class GetSurveyService {
+public class GetSurvey {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)

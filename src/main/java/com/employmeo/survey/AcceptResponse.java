@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import com.employmeo.objects.Response;
 
 @Path("response")
-public class ResponseService {
+public class AcceptResponse {
 
 	  @GET
 	  @Produces(MediaType.TEXT_PLAIN)

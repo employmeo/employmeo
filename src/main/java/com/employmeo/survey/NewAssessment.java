@@ -16,7 +16,7 @@ import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Survey;
 
 @Path("order")
-public class OrderAssessmentService {
+public class NewAssessment {
   private static Logger logger = Logger.getLogger("RestService");
 
   @POST

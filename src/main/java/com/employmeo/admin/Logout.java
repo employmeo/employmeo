@@ -1,38 +1,41 @@
 package com.employmeo.admin;
 
 import javax.annotation.security.PermitAll;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 
 @Path("logout")
-@PermitAll
 public class Logout {
-	
-	  @POST
-	  public void doPost (
+
+
+  @POST
+  @PermitAll
+  public Response doPost (
 			    @Context final HttpServletRequest reqt,
 			    @Context final HttpServletResponse resp
 			    )
 	  {  
-		  HttpSession sess = reqt.getSession();
-		  sess.invalidate();
 
-		  // Kill the persist login cookie
-		  Cookie cookie = new Cookie("email", "");
-		  cookie.setMaxAge(5); // kills the cookie after 5 seconds  
-		  resp.addCookie(cookie);
-		  cookie = new Cookie("hashword", "");
-		  cookie.setMaxAge(5); // kills the cookie after 5 seconds  
-		  resp.addCookie(cookie);
+	      ResponseBuilder rb = Response.status(Response.Status.ACCEPTED).entity("{ message: 'Logged Out' }");
+		  Cookie uCookie = new Cookie("email", null, "/", reqt.getServerName());
+		  rb.cookie(new NewCookie(uCookie,"email",1,false));
+		  Cookie pCookie = new Cookie("hashword", null, "/", reqt.getServerName());
+		  rb.cookie(new NewCookie(pCookie,"hashword",1,false));
+		  Cookie nCookie = new Cookie("user_fname", null, "/", reqt.getServerName());
+		  rb.cookie(new NewCookie(nCookie,"user_fname",1,false));
+		  
+		  reqt.getSession().invalidate();;
 
-		  return;
-	  }	  
+		  return rb.build();
+	  }
 	  
 }

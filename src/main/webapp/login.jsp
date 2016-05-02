@@ -29,21 +29,20 @@
 	  <div class="col-xs-12 text-center"><img src='/images/emp-logo-sm.png' style="width:65%;"></div>
       <div class="col-xs-1"></div><div class="col-xs-10">
         <section class="login_content">
-		  <form name="login" method="post" action="/mp">
+		  <form name="login" method="post" action="javascript:login();" id='loginform'>
             <h1>Sign In</h1>
 			<div><input class="form-control" type="email" name="email" required placeholder="Email Address"></div>
 			<div><input class="form-control" type="password" name="password" placeholder="Password" required></div>
 			<div class="text-right"></div>
             <div>
               <div class="col-xs-6"><button class="btn btn-default submit" type="submit">Sign In</button></div>
-              <div class="col-xs-6"><input type="checkbox" id="rememberme" name="rememberme" value="y" checked><label for="rememberme">Stay Logged In</label></div>
+              <div class="col-xs-6"><input type="checkbox" id="rememberme" name="rememberme" value="true" checked><label for="rememberme">Stay Logged In</label></div>
             </div>
             <div class="clearfix"></div>
             <div class="separator"><p class="change_link">New to site?
                 <a href="http://www.employmeo.com/contact-us"> Create Account </a></p>
             </div>
-		<INPUT type='hidden' name='formname' value='login'>
-		<input type="hidden" name="fromJSP" value="<%=request.getRequestURI()%>">
+			<input id='toPage' type="hidden" value='/index.jsp'>
           </form>
         </section>
 

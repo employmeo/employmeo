@@ -1,57 +1,3 @@
-var atsdata = {
-		account : {
-			account_ats_id : '1234'
-		},
-		applicant : {
-			applicant_ats_id : "1234",
-			fname : "First",
-			lname : "Last",
-			email : "testuser@integration.employmeo.com",
-			address : "1234 Oak St, San Mateo CA 90066",
-			lat : 1.2,
-			lng : 1.2,
-			account_id : 1,
-			assessment_id : 2,
-			location_id : 3,
-			position_id : 4,
-		},
-		assessment : {
-			
-		},
-		delivery : {
-			email_applicant : false,
-			redirect_url : "http://employmeo.com",
-			scores_url : "http://portal.employmeo.com/integration/echo",
-			scores_email_notify : true,
-			scores_email_address : "info@employmeo.com"
-		},
-		location : {
-			location_ats_id : '1234'
-		},
-		position : {
-			position_id : 1
-		},
-		application : {}
-};
-
-function testIntegrationService(user,pass,data,url) {
-	$.ajax({
-		type: "POST",
-		async: true,
-	    headers: { 
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json',
-	        'Authorization': 'Basic ' + btoa(user + ':' + pass)
-	    },
-	    dataType: 'json',
-	    url: "/integration/"+url,
-		data: JSON.stringify(data),
-		success: function(data) {console.log(data);}
-	});
-}
-
-
-
 
 // stub variables to be removed
 var redflagColor = "#d9534f";
@@ -70,6 +16,9 @@ var risingstarColor = "#5cb85c";
 var risingstarOverlay = "rgba(92, 184, 92,0.3)";
 var risingstarHighlight = "#4cae4c";
 
+var applicantColor = "rgba(120,60,100,1)";
+var applicantOverlay = "rgba(120,60,100,0.3)";
+var applicantHighlight = "rgba(120,60,100,1)";
 
 // Stub Functions to be removed
 function getApplicantData(){
@@ -305,7 +254,70 @@ function getPositionDetails(scores) {
 	return position;
 	
 }
+var atsdata = {
+		account : {
+			account_ats_id : '1234'
+		},
+		applicant : {
+			applicant_ats_id : "1234",
+			fname : "First",
+			lname : "Last",
+			email : "testuser@integration.employmeo.com",
+			address : "1234 Oak St, San Mateo CA 90066",
+			lat : 1.2,
+			lng : 1.2,
+			account_id : 1,
+			assessment_id : 2,
+			location_id : 3,
+			position_id : 4,
+		},
+		assessment : {
+			
+		},
+		delivery : {
+			email_applicant : false,
+			redirect_url : "http://employmeo.com",
+			scores_url : "http://portal.employmeo.com/integration/echo",
+			scores_email_notify : true,
+			scores_email_address : "info@employmeo.com"
+		},
+		location : {
+			location_ats_id : '1234'
+		},
+		position : {
+			position_id : 1
+		},
+		application : {}
+};
 
-function getSurveyDisclaimer(survey) {
-	return "<h3>Welcome</h3><p>In an effort to ensure that applicants meet position requirements, this employer uses a pre-employment assessment administered by employmeo.com for the job you have recently applied to. Please complete the following test to the best of your ability.</p><p>All candidates are tested according to Equal Employment Opportunity Commission (EEOC) testing guidelines. For further information, contact the hiring mangaer responsible for this role.</p>";
+function testIntegrationService(user,pass,data,url) {
+	$.ajax({
+		type: "POST",
+		async: true,
+	    headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json',
+	        'Authorization': 'Basic ' + btoa(user + ':' + pass)
+	    },
+	    dataType: 'json',
+	    url: "/integration/"+url,
+		data: JSON.stringify(data),
+		success: function(data) {console.log(data);}
+	});
+}
+//Generic, always useful post form to action
+
+function postJsonData(jsondata, url, callback) {
+	$.ajax({
+		type: "POST",
+		async: true,
+	    headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+	    dataType: 'json',
+	    url: url,
+		data: JSON.stringify(jsondata),
+		success: callback
+	});
 }

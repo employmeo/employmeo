@@ -1,4 +1,4 @@
-package com.employmeo;
+package com.employmeo.admin;
 
 import java.io.IOException;
 
@@ -47,6 +47,7 @@ public class EmpAutoLoginFilter implements Filter {
         String page = requestURI.substring(requestedContext.length());
         
         if (session.isNew()) {
+
      	   	session.setAttribute("LoggedIn", loggedIn);
      	   	Locale locale = null;
      	   	if (locale == null) locale = Locale.ENGLISH;
@@ -54,11 +55,11 @@ public class EmpAutoLoginFilter implements Filter {
             
         	try {
         	   if( cookies == null ){
-            	 Cookie cookie = new Cookie("CreateDate",Calendar.getInstance().getTime().toString());
+
+        		   Cookie cookie = new Cookie("CreateDate",Calendar.getInstance().getTime().toString());
         	     cookie.setMaxAge(60*60*24*90); 
         	     response.addCookie( cookie );
         	     cookies = new Cookie[] {cookie};
-
         	   } else {
         		   String email = null;
         		   String hashword = null;
@@ -72,12 +73,19 @@ public class EmpAutoLoginFilter implements Filter {
         			   }
         		   }
         		   if (hashword != null) {
+        			   
         			   User user = User.loginHashword(email, hashword);
        	  		  	   if (user.getUserId() != null) {
-       	  		  		   EmpAdminServlet.login(user, session, response, request);
+       	  		  		   login(user, request);
+	       	  		  	    if (user.getUserFname() != null) {
+		       	  	  		    Cookie cookie = new Cookie("user_fname", user.getUserFname());
+		       	  	  		    response.addCookie(cookie);
+	       	  		  	    }       	  	 
        	  		  		   loggedIn = (Boolean) session.getAttribute("LoggedIn");
        	  		  	   }
+       	  		  	   
         		   }
+
         	   }
         	   Cookie visit = new Cookie("LastVisitDate",Calendar.getInstance().getTime().toString());
         	   visit.setMaxAge(60*60*24*90); 
@@ -121,12 +129,20 @@ public class EmpAutoLoginFilter implements Filter {
 
     public static void removeLoginCookies(HttpServletResponse res) {
 		  Cookie cookie = new Cookie("email", null);
-		  cookie.setMaxAge(1); 
+		  cookie.setMaxAge(0); 
 		  res.addCookie(cookie);
 		  cookie = new Cookie("hashword", null);
-		  cookie.setMaxAge(1); 
+		  cookie.setMaxAge(0); 
 		  res.addCookie(cookie);    	
-  	return;
-  }
+		  return;
+    }
+    
+    public static void login(User user, HttpServletRequest req) {
+  	  	  
+    	req.getSession().setAttribute("LoggedIn", new Boolean(true));
+    	req.getSession().setAttribute("User", user);
+
+  	    return;
+    }
 	
 }

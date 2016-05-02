@@ -1,8 +1,6 @@
-package com.employmeo.actions;
-
+package com.employmeo.util;
 
 import java.util.List;
-
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,21 +8,18 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
 
-
-import com.employmeo.EmpFormResponse;
 import com.employmeo.objects.Account;
 import com.employmeo.objects.Location;
 import com.employmeo.objects.Position;
 import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.User;
-import com.employmeo.util.PredictionUtil;
 
 
 
-public class TestAction extends MPFormAction {
+public class TestAction  {
 	
-	  public static void execute(HttpServletRequest req, HttpServletResponse res, HttpSession sess, EmpFormResponse fRes) {
+	  public static void execute(HttpServletRequest req, HttpServletResponse res, HttpSession sess) {
 		  
 		  // Collect expected input fields
 		  User user = (User) sess.getAttribute("User");
@@ -33,8 +28,7 @@ public class TestAction extends MPFormAction {
 		  List<Location> locations = account.getLocations();
 		  
 		  // Validate input fields
-		  fRes.setValid(true);
-		  
+
 		  JSONArray response = new JSONArray();
 
 		  List<Respondant> respondants = account.getRespondants(Respondant.STATUS_COMPLETED,Respondant.STATUS_HIRED,500);
@@ -96,8 +90,6 @@ public class TestAction extends MPFormAction {
 			  response.put(respondants.get(j).getJSON());
 		  }
 		   
-		  fRes.setSuccess(true);		  
-		  fRes.setHTML(response.toString());
 		  return;
 	  }
 	  

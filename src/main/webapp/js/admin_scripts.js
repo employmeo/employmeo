@@ -4,18 +4,47 @@ var profileChart;
 var respondantProfile;
 var historyChart;
 
-var applicantColor = "rgba(120,60,100,1)";
-var applicantOverlay = "rgba(120,60,100,0.3)";
-var applicantHighlight = "rgba(120,60,100,1)";
-
 var respondant;
 var surveyList;
 var positionList;
 var locationList;
 var qTable;
 
-
 //basic user / account functions (login/logout/etc)
+function login() {
+	var redirectTo = $('#topage').value;
+	$.ajax({
+		type: "POST",
+		async: true,
+		data : $('#loginform').serialize(),
+		url: "/admin/login",
+		xhrFields: {
+            withCredentials: true
+        },
+		success: function(data) {
+			window.location.assign(redirectTo);
+		},
+		error: function(data) {
+			console.log(data);			
+		}
+	});	
+}
+
+function logout() {
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/admin/logout",
+		xhrFields: {
+            withCredentials: true
+        },
+		success: function(data) {
+			console.log(data);
+			window.location.assign('/login.jsp');
+		}
+	});	
+}
+
 function getUserFname() {
 	var name = "user_fname=";
 	var ca = document.cookie.split(';');
@@ -26,6 +55,7 @@ function getUserFname() {
 	}
 	return "";
 }
+
 
 // section for updating selectors
 function updatePositionsSelect() {
@@ -148,7 +178,7 @@ function inviteApplicant(e) {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/mp",
+		url: "/admin/inviteapplicant",
 		data: $(e).serialize(),
 		beforeSend: function(data) {
 			$("#inviteapplicant :input").prop('readonly', true);
@@ -159,7 +189,6 @@ function inviteApplicant(e) {
 			e.reset();
 			$('#invitationform').addClass('hidden');
 			$('#invitationsent').removeClass('hidden');
-			response = JSON.parse(data);
 		},
 		complete: function(data) {
 			$("#inviteapplicant :input").prop('readonly', false);
@@ -202,7 +231,7 @@ function updateRespondantsTable() {
 		type: "POST",
 		async: true,
 		url: "/admin/getrespondants",
-		data: $('#refine_query').serialize(),
+		data: $('#refinequery').serialize(),
 		beforeSend: function() {
 			$("#waitingmodal").removeClass("hidden");
 			rTable = $('#respondants').DataTable();
@@ -228,21 +257,6 @@ function updateRespondantsTable() {
 		}
 	});
 }
-
-function changePositionTo(pos_id) {
-	var items = $('#positions_nav li');
-
-	items.each(function(li) {
-		$(this).attr("class","");
-		if (pos_id == $(this).attr("pos_id")) {
-			$(this).attr("class", "active");
-		}
-	});
-
-	updatePositionTenure(pos_id);
-	updatePositionProfile(pos_id);
-}
-
 
 //Section for looking at / manipulating surveys
 function changeSurveyTo(survey_id) {
@@ -424,6 +438,12 @@ function showApplicantScoring(applicantData) {
 	refreshPositionTenure(getPositionTenureData()); // use stub code
 }
 
+function changePositionTo(pos_id) {
+
+	updatePositionTenure(pos_id);
+	updatePositionProfile(pos_id);
+}
+
 function updatePositionTenure(pos_id) {
 	refreshPositionTenure(getPositionTenureData()); // use stub code
 }
@@ -487,7 +507,7 @@ function uploadPayroll(e) {
 
 
 // Respondant scoring section
-function processRespondant(respondantId) {
+function getScore(respondantId) {
 	$.ajax({
 		type: "POST",
 		async: true,
@@ -624,14 +644,13 @@ function refreshRespondantProfile(dataScores) {
 
 
 function lookupLastTenCandidates() {
-	postDataToServlet (
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/admin/getlastten",
+		data: $('#refinequery').serialize(),
+		success: function(respondants)
 		{
-			"formname" : "getlasttenrespondants",
-			"noRedirect" : true
-		},
-		function(data)
-		{
-			var respondants = JSON.parse(data);
 			$('#recentcandidates').empty();
 			for (var i = 0; i < respondants.length; i++ ) {
 				var li = $('<li />', { 'class' : 'media event' });
@@ -661,45 +680,5 @@ function lookupLastTenCandidates() {
 				li.append(ico);
 				li.append(badge);
 				$('#recentcandidates').append(li);
-			}
-
-		});
+			}}});
 }
-
-//Generic, always useful post form to action
-function postToAction(e) {
-	postDataToServlet(
-		$(e).serialize(),
-		function(data) {
-			console.log(JSON.parse(data));
-			$("#form_response").html(data);
-		}
-	);
-}
-
-function postJsonData(jsondata, url, callback) {
-	$.ajax({
-		type: "POST",
-		async: true,
-	    headers: { 
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json' 
-	    },
-	    dataType: 'json',
-	    url: url,
-		data: JSON.stringify(jsondata),
-		success: callback
-	});
-}
-
-// Raw post data to mp servlet
-function postDataToServlet(data, callback) {
-	$.ajax({
-		type: "POST",
-		async: true,
-		url: "/mp",
-		data: data,
-		success: callback
-	});
-}
-

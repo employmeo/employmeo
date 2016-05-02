@@ -17,9 +17,10 @@
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?&key=AIzaSyA2bSTr1nfJEneqGPFjpJTASqy8P7cVyrc&libraries=places"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/geocomplete/1.7.0/jquery.geocomplete.min.js"></script>
 <script type="text/javascript" src='/js/swipe.js'></script>
-<script type="text/javascript" src='/js/stub_scripts.js'></script>
-<script type="text/javascript" src='/js/scripts.js'></script>
+<script type="text/javascript" src='/js/assessment_scripts.js'></script>
 
 </head>
 <body>
@@ -31,25 +32,14 @@
       <div id='wrapper' class='swipe-wrap'></div>
 	</div>
 <script>
-var urlParams; 
-(window.onpopstate = function () {
-    var match,
-        pl     = /\+/g,  // Regex for replacing addition symbol with a space
-        search = /([^&=]+)=?([^&]*)/g,
-        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-        query  = window.location.search.substring(1);
-
-    urlParams = {};
-    while (match = search.exec(query))
-       urlParams[decode(match[1])] = decode(match[2]);
-})();
-
-if (urlParams.respondant_id != null) {
-    buildSurveyWithRespondantId(urlParams.respondant_id);
-} else {
-	var surveyId = urlParams.survey_id;
-	var accountId = urlParams.account_id;
-	createVisualNewRespondant(surveyId, accountId);
-}
+$(document).ready(function() {
+	if (urlParams.respondant_id != null) {
+	    buildPlainSurveyWithRespondantId(urlParams.respondant_id);
+	} else {
+		var surveyId = urlParams.survey_id;
+		var accountId = urlParams.account_id;
+		createPlainNewRespondant(surveyId, accountId);
+	}
+});
 </script>
 </html>

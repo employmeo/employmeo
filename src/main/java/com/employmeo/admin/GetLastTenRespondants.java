@@ -1,8 +1,5 @@
 package com.employmeo.admin;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-
 import javax.annotation.security.PermitAll;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -26,9 +23,9 @@ import com.employmeo.util.DBUtil;
 
 import java.util.List;
 
-@Path("getrespondants")
+@Path("getlastten")
 @PermitAll
-public class GetRespondants {
+public class GetLastTenRespondants {
 	
 	  @POST
 	  @Produces(MediaType.APPLICATION_JSON)
@@ -36,9 +33,7 @@ public class GetRespondants {
 			    @Context final HttpServletRequest reqt,
 			    @Context final HttpServletResponse resp,
 			    @DefaultValue("-1") @FormParam("location_id") Long locationId,
-			    @DefaultValue("-1") @FormParam("position_id") Long positionId,
-			    @DefaultValue("2015-01-01") @FormParam("fromdate") String fromDate,
-			    @DefaultValue("2020-12-31") @FormParam("todate") String toDate 
+			    @DefaultValue("-1") @FormParam("position_id") Long positionId
 			    )
 	  {  
 		  JSONArray response = new JSONArray();
@@ -50,32 +45,27 @@ public class GetRespondants {
 			  return null;
 	  	  } // else if (false) { // {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
-  		  Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
-		  Timestamp to = new Timestamp(Date.valueOf(toDate).getTime());	  // losing rest of day (need to add a day)
 		  String locationSQL = "";
 		  String positionSQL = "";
 		  if (locationId > -1) locationSQL = "AND r.respondantLocationId = :locationId ";
 		  if (positionId > -1) positionSQL = "AND r.respondantPositionId = :positionId ";
 
 		  EntityManager em = DBUtil.getEntityManager();		  
-		  String dateSQL = "AND r.respondantCreatedDate >= :fromDate AND r.respondantCreatedDate <= :toDate ";
 		  String sql = "SELECT r from Respondant r WHERE " +
 				  	   "r.respondantStatus >= :status AND r.respondantAccountId = :accountId " +
-				  	   locationSQL + positionSQL + dateSQL +
+				  	   locationSQL + positionSQL +
 				  	   "ORDER BY r.respondantCreatedDate DESC";
 		  TypedQuery<Respondant> query = em.createQuery(sql, Respondant.class);
+		  query.setMaxResults(10);
 		  query.setParameter("accountId", user.getAccount().getAccountId());
 		  if (locationId > -1) query.setParameter("locationId", locationId);
 		  if (positionId > -1) query.setParameter("positionId", positionId);
-		  query.setParameter("fromDate", from);
-		  query.setParameter("toDate", to);
-		  query.setParameter("status", Respondant.STATUS_SCORED);
+		  query.setParameter("status", Respondant.STATUS_COMPLETED);
 			    
 		  List<Respondant> respondants = query.getResultList();
 		  for (int j=0;j<respondants.size();j++) {
 			  JSONObject jresp = respondants.get(j).getJSON();
 			  jresp.put("scores", respondants.get(j).scoreMe());
-			  jresp.put("position", respondants.get(j).getPosition().getJSON());
 
 			  response.put(jresp);
 		  }

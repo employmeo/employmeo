@@ -4,7 +4,7 @@
                             <h3>Candidate Search</h3>
                         </div>
                             <div class="col-md-9 col-sm-9 col-xs-12 pull-right">
-						<form class="form-inline pull-right" id='refine_query'>
+						<form class="form-inline pull-right" id='refinequery'>
 								<div class="form-group">
 									<div id="reportrange" class="form-control" style="line-height: 1.42857143;">
 									<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>

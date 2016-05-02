@@ -16,9 +16,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.employmeo.objects.User;
 
@@ -27,7 +24,7 @@ import com.employmeo.objects.User;
 public class AdminAuthProvider implements ContainerRequestFilter {
 
     private static final Response LOGIN_REQUIRED = Response.status(Response.Status.UNAUTHORIZED).entity("{ message: 'Login Required' }").build();
-    private static final Response INSUFFICIENT_PERMISSION = Response.status(Response.Status.UNAUTHORIZED).entity("{ message: 'Insufficient Permission' }").build();
+//    private static final Response INSUFFICIENT_PERMISSION = Response.status(Response.Status.UNAUTHORIZED).entity("{ message: 'Insufficient Permission' }").build();
     private static final Response ACCESS_FORBIDDEN = Response.status(Response.Status.FORBIDDEN).entity("{ message: 'Access Forbidden' }").build();
 
 	@Context

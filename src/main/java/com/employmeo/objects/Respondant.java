@@ -1,11 +1,16 @@
 package com.employmeo.objects;
 
 import java.io.Serializable;
+import java.net.URL;
+
 import javax.persistence.*;
+import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
+import com.employmeo.util.EmailServletResponse;
+import com.employmeo.util.EmailUtility;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -282,9 +287,22 @@ public class Respondant extends PersistantObject implements Serializable {
 			json.put("respondant_person_email", this.person.getPersonEmail());			
 			json.put("respondant_person_address", this.person.getPersonAddress());			
 		} 	
+		
+		if (this.respondantProfile != null) {
+			PositionProfile profile = PositionProfile.getProfileDefaults(this.getRespondantProfile());
+		    json.put("respondant_profile_icon", profile.get("profile_icon"));
+		    json.put("respondant_profile_class", profile.get("profile_class"));
+		}
+		
 		return json;
 	}
 	
+	
+	/***
+	 *  Special section for unique functionality 
+	 *  for the Respondant Object
+	 */
+
 	
 	public JSONObject scoreMe() {
 		  JSONObject scores = new JSONObject();
@@ -328,4 +346,42 @@ public class Respondant extends PersistantObject implements Serializable {
 		  }
 		  return scores;
 	}
+
+	public String getSurveyUrl(HttpServletRequest req) {
+		String prefix = "http://" + req.getServerName();
+		if (req.getServerPort() != 80) {
+			prefix = prefix + ":" + req.getServerPort();
+		}
+		String link = null;
+		try {
+			link = new URL(prefix + "/take_assessment.html" + "?&respondant_id=" + this.getRespondantId()).toString();
+		} catch (Exception e) {
+			link = prefix + "/take_assessment.html" + "?&respondant_id=" + this.getRespondantId();
+		}
+		return link.toString();
+	}
+	
+	public void sendEmailInvitation(HttpServletRequest req) {
+		  String link = this.getSurveyUrl(req);
+		  String body = "Dear " + this.person.getPersonFname() + ",\n" +
+		  			"\n" +
+		  			"Congratulations, we are excited to invite you to complete a preliminary " +
+		  			"assessment for this position.\nThis assessment can be completed on a " + 
+		  			"mobile device or in a browser at this link: \n" + link;
+		  try {
+			  req.getSession().setAttribute("applicant", this.person);
+			  req.getSession().setAttribute("link", link);
+			  EmailServletResponse htmlpart = new EmailServletResponse();
+			  req.getRequestDispatcher("/WEB-INF/emails/inviteapplicant.jsp").forward(req, htmlpart);
+			  EmailUtility.sendMessage(this.person.getPersonEmail(), "Invitation to Apply", body, htmlpart);
+		  } catch (Exception e) {
+			  // if using the jsp emai template fails, just send basic body text.
+			  EmailUtility.sendMessage(this.person.getPersonEmail(), "Invitation to Apply", body);		  
+		  }
+	}
+	
+	public void postScoresToATS() {
+		// Stub code to send the final scores somewhere...
+	}
+
 }

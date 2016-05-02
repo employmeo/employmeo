@@ -1,6 +1,5 @@
 package com.employmeo.integration;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.security.PermitAll;
@@ -31,7 +30,8 @@ public class Echo {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost (JSONObject json)
 	{
-		return json.toString();
+    	logger.info("Echo Called with: \n" + json.toString());
+    	return json.toString();
 	}
    
 }
