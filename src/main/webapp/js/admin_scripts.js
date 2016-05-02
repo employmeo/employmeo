@@ -9,10 +9,11 @@ var surveyList;
 var positionList;
 var locationList;
 var qTable;
+var startPage = '/index.jsp';
 
 //basic user / account functions (login/logout/etc)
 function login() {
-	var redirectTo = $('#topage').value;
+	
 	$.ajax({
 		type: "POST",
 		async: true,
@@ -22,7 +23,7 @@ function login() {
             withCredentials: true
         },
 		success: function(data) {
-			window.location.assign(redirectTo);
+			window.location.assign(startPage);
 		},
 		error: function(data) {
 			console.log(data);			
