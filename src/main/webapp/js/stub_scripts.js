@@ -256,33 +256,44 @@ function getPositionDetails(scores) {
 }
 var atsdata = {
 		account : {
-			account_ats_id : '1234'
+			account_ats_id : '1234',
+			account_name : 'Test Client'
 		},
 		applicant : {
 			applicant_ats_id : "1234",
 			fname : "First",
 			lname : "Last",
 			email : "testuser@integration.employmeo.com",
-			address : "1234 Oak St, San Mateo CA 90066",
-			lat : 1.2,
-			lng : 1.2,
-			account_id : 1,
-			assessment_id : 2,
-			location_id : 3,
-			position_id : 4,
+			address : {
+				street: "1234 Oak St",
+				city: "San Mateo",
+				state : "CA",
+				zip : "90066",
+				lat : 1.2,
+				lng : 1.2
+			}
 		},
 		assessment : {
-			
+			assessment_asid : 3
 		},
 		delivery : {
 			email_applicant : false,
 			redirect_url : "http://employmeo.com",
-			scores_url : "http://portal.employmeo.com/integration/echo",
+			scores_post_url : "http://portal.employmeo.com/integration/echo",
 			scores_email_notify : true,
 			scores_email_address : "info@employmeo.com"
 		},
 		location : {
-			location_ats_id : '1234'
+			location_ats_id : '1234',
+			location_name : 'Store 10',
+			address : {
+				street: "1234 Oak St",
+				city: "San Mateo",
+				state : "CA",
+				zip : "90066",
+				lat : 1.2,
+				lng : 1.2
+			}
 		},
 		position : {
 			position_id : 1

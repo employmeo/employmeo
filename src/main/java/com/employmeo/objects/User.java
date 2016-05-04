@@ -7,7 +7,6 @@ import javax.persistence.*;
 import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
-import com.employmeo.util.SecurityUtil;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -186,28 +185,6 @@ public class User extends PersistantObject implements Serializable {
 
 	public void setAccount(Account account) {
 		this.account = account;
-	}
-	
-	public static User login(String email, String password) {
-		  String hashword = SecurityUtil.hashPassword(password);
-		  return loginHashword(email, hashword);       
-	}
-	
-	public static User loginHashword(String email, String hashword) {
-
-		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.userEmail = :email AND u.userPassword = :password", User.class);
-        q.setParameter("email", email);
-        q.setParameter("password", hashword);
-        User user = null;
-        try {
-      	  user = q.getSingleResult();
-        } catch (NoResultException nre) {
-          user = new User();
-          user.setUserEmail(email);
-        }
-        
-        return user;
 	}
 	
 	public static User lookupByEmail(String email) {

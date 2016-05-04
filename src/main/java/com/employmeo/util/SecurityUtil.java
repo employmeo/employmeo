@@ -5,7 +5,11 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONObject;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+
+import com.employmeo.objects.User;
 
 public class SecurityUtil {
 
@@ -50,5 +54,27 @@ public class SecurityUtil {
 		}
 		return sb.toString();
 	}
+	
+	public static User login(String email, String password) {
+		  String hashword = SecurityUtil.hashPassword(password);
+		  return loginHashword(email, hashword);       
+	}
+	
+	public static User loginHashword(String email, String hashword) {
+
+		EntityManager em = DBUtil.getEntityManager();
+		TypedQuery<User> q = em.createQuery("SELECT u FROM User u WHERE u.userEmail = :email AND u.userPassword = :password", User.class);
+      q.setParameter("email", email);
+      q.setParameter("password", hashword);
+      User user = null;
+      try {
+    	  user = q.getSingleResult();
+      } catch (NoResultException nre) {
+        user = new User();
+        user.setUserEmail(email);
+      }    
+      return user;
+	}
+	
 
 }

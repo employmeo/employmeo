@@ -1,5 +1,8 @@
 package com.employmeo.admin;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +17,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import com.employmeo.objects.User;
+import com.employmeo.util.SecurityUtil;
 
 
 @Path("login")
@@ -35,7 +39,7 @@ public class Login {
 		  // Validate required fields
 
 		  // Execute business logic (lookup the user by email and password)
-		  User user = User.login(email, password);
+		  User user = SecurityUtil.login(email, password);
 	      if (user.getUserId() !=null) {
 
 	    	  EmpAutoLoginFilter.login(user, reqt);
@@ -43,14 +47,20 @@ public class Login {
 
 	    	  if (persistLogin) {
 	        	  String hashword = user.getUserPassword();
-	    		  Cookie uCookie = new Cookie("email", user.getUserEmail(), "/", reqt.getServerName());
+	        	  String encodedHash = hashword;
+	        	  String encodedEmail = email;
+	        	  try {
+	        		  encodedEmail = URLEncoder.encode(user.getUserEmail(),"UTF-8");
+	        		  encodedHash = URLEncoder.encode(hashword,"UTF-8");	        		  
+	        	  } catch (UnsupportedEncodingException e) {}
+	        	  Cookie uCookie = new Cookie("email", encodedEmail, "/", reqt.getServerName());
+	    		  Cookie pCookie = new Cookie("hashword", encodedHash, "/", reqt.getServerName());
 	    		  rb.cookie(new NewCookie(uCookie,"email",60*60*24*90,false));
-	    		  Cookie pCookie = new Cookie("hashword", hashword, "/", reqt.getServerName());
 	    		  rb.cookie(new NewCookie(pCookie,"hashword",60*60*24*90,false));
 			  } else {
 	    		  Cookie uCookie = new Cookie("email", null, "/", reqt.getServerName());
-	    		  rb.cookie(new NewCookie(uCookie,"email",0,false));
 	    		  Cookie pCookie = new Cookie("hashword", null, "/", reqt.getServerName());
+	    		  rb.cookie(new NewCookie(uCookie,"email",0,false));
 	    		  rb.cookie(new NewCookie(pCookie,"hashword",0,false));	  
 	          }
 	  		  Cookie nCookie = new Cookie("user_fname", user.getUserFname(), "/", reqt.getServerName());

@@ -30,8 +30,12 @@ public class Respondant extends PersistantObject implements Serializable {
 	public static final int STATUS_STARTED = 5;
 	public static final int STATUS_COMPLETED = 10;
 	public static final int STATUS_SCORED = 15;
+	public static final int STATUS_REJECTED = 16;
+	public static final int STATUS_OFFERED = 17;
+	public static final int STATUS_DECLINED = 18;
 	public static final int STATUS_HIRED = 20;
-	public static final int STATUS_REJECTED = 19;
+	public static final int STATUS_QUIT = 30;
+	public static final int STATUS_TERMINATED = 40;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -95,6 +99,11 @@ public class Respondant extends PersistantObject implements Serializable {
 	@Column(name="respondant_profile_d")
 	private Double profileD;
 
+	@Column(name="respondant_ats_id")
+	private String respondantAtsId;
+
+	@Column(name="respondant_payroll_id")
+	private String respondantPayrollId;
 	
 	public Respondant() {
 	}
@@ -234,6 +243,22 @@ public class Respondant extends PersistantObject implements Serializable {
 		return this.responses;
 	}
 	
+	public void setRespondantAtsId (String atsId) {
+		this.respondantAtsId = atsId;
+	}
+	
+	public String getRespondantAtsId () {
+		return this.respondantAtsId;
+	}
+	
+	public void setRespondantPayrollId (String payrollId) {
+		this.respondantAtsId = payrollId;
+	}
+		
+	public String getRespondantPayrollId() {
+		return this.respondantAtsId;
+	}
+
 	public List<RespondantScore> getScores() {
 
 		EntityManager em = DBUtil.getEntityManager();

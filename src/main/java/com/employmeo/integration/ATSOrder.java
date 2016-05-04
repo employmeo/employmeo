@@ -15,16 +15,20 @@ import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONObject;
 
+import com.employmeo.objects.Account;
+import com.employmeo.objects.Location;
 import com.employmeo.objects.Person;
+import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
+import com.employmeo.objects.Survey;
+import com.employmeo.util.AddressUtil;
+import com.employmeo.util.PartnerUtil;
 
 @Path("atsorder")
 public class ATSOrder {
 	
     @Context
     private UriInfo uriInfo;
-    @Context
-    private Response resp;
     
     private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST).entity("{ message: 'Missing Required Parameters' }").build();
     private static Logger logger = Logger.getLogger("RestService");
@@ -34,41 +38,45 @@ public class ATSOrder {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost (JSONObject json)
 	{
-		Person person = new Person();
-		Respondant respondant = new Respondant();
 		JSONObject applicant = null;
-		JSONObject address = null;
-		JSONObject account = null;
-		JSONObject location = json.optJSONObject("location");
-		JSONObject position = json.optJSONObject("position");
-		JSONObject assessment = json.optJSONObject("assessment");
-	    JSONObject delivery = json.optJSONObject("delivery");
-	    String atsclientId = null;
+	    Account account = null;
+	    Person person = new Person();
+		Respondant respondant = new Respondant();
 	    
     	try { // the required parameters
+    		account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
     		applicant = json.getJSONObject("applicant");
+    		person.setPersonSsn(applicant.getString("applicant_ats_id"));
     		person.setPersonEmail(applicant.getString("email"));
     		person.setPersonFname(applicant.getString("fname"));
     		person.setPersonLname(applicant.getString("lname"));
-    		address = applicant.getJSONObject("address");
+    		
+    		JSONObject personAddress = applicant.getJSONObject("address");
+    		AddressUtil.validate(personAddress);
+    		
+        	person.setPersonAddress(personAddress.optString("address"));
+    		person.setPersonLat(personAddress.optDouble("lat"));
+    		person.setPersonLong(personAddress.optDouble("lng"));
     	} catch (Exception e) {
     		throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
     	}
 
+	    Location location = PartnerUtil.getLocationFrom(json.optJSONObject("location"), account);   	
+	    Position position = PartnerUtil.getPositionFrom(json.optJSONObject("position"), account);
+	    Survey survey = PartnerUtil.getSurveyFrom(json.optJSONObject("assessment"), account);
+
+    	JSONObject delivery = json.optJSONObject("delivery");
     	
-    	person.setPersonAddress("");
-		person.setPersonLat(applicant.getDouble("lat"));
-		person.setPersonLong(applicant.getDouble("lng"));
-		respondant.setRespondantAccountId((long)123);   	
-		respondant.setRespondantSurveyId(applicant.getLong("assessment_id"));
-		respondant.setRespondantLocationId(applicant.getLong("location_id"));// ok for null location
-		respondant.setRespondantPositionId(applicant.getLong("position_id"));// ok for null location
+		respondant.setRespondantAccountId(account.getAccountId());   	
+		respondant.setRespondantSurveyId(survey.getSurveyId());
+		respondant.setRespondantLocationId(location.getLocationId());// ok for null location
+		respondant.setRespondantPositionId(position.getPositionId());// ok for null location
 
 		// Perform business logic  
 	
-		// person.persistMe();
-		  respondant.setPerson(person);
-		// respondant.persistMe();
+		person.persistMe();
+		respondant.setPerson(person);
+		respondant.persistMe();
 		  
 		JSONObject output = new JSONObject();
 		output.put("applicant", respondant.getJSON());

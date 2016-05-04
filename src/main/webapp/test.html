@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>Employmeo | Test Page</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+<link rel="shortcut icon" type="image/gif" href="/images/favico.gif">
+<link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap-theme.min.css">
+<link rel='stylesheet' type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.1/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.11/css/dataTables.bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.0.2/css/responsive.bootstrap.min.css"/>
+<link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.19/daterangepicker.min.css">
+<link rel='stylesheet' type='text/css' href='/css/custom.css' media='all' />
+<link rel='stylesheet' type='text/css' href='/css/admin_style.css' media='all' />
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.3/jquery.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?&key=AIzaSyA2bSTr1nfJEneqGPFjpJTASqy8P7cVyrc&libraries=places"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/geocomplete/1.7.0/jquery.geocomplete.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.0.1/Chart.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.0.2/js/responsive.bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.19/daterangepicker.min.js"></script>
+<script type="text/javascript" src='/js/stub_scripts.js'></script>
+<script type="text/javascript" src='/js/custom.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js" charset="utf-8"></script>
+<script type="text/javascript" src='/js/admin_scripts.js'></script>
+</head>
+
+<header>
+<nav id='header' class="navbar navbar-default navbar-fixed-top">
+  <div class="col-xs-12 col-sm-6 col-md-9">
+            <h3><i class="fa fa-edit"></i>Assessment</h3>
+        </div>
+  <div class="col-xs-12 col-sm-6 col-md-3" id="surveyprogress">
+  <div class="col-sm-12 col-md-12 hidden-xs" style="height:20px;"></div>
+  <div class="col-xs-12 col-sm-12 col-md-12">
+  <div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+  </div>
+</div>
+</div>
+  </div>
+</nav>
+</header>
+
+<body style="padding-top: 70px;">
+	<div id='area1' class="areaa">
+      <div id='innerdiva' class='innerdiv'></div>
+	</div>
+    <div id='areab' class='areab'>
+      <canvas id='canvasb' class='innercanvas' width='200px' height='200px'></canvas>
+	</div>
+    <div id='areac' class='areac'>
+      <svg id='svgc' class='innersvg'></svg>
+	</div>
+</body>
+
+<script>
+$(document).ready(function(){
+	 
+    var arr = [[11, 123, 1236, "Acura"], [45, 92, 1067, "Alfa Romeo"], 
+    [24, 104, 1176, "AM General"], [50, 23, 610, "Aston Martin Lagonda"], 
+    [18, 17, 539, "Audi"], [7, 89, 864, "BMW"], [2, 13, 1026, "Bugatti"]];
+     
+    var plot1 = $.jqplot('areab',[arr],{
+        title: 'Bubble',
+        axes:{
+        	yaxis:{min:20, max:100},
+        	xaxis:{min:20, max:100}
+        },
+        seriesDefaults:{
+            renderer: $.jqplot.BubbleRenderer,
+            rendererOptions: {
+                bubbleGradients: true
+            },
+            shadow: true
+        }
+    });
+});
+</script>
+
+</html>

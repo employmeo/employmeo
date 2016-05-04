@@ -1,6 +1,7 @@
 package com.employmeo.admin;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -8,7 +9,7 @@ import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.*;
 
 import com.employmeo.objects.User;
-
+import com.employmeo.util.SecurityUtil;
 
 import java.util.*;
 
@@ -66,15 +67,15 @@ public class EmpAutoLoginFilter implements Filter {
         		   for (Cookie cookie : cookies) {
         			   String name = cookie.getName(); 
         			   if (name.equals("email")) {
-  						   email = cookie.getValue();
+  						   email = URLDecoder.decode(cookie.getValue(), "UTF-8");
         			   }
         			   if (name.equals("hashword")) {
-        				   hashword = cookie.getValue();
+        				   hashword = URLDecoder.decode(cookie.getValue(), "UTF-8");
         			   }
         		   }
         		   if (hashword != null) {
         			   
-        			   User user = User.loginHashword(email, hashword);
+        			   User user = SecurityUtil.loginHashword(email, hashword);
        	  		  	   if (user.getUserId() != null) {
        	  		  		   login(user, request);
 	       	  		  	    if (user.getUserFname() != null) {

@@ -65,6 +65,13 @@ public class Location extends PersistantObject implements Serializable {
 	@Column(name="location_zip")
 	private String locationZip;
 
+	@Column(name="location_ats_id")
+	private String locationAtsId;
+
+	@Column(name="location_payroll_id")
+	private String locationPayrollId;
+
+
 	public Location() {
 	}
 
@@ -170,6 +177,22 @@ public class Location extends PersistantObject implements Serializable {
 
 	public void setLocationZip(String locationZip) {
 		this.locationZip = locationZip;
+	}
+
+	public String getLocationAtsId() {
+		return this.locationAtsId;
+	}
+
+	public void setLocationAtsId(String atsId) {
+		this.locationAtsId = atsId;
+	}
+
+	public String getLocationPayrollId() {
+		return this.locationPayrollId;
+	}
+
+	public void setLocationPayrollId(String payrollId) {
+		this.locationPayrollId = payrollId;
 	}
 
 	public Account getAccount() {
