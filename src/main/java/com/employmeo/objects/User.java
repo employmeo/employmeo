@@ -63,8 +63,12 @@ public class User extends PersistantObject implements Serializable {
 
 	//bi-directional many-to-one association to Account
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="USER_ACCOUNT_ID")
+	@JoinColumn(name="USER_ACCOUNT_ID",updatable=false,insertable=false)
 	private Account account;
+
+	//direct access to account id
+	@Column(name="USER_ACCOUNT_ID",updatable=false,insertable=true)
+	private Long userAccountId;
 
 	public User() {
 	}
@@ -180,10 +184,20 @@ public class User extends PersistantObject implements Serializable {
 	}
 
 	public Account getAccount() {
+		if (this.account == null) this.account = Account.getAccountById(this.userAccountId);
 		return this.account;
 	}
 
+	public Long getUserAccountId() {
+		return this.getAccount().getAccountId();
+	}
+
+	public void setUserAccountId(Long accountId) {
+		this.userAccountId = accountId;
+		this.account = Account.getAccountById(this.userAccountId);
+	}
 	public void setAccount(Account account) {
+		this.userAccountId = account.getAccountId();
 		this.account = account;
 	}
 	
@@ -207,6 +221,7 @@ public class User extends PersistantObject implements Serializable {
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
 		json.put("user_id", this.userId);
+		json.put("user_account_id", this.userAccountId);
 		json.put("user_email", this.userEmail);
 		json.put("user_fname", this.userFname);
 		json.put("user_lname", this.userLname);

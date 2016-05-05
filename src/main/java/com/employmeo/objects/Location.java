@@ -34,15 +34,8 @@ public class Location extends PersistantObject implements Serializable {
 	@Column(name="location_account_id",insertable=true,updatable=false)
 	private Long locationAccountId;
 	
-	
 	@Column(name="location_city")
 	private String locationCity;
-
-	@Column(name="location_client_ats_id")
-	private String locationClientAtsId;
-
-	@Column(name="location_client_payroll_id")
-	private String locationClientPayrollId;
 
 	@Column(name="location_fein")
 	private String locationFein;
@@ -105,22 +98,6 @@ public class Location extends PersistantObject implements Serializable {
 
 	public void setLocationCity(String locationCity) {
 		this.locationCity = locationCity;
-	}
-
-	public String getLocationClientAtsId() {
-		return this.locationClientAtsId;
-	}
-
-	public void setLocationClientAtsId(String locationClientAtsId) {
-		this.locationClientAtsId = locationClientAtsId;
-	}
-
-	public String getLocationClientPayrollId() {
-		return this.locationClientPayrollId;
-	}
-
-	public void setLocationClientPayrollId(String locationClientPayrollId) {
-		this.locationClientPayrollId = locationClientPayrollId;
 	}
 
 	public String getLocationFein() {
@@ -220,8 +197,8 @@ public class Location extends PersistantObject implements Serializable {
 		JSONObject json = new JSONObject();
 		json.put("location_name", this.locationName);
 		json.put("location_id", this.locationId);
-		json.put("location_client_ats_id", this.locationClientAtsId);
-		json.put("location_client_payroll_id", this.locationClientPayrollId);
+		json.put("location_ats_id", this.locationAtsId);
+		json.put("location_payroll_id", this.locationPayrollId);
 		json.put("location_account_id", this.locationAccountId);
 		json.put("location_street1", this.locationStreet1);
 		json.put("location_street2", this.locationStreet2);
