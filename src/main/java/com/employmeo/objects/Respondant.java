@@ -12,6 +12,7 @@ import com.employmeo.util.DBUtil;
 import com.employmeo.util.EmailServletResponse;
 import com.employmeo.util.EmailUtility;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class Respondant extends PersistantObject implements Serializable {
 	private Long respondantAccountId;
 
 	@Column(name="respondant_created_date", insertable=false, updatable=false)
-	private Timestamp respondantCreatedDate;
+	private Date respondantCreatedDate;
 
 	@Column(name="respondant_status")
 	private int respondantStatus;
@@ -92,10 +93,13 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	@Column(name="respondant_profile_a")
 	private Double profileA;
+
 	@Column(name="respondant_profile_b")
 	private Double profileB;
+	
 	@Column(name="respondant_profile_c")
 	private Double profileC;
+
 	@Column(name="respondant_profile_d")
 	private Double profileD;
 
@@ -104,6 +108,26 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	@Column(name="respondant_payroll_id")
 	private String respondantPayrollId;
+
+	@Column(name = "respondant_redirect_page")
+	private String respondantRedirectUrl;
+
+	@Column(name="respondant_email_recipient")
+	private String respondantEmailRecipient;
+
+	@Column(name="respondant_score_postmethod")
+	private String respondantScorePostMethod;
+
+	@Column(name="respondant_start_time")
+	private Timestamp respondantStartTime;
+
+	@Column(name="respondant_finish_time")
+	private Timestamp respondantFinishTime;
+	
+	@Column(name="respondant_hire_date")
+	private Date respondantHireDate;
+	
+	
 	
 	public Respondant() {
 	}
@@ -163,12 +187,20 @@ public class Respondant extends PersistantObject implements Serializable {
 	public void setPosition(Position position) {
 		this.position = position;
 	}
-	public Timestamp getRespondantCreatedDate() {
+	public Date getRespondantCreatedDate() {
 		return this.respondantCreatedDate;
 	}
 
-	public void setRespondantCreatedDate(Timestamp respondantCreatedDate) {
+	public void setRespondantCreatedDate(Date respondantCreatedDate) {
 		this.respondantCreatedDate = respondantCreatedDate;
+	}
+
+	public Date getRespondantHireDate() {
+		return this.respondantHireDate;
+	}
+
+	public void setRespondantHireDate(Date respondantHireDate) {
+		this.respondantHireDate = respondantHireDate;
 	}
 
 	public int getRespondantStatus() {

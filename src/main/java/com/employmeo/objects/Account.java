@@ -7,7 +7,6 @@ import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,26 +26,14 @@ public class Account extends PersistantObject implements Serializable {
 	@Column(name="account_id")
 	private Long accountId;
 
-	@Column(name="account_creator")
-	private Long accountCreator;
-
-	@Column(name="account_currency")
-	private String accountCurrency;
-
 	@Column(name="account_name")
 	private String accountName;
 
 	@Column(name="account_status")
 	private int accountStatus;
 
-	@Column(name="account_timezone")
-	private String accountTimezone;
-
 	@Column(name="account_type")
 	private int accountType;
-
-	@Column(name="modified_date")
-	private Timestamp modifiedDate;
 
 	@Column(name="account_ats_id")
 	private String accountAtsId;
@@ -92,21 +79,6 @@ public class Account extends PersistantObject implements Serializable {
 		this.accountId = accountId;
 	}
 
-	public Long getAccountCreator() {
-		return this.accountCreator;
-	}
-
-	public void setAccountCreator(Long accountCreator) {
-		this.accountCreator = accountCreator;
-	}
-
-	public String getAccountCurrency() {
-		return this.accountCurrency;
-	}
-
-	public void setAccountCurrency(String accountCurrency) {
-		this.accountCurrency = accountCurrency;
-	}
 
 	public String getAccountName() {
 		return this.accountName;
@@ -124,28 +96,12 @@ public class Account extends PersistantObject implements Serializable {
 		this.accountStatus = accountStatus;
 	}
 
-	public String getAccountTimezone() {
-		return this.accountTimezone;
-	}
-
-	public void setAccountTimezone(String accountTimezone) {
-		this.accountTimezone = accountTimezone;
-	}
-
 	public int getAccountType() {
 		return this.accountType;
 	}
 
 	public void setAccountType(int accountType) {
 		this.accountType = accountType;
-	}
-
-	public Timestamp getModifiedDate() {
-		return this.modifiedDate;
-	}
-
-	public void setModifiedDate(Timestamp modifiedDate) {
-		this.modifiedDate = modifiedDate;
 	}
 
 	public List<Survey> getSurveys() {
@@ -263,8 +219,6 @@ public class Account extends PersistantObject implements Serializable {
 		JSONObject json = new JSONObject();
 		json.put("account_id", this.accountId);
 		json.put("account_name", this.accountName);
-		json.put("account_currency", this.accountCurrency);
-		json.put("account_timezone", this.accountTimezone);
 		json.put("account_status", this.accountStatus);
 		json.put("account_type", this.accountType);
 				

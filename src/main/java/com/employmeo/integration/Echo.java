@@ -15,7 +15,6 @@ import javax.ws.rs.core.UriInfo;
 import org.json.JSONObject;
 
 @Path("echo")
-@PermitAll
 public class Echo {
 	
     @Context
@@ -26,6 +25,7 @@ public class Echo {
     private static Logger logger = Logger.getLogger("RestService");
 
     @POST
+    @PermitAll
     @Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost (JSONObject json)

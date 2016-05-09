@@ -7,9 +7,13 @@
   <display-name>employmeo</display-name>
   <description>
 	employmeo.com - a new way to attract and evaluate talent
-    </description>
- <error-page>
+  </description>
+  <error-page>
     <exception-type>java.lang.Throwable</exception-type>
     <location>/error.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error404.jsp</location>
   </error-page>
 </web-app>

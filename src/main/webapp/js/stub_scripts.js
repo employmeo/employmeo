@@ -290,9 +290,7 @@ var atsdata = {
 				street: "1234 Oak St",
 				city: "San Mateo",
 				state : "CA",
-				zip : "90066",
-				lat : 1.2,
-				lng : 1.2
+				zip : "90066"
 			}
 		},
 		position : {
@@ -329,6 +327,16 @@ function postJsonData(jsondata, url, callback) {
 	    dataType: 'json',
 	    url: url,
 		data: JSON.stringify(jsondata),
+		success: callback
+	});
+}
+
+function postToService(data, url, callback) {
+	$.ajax({
+		type: "POST",
+		async: true,
+	    url: url,
+		data: data,
 		success: callback
 	});
 }

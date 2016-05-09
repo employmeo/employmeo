@@ -21,6 +21,7 @@ public class Location extends PersistantObject implements Serializable {
 
 	@Id
 	@Column(name="location_id")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long locationId;
 
 	@Column(name="location_name")

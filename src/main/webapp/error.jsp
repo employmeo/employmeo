@@ -1,29 +1,25 @@
 <%@ page isErrorPage="true" %>
 <%@ include file="/WEB-INF/includes/inc_head.jsp" %>
-<div class="row"><div class="sectionheader"><div class="center">An Error has Occurred</div></div></div>
 <%
 Exception e = pageContext.getException();
 ErrorData ed = pageContext.getErrorData();
-%>
-        <div class="row"><div class="pane" style="text-align:left;">
-		<h3>Oops - something went wrong</h3>
-		ERROR OVERVIEW
-		<a href="<%=response.encodeURL("/contact_us.jsp")%>">contact us page.</a>
-		</div></div>
-        <div class="row"><div class="errorpane" style="text-align:left;">
-<h3>Details of error message:</h3>
-<%
+int statusCode = 500;
+String message = "An unexpected error has occurred";
 if (ed != null) {
-%>
-Requested <%=ed.getRequestURI() %> with status code of: <%=ed.getStatusCode() %> <br>
-<%
+    statusCode = ed.getStatusCode();
 }
 if (e != null) {
-%>
-<pre>Exception: <%=e.getMessage()%></pre>
-<%
+	message = e.getMessage();
 }
 %>
-          </div></div>
+<div class="col-md-12">
+	<div class="col-middle">
+		<div class="text-center text-center">
+			<h1 class="error-number"><%=statusCode%></h1>
+			<h2><%=message%></h2>
+			<p><a href="<%=response.encodeURL("/contact_us.jsp")%>">Report this?</a></p>
+		</div>
+	</div>
+</div>
 <%@ include file="/WEB-INF/includes/inc_header.jsp" %>
 </html>

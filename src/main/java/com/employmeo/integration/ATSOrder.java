@@ -53,10 +53,12 @@ public class ATSOrder {
     		
     		JSONObject personAddress = applicant.getJSONObject("address");
     		AddressUtil.validate(personAddress);
-    		
-        	person.setPersonAddress(personAddress.optString("address"));
+        	person.setPersonAddress(personAddress.optString("formatted_address"));
     		person.setPersonLat(personAddress.optDouble("lat"));
     		person.setPersonLong(personAddress.optDouble("lng"));
+
+    	} catch (WebApplicationException we) {
+    		throw we;
     	} catch (Exception e) {
     		throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
     	}
@@ -66,12 +68,13 @@ public class ATSOrder {
 	    Survey survey = PartnerUtil.getSurveyFrom(json.optJSONObject("assessment"), account);
 
     	JSONObject delivery = json.optJSONObject("delivery");
+    	// get the redirect method, score posting and email handling for this assessment
     	
 		respondant.setRespondantAccountId(account.getAccountId());   	
 		respondant.setRespondantSurveyId(survey.getSurveyId());
 		respondant.setRespondantLocationId(location.getLocationId());// ok for null location
 		respondant.setRespondantPositionId(position.getPositionId());// ok for null location
-
+		
 		// Perform business logic  
 	
 		person.persistMe();

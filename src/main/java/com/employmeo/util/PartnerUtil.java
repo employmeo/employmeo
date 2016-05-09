@@ -3,6 +3,9 @@ package com.employmeo.util;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONObject;
 
@@ -24,7 +27,9 @@ public class PartnerUtil {
 	        q.setParameter("accountAtsId", accountAtsId);
 	        try {
 	      	  account = q.getSingleResult();
-	        } catch (NoResultException nre) {}
+	        } catch (NoResultException nre) {
+	        	throw new WebApplicationException (Response.status(Status.PRECONDITION_FAILED).entity(jAccount.toString()).build());
+	        }
 		} else {
 			// Try to grab account by account_id
 			account = Account.getAccountById(jAccount.optLong("account_id"));
@@ -37,23 +42,26 @@ public class PartnerUtil {
 		String locationAtsId = null;
 		if (jLocation != null) locationAtsId = jLocation.optString("location_ats_id");
 		if (locationAtsId != null) {
-
 			EntityManager em = DBUtil.getEntityManager();
 			TypedQuery<Location> q = em.createQuery("SELECT l FROM Location l WHERE l.locationAtsId = :locationAtsId", Location.class);
 	        q.setParameter("locationAtsId", locationAtsId);
 	        try {
 	      	  location = q.getSingleResult();
 	        } catch (NoResultException nre) {
+	        	location = new Location();
 	        	// Create a new location from address
 	        	JSONObject address = jLocation.getJSONObject("address");
 	        	AddressUtil.validate(address);
-	        	location = new Location();
-	        	location.setAccount(account);
 	        	location.setLocationAtsId(locationAtsId);
-	        	location.setLocationName(jLocation.optString("location_name"));
-	        	location.setLocationStreet1(address.optString("address"));
-	        	location.setLocationLat(address.optDouble("lat"));
-	        	location.setLocationLong(address.optDouble("lng"));
+	        	if (jLocation.has("location_name")) location.setLocationName(jLocation.getString("location_name"));
+	        	if (address.has("street")) location.setLocationStreet1(address.getString("street"));
+	        	if (address.has("formatted_address"))location.setLocationStreet2(address.getString("formatted_address"));
+	        	if (address.has("city")) location.setLocationCity(address.getString("city"));
+	        	if (address.has("state")) location.setLocationState(address.getString("state"));
+	        	if (address.has("zip")) location.setLocationZip(address.getString("zip"));
+	        	if (address.has("lat")) location.setLocationLat(address.getDouble("lat"));
+	        	if (address.has("lng")) location.setLocationLong(address.getDouble("lng"));
+	        	location.setAccount(account);
 	        	location.persistMe();
 	        }
 			

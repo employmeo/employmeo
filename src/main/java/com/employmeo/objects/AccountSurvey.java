@@ -33,6 +33,9 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 	@Column(name="as_preamble_text")
 	private String asPreambleText;
 
+	@Column(name="as_thankyou_text")
+	private String asThankyouText;
+
 	@Column(name="as_redirect_page")
 	private String asRedirectPage;
 
@@ -73,6 +76,14 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 		this.asPreambleText = asPreambleText;
 	}
 
+	public String getAsThankyouText() {
+		return this.asThankyouText;
+	}
+
+	public void setAsThankyouText(String asThankyouText) {
+		this.asThankyouText = asThankyouText;
+	}
+
 	public String getAsRedirectPage() {
 		return this.asRedirectPage;
 	}
@@ -104,8 +115,13 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 
 	@Override
 	public JSONObject getJSON() {
+		JSONObject aSurvey = this.survey.getJSON();
+		aSurvey.put("survey_preamble_text", this.asPreambleText);
+		aSurvey.put("survey_thankyou_text", this.asThankyouText);
+		aSurvey.put("survey_redirect_page", this.asRedirectPage);
+		aSurvey.put("survey_asid", this.asId);
 		// TODO Auto-generated method stub
-		return null;
+		return aSurvey;
 	}
 
 	public static Survey getSurveyByASID(long accountDefaultAsId) {

@@ -9,8 +9,6 @@ import org.json.JSONObject;
 import com.employmeo.util.DBUtil;
 
 import java.sql.Timestamp;
-import java.util.List;
-
 
 /**
  * The persistent class for the users database table.
@@ -56,10 +54,6 @@ public class User extends PersistantObject implements Serializable {
 
 	@Column(name="USER_TYPE")
 	private int userType;
-
-	//bi-directional many-to-one association to Survey
-	@OneToMany(mappedBy="user",fetch=FetchType.LAZY)
-	private List<Survey> surveys;
 
 	//bi-directional many-to-one association to Account
 	@ManyToOne(fetch=FetchType.EAGER)
@@ -159,28 +153,6 @@ public class User extends PersistantObject implements Serializable {
 
 	public void setUserType(int userType) {
 		this.userType = userType;
-	}
-
-	public List<Survey> getSurveys() {
-		return this.surveys;
-	}
-
-	public void setSurveys(List<Survey> surveys) {
-		this.surveys = surveys;
-	}
-
-	public Survey addSurvey(Survey survey) {
-		getSurveys().add(survey);
-		survey.setUser(this);
-
-		return survey;
-	}
-
-	public Survey removeSurvey(Survey survey) {
-		getSurveys().remove(survey);
-		survey.setUser(null);
-
-		return survey;
 	}
 
 	public Account getAccount() {
