@@ -9,6 +9,7 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @PersistenceContext(unitName="employmeo")
 public class DBUtil {
 

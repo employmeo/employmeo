@@ -4,13 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MediaType;
-
 import org.json.JSONObject;
 
 import com.employmeo.objects.Person;

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.security.Principal;
 
 import javax.persistence.*;
-import javax.ws.rs.core.SecurityContext;
 
 import org.json.JSONObject;
 

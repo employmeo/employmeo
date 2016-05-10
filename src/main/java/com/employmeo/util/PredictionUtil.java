@@ -1,15 +1,14 @@
 package com.employmeo.util;
 
-import com.employmeo.objects.Location;
-import com.employmeo.objects.Position;
 import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
 
 public class PredictionUtil {
 
 	public static void scoreRespondant(Respondant respondant) {
-		Position position = Position.getPositionById(respondant.getRespondantPositionId());
-		Location location = Location.getLocationById(respondant.getRespondantLocationId());
+// TODO - replace random logic with real scoring algorithm
+//		Position position = Position.getPositionById(respondant.getRespondantPositionId());
+//		Location location = Location.getLocationById(respondant.getRespondantLocationId());
 
 		double d = Math.random();
 		double b = Math.random();

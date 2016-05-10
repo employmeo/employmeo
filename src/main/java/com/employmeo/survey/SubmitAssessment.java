@@ -1,7 +1,6 @@
 package com.employmeo.survey;
 
 import javax.annotation.security.PermitAll;
-import javax.json.JsonObject;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -11,8 +10,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-
-import org.json.JSONObject;
 
 import com.employmeo.objects.Respondant;
 

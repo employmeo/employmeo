@@ -1,7 +1,5 @@
 package com.employmeo.util;
 
-import java.net.URLEncoder;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;

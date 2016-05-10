@@ -1,8 +1,10 @@
 package com.employmeo.util;
 
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.employmeo.objects.Respondant;
 import com.sendgrid.*;
 
 public class EmailUtility {
@@ -10,10 +12,12 @@ public class EmailUtility {
 
 	public static final String FROM_ADDRESS = "info@employmeo.com";	
 	private static Logger logger = Logger.getLogger("EmailUtility");
+	private static String SG_USER = System.getenv("SENDGRID_USERNAME");
+	private static String SG_PASS = System.getenv("SENDGRID_PASSWORD");
+	private static String BASE_SURVEY_URL = System.getenv("BASE_SURVEY_URL");
 	
 	public static SendGrid getSendGrid() {
-
-		return new SendGrid(System.getenv("SENDGRID_USERNAME"),System.getenv("SENDGRID_PASSWORD"));
+		return new SendGrid(SG_USER,SG_PASS);
 	}
 
 	public static void sendMessage(String to, String subject, String content) {
@@ -54,5 +58,16 @@ public class EmailUtility {
 		
 		return;
 	}
-		
+
+	public static String getAssessmentLink(Respondant respondant) {
+		String link = null;
+		try {
+			link = new URL(BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_id=" + respondant.getRespondantId()).toString();
+		} catch (Exception e) {
+			link = BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_id=" + respondant.getRespondantId();
+		}
+		return link.toString();
+	}
+
+	
 }

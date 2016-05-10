@@ -33,61 +33,140 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.19/daterangepicker.min.js"></script>
 <script type="text/javascript" src='/js/stub_scripts.js'></script>
 <script type="text/javascript" src='/js/custom.js'></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src='/js/admin_scripts.js'></script>
 </head>
 
-<header>
-<nav id='header' class="navbar navbar-default navbar-fixed-top">
-  <div class="col-xs-12 col-sm-6 col-md-9">
-            <h3><i class="fa fa-edit"></i>Assessment</h3>
-        </div>
-  <div class="col-xs-12 col-sm-6 col-md-3" id="surveyprogress">
-  <div class="col-sm-12 col-md-12 hidden-xs" style="height:20px;"></div>
-  <div class="col-xs-12 col-sm-12 col-md-12">
-  <div class="progress">
-  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-  </div>
-</div>
-</div>
-  </div>
-</nav>
-</header>
 
-<body style="padding-top: 70px;">
-	<div id='area1' class="areaa">
-      <div id='innerdiva' class='innerdiv'></div>
+
+<body>
+	<div class="input-group form-inline"><form class="form">
+		<button class="btn-primary" type="button" onClick="loadDataFile();">
+			<i class="fa fa-upload"></i>
+		</button>
+	</form></div>
+
+	<div id='chartplace'>
 	</div>
-    <div id='areab' class='areab'>
-      <canvas id='canvasb' class='innercanvas' width='200px' height='200px'></canvas>
-	</div>
-    <div id='areac' class='areac'>
-      <svg id='svgc' class='innersvg'></svg>
-	</div>
+
 </body>
 
 <script>
-$(document).ready(function(){
-	 
-    var arr = [[11, 123, 1236, "Acura"], [45, 92, 1067, "Alfa Romeo"], 
-    [24, 104, 1176, "AM General"], [50, 23, 610, "Aston Martin Lagonda"], 
-    [18, 17, 539, "Audi"], [7, 89, 864, "BMW"], [2, 13, 1026, "Bugatti"]];
-     
-    var plot1 = $.jqplot('areab',[arr],{
-        title: 'Bubble',
-        axes:{
-        	yaxis:{min:20, max:100},
-        	xaxis:{min:20, max:100}
-        },
-        seriesDefaults:{
-            renderer: $.jqplot.BubbleRenderer,
-            rendererOptions: {
-                bubbleGradients: true
-            },
-            shadow: true
-        }
-    });
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+/* 
+ * value accessor - returns the value to encode for a given data object.
+ * scale - maps value to a visual display encoding, such as a pixel position.
+ * map function - maps from data value to display value
+ * axis - sets up axis
+ */ 
+
+// setup x 
+var xValue = function(d) { return Number(d["Total Hours"]);}, // data -> value
+    xScale = d3.scale.linear().range([0, width]), // value -> display
+    xMap = function(d) { return xScale(xValue(d));}, // data -> display
+    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+// setup y
+var yValue = function(d) {
+	var val = parseFloat(d["RaiseRate"])
+	if (isNaN(val)) {
+		val = 0;
+	}
+	return val;
+    }, // data -> value
+    yScale = d3.scale.linear().range([height, 0]), // value -> display
+    yMap = function(d) { return yScale(yValue(d));}, // data -> display
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+// setup fill color
+var cValue = function(d) { return d.Manufacturer;},
+    color = d3.scale.category10();
+
+// add the graph canvas to the body of the webpage
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// add the tooltip area to the webpage
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+function loadDataFile(file){
+	
+// load data
+d3.csv('employees.csv', function(error, data) {
+
+  // change string (from CSV) into number format
+  data.forEach(function(d) {
+//    console.log(d);
+  });
+
+  // don't want dots overlapping axis, so add in buffer to data domain
+  xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+  yScale.domain([0, .3]); //d3.min(data, yValue)-1, d3.max(data, yValue)+1
+
+  console.log("Min X: ", d3.min(data, xValue)-1);
+  console.log("Max X: ", d3.max(data, xValue)+1);
+  console.log("Min Y: ", d3.min(data, yValue)-1);
+  console.log("Max Y: ", d3.max(data, yValue)+1);
+
+  
+  // x-axis
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Calories");
+
+  // y-axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Protein (g)");
+
+  // draw dots
+  svg.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", xMap)
+      .attr("cy", yMap)
+      .style("fill", function(d) { return color(cValue(d));}) 
+      .on("mouseover", function(d) {
+          tooltip.transition()
+               .duration(200)
+               .style("opacity", .9);
+          tooltip.html(d["Cereal Name"] + "<br/> (" + xValue(d) 
+	        + ", " + yValue(d) + ")")
+               .style("left", (d3.event.pageX + 5) + "px")
+               .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout", function(d) {
+          tooltip.transition()
+               .duration(500)
+               .style("opacity", 0);
+      });
+
 });
+}
 </script>
+
 
 </html>

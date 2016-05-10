@@ -5,6 +5,7 @@ import java.net.URL;
 
 import javax.persistence.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONObject;
 
@@ -14,6 +15,7 @@ import com.employmeo.util.EmailUtility;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -135,23 +137,21 @@ public class Respondant extends PersistantObject implements Serializable {
 	public Long getRespondantId() {
 		return this.respondantId;
 	}
-
 	public void setRespondantId(Long respondantId) {
 		this.respondantId = respondantId;
 	}
+
 	public Long getRespondantAccountId() {
 		return this.respondantAccountId;
-	}
-	
-	public void setRespondantAccountId(Long accountId) {
-		this.respondantAccountId = accountId;
-		this.account = Account.getAccountById(accountId);
 	}
 	public Account getRespondantAccount() {
 		if (this.account == null) this.account = Account.getAccountById(this.respondantAccountId);
 		return this.account;
 	}
-
+	public void setRespondantAccountId(Long accountId) {
+		this.respondantAccountId = accountId;
+		this.account = Account.getAccountById(accountId);
+	}
 	public void setAccount(Account account) {
 		this.account = account;
 		this.respondantAccountId = account.getAccountId();
@@ -160,37 +160,35 @@ public class Respondant extends PersistantObject implements Serializable {
 	public Long getRespondantLocationId() {
 		return this.respondantLocationId;
 	}
-	
+	public Location getLocation() {
+		if (this.location == null) this.location = Location.getLocationById(this.respondantLocationId);
+		return this.location;
+	}	
 	public void setRespondantLocationId(Long locationId) {
 		this.respondantLocationId = locationId;
 		this.location = Location.getLocationById(this.respondantLocationId);
 	}
-
-	public Location getLocation() {
-		if (this.location == null) this.location = Location.getLocationById(this.respondantLocationId);
-		return this.location;
-	}
-
+	
 	public Long getRespondantPositionId() {
+		if (this.respondantPositionId == null) this.respondantPositionId = this.position.getPositionId();
 		return this.respondantPositionId;
 	}
-	
-	public void setRespondantPositionId(Long positionId) {
-		this.respondantPositionId = positionId;
-	}
-	
 	public Position getPosition() {
 		if (this.position == null) this.position = Position.getPositionById(this.respondantPositionId);
 		return this.position;
 	}
-
+	public void setRespondantPositionId(Long positionId) {
+		this.respondantPositionId = positionId;
+		this.position = Position.getPositionById(positionId);
+	}
 	public void setPosition(Position position) {
+		this.respondantPositionId = position.getPositionId();
 		this.position = position;
 	}
+	
 	public Date getRespondantCreatedDate() {
 		return this.respondantCreatedDate;
 	}
-
 	public void setRespondantCreatedDate(Date respondantCreatedDate) {
 		this.respondantCreatedDate = respondantCreatedDate;
 	}
@@ -198,7 +196,6 @@ public class Respondant extends PersistantObject implements Serializable {
 	public Date getRespondantHireDate() {
 		return this.respondantHireDate;
 	}
-
 	public void setRespondantHireDate(Date respondantHireDate) {
 		this.respondantHireDate = respondantHireDate;
 	}
@@ -206,7 +203,6 @@ public class Respondant extends PersistantObject implements Serializable {
 	public int getRespondantStatus() {
 		return this.respondantStatus;
 	}
-
 	public void setRespondantStatus(int respondantStatus) {
 		this.respondantStatus = respondantStatus;
 	}
@@ -214,7 +210,6 @@ public class Respondant extends PersistantObject implements Serializable {
 	public String getRespondantProfile() {
 		return this.respondantProfile;
 	}
-
 	public void setRespondantProfile(String profile) {
 		this.respondantProfile = profile;
 	}
@@ -249,8 +244,7 @@ public class Respondant extends PersistantObject implements Serializable {
 	
 	public Long getRespondantSurveyId() {
 		return this.respondantSurveyId;
-	}
-	
+	}	
 	public void setRespondantSurveyId(Long surveyId) {
 		this.respondantSurveyId = surveyId;
 	}
@@ -258,7 +252,6 @@ public class Respondant extends PersistantObject implements Serializable {
 		if (this.survey == null) this.survey = Survey.getSurveyById(this.respondantSurveyId);
 		return this.survey;
 	}
-
 	public void setSurvey(Survey survey) {
 		this.survey = survey;
 	}
@@ -266,7 +259,6 @@ public class Respondant extends PersistantObject implements Serializable {
 	public Person getPerson() {
 		return this.person;
 	}
-
 	public void setPerson(Person person) {
 		this.person = person;
 	}
@@ -278,36 +270,57 @@ public class Respondant extends PersistantObject implements Serializable {
 	public void setRespondantAtsId (String atsId) {
 		this.respondantAtsId = atsId;
 	}
-	
 	public String getRespondantAtsId () {
 		return this.respondantAtsId;
 	}
 	
 	public void setRespondantPayrollId (String payrollId) {
 		this.respondantAtsId = payrollId;
-	}
-		
+	}	
 	public String getRespondantPayrollId() {
 		return this.respondantAtsId;
 	}
-
-	public List<RespondantScore> getScores() {
-
-		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<RespondantScore> q = em.createQuery("SELECT r FROM RespondantScore r WHERE r.rsRespondantId = :respondantId", RespondantScore.class);
-        q.setParameter("respondantId", this.getRespondantId());
-        
-        return q.getResultList();
+	
+	public String getRespondantRedirectUrl() {
+		return this.respondantRedirectUrl;
+	}
+	public void setRespondantRedirectUrl(String respondantRedirectUrl) {
+		this.respondantRedirectUrl = respondantRedirectUrl;
 	}
 	
-	public static Respondant getRespondantById(String lookupId) {
-		
+	public String getRespondantScorePostMethod() {
+		return this.respondantScorePostMethod;
+	}
+	public void setRespondantScorePostMethod(String respondantScorePostMethod) {
+		this.respondantScorePostMethod = respondantScorePostMethod;
+	}
+	
+	public String getRespondantEmailRecipient() {
+		return this.respondantEmailRecipient;
+	}
+	public void setRespondantEmailRecipient(String respondantEmailRecipient) {
+		this.respondantEmailRecipient = respondantEmailRecipient;
+	}
+	
+	public void setRespondantStartTime(Timestamp start) {
+		this.respondantStartTime = start;
+	}
+	public Timestamp getRespondantStartTime() {
+		return this.respondantStartTime;
+	}
+
+	public void setRespondantFinishTime (Timestamp finish) {
+		this.respondantFinishTime = finish;
+	}
+	public Timestamp getRespondantFinishTime () {
+		return this.respondantFinishTime;
+	}
+
+	public static Respondant getRespondantById(String lookupId) {		
 		return getRespondantById(new Long(lookupId));
-		
 	}
 	
 	public static Respondant getRespondantById(Long lookupId) {
-
 		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Respondant> q = em.createQuery("SELECT r FROM Respondant r WHERE r.respondantId = :respondantId", Respondant.class);
         q.setParameter("respondantId", lookupId);
@@ -368,7 +381,10 @@ public class Respondant extends PersistantObject implements Serializable {
 			  System.out.println("CANT SCORE INCOMPLETE ASSESSMENT FOR:\n" + this.getJSONString());
 		  } else {
 			  if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
-				  List<RespondantScore> rs = this.getScores();
+				  EntityManager em = DBUtil.getEntityManager();
+				  TypedQuery<RespondantScore> q = em.createQuery("SELECT r FROM RespondantScore r WHERE r.rsRespondantId = :respondantId", RespondantScore.class);
+		          q.setParameter("respondantId", this.getRespondantId());		  
+				  List<RespondantScore> rs = q.getResultList();
 				  for (int i=0; i<rs.size(); i++) {
 					  Corefactor corefactor = Corefactor.getCorefactorById(rs.get(i).getRsCfId());			  
 					  scores.put(corefactor.getCorefactorName(),rs.get(i).getRsValue());					  
@@ -404,41 +420,28 @@ public class Respondant extends PersistantObject implements Serializable {
 		  return scores;
 	}
 
-	public String getSurveyUrl(HttpServletRequest req) {
-		String prefix = "http://" + req.getServerName();
-		if (req.getServerPort() != 80) {
-			prefix = prefix + ":" + req.getServerPort();
-		}
-		String link = null;
-		try {
-			link = new URL(prefix + "/take_assessment.html" + "?&respondant_id=" + this.getRespondantId()).toString();
-		} catch (Exception e) {
-			link = prefix + "/take_assessment.html" + "?&respondant_id=" + this.getRespondantId();
-		}
-		return link.toString();
-	}
-	
 	public void sendEmailInvitation(HttpServletRequest req) {
-		  String link = this.getSurveyUrl(req);
-		  String body = "Dear " + this.person.getPersonFname() + ",\n" +
-		  			"\n" +
+		// TODO switch over to a maintainable template on sendgrid.
+		String link = EmailUtility.getAssessmentLink(this);
+		String body = "Dear " + this.person.getPersonFname() + ",\n" +
+		 			"\n" +
 		  			"Congratulations, we are excited to invite you to complete a preliminary " +
 		  			"assessment for this position.\nThis assessment can be completed on a " + 
 		  			"mobile device or in a browser at this link: \n" + link;
-		  try {
+		try {
 			  req.getSession().setAttribute("applicant", this.person);
 			  req.getSession().setAttribute("link", link);
 			  EmailServletResponse htmlpart = new EmailServletResponse();
 			  req.getRequestDispatcher("/WEB-INF/emails/inviteapplicant.jsp").forward(req, htmlpart);
 			  EmailUtility.sendMessage(this.person.getPersonEmail(), "Invitation to Apply", body, htmlpart);
-		  } catch (Exception e) {
-			  // if using the jsp emai template fails, just send basic body text.
+		} catch (Exception e) {
+			  // if using the jsp email template fails, just send basic body text.
 			  EmailUtility.sendMessage(this.person.getPersonEmail(), "Invitation to Apply", body);		  
-		  }
+		}
 	}
 	
 	public void postScoresToATS() {
-		// Stub code to send the final scores somewhere...
+		// TODO Stub code to send the final scores somewhere...
 	}
 
 }

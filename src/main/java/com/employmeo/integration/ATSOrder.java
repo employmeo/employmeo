@@ -22,6 +22,7 @@ import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Survey;
 import com.employmeo.util.AddressUtil;
+import com.employmeo.util.EmailUtility;
 import com.employmeo.util.PartnerUtil;
 
 @Path("atsorder")
@@ -47,6 +48,7 @@ public class ATSOrder {
     		account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
     		applicant = json.getJSONObject("applicant");
     		person.setPersonSsn(applicant.getString("applicant_ats_id"));
+    		respondant.setRespondantAtsId(applicant.getString("applicant_ats_id"));
     		person.setPersonEmail(applicant.getString("email"));
     		person.setPersonFname(applicant.getString("fname"));
     		person.setPersonLname(applicant.getString("lname"));
@@ -69,23 +71,41 @@ public class ATSOrder {
 
     	JSONObject delivery = json.optJSONObject("delivery");
     	// get the redirect method, score posting and email handling for this assessment
+    	if (delivery.has("scores_email_address")) respondant.setRespondantEmailRecipient(delivery.getString("scores_email_address")); 
+    	if (delivery.has("scores_redirect_url")) respondant.setRespondantRedirectUrl(delivery.getString("scores_redirect_url")); 
+    	if (delivery.has("scores_post_url")) respondant.setRespondantScorePostMethod(delivery.getString("scores_post_url"));  	
     	
 		respondant.setRespondantAccountId(account.getAccountId());   	
 		respondant.setRespondantSurveyId(survey.getSurveyId());
 		respondant.setRespondantLocationId(location.getLocationId());// ok for null location
 		respondant.setRespondantPositionId(position.getPositionId());// ok for null location
 		
-		// Perform business logic  
-	
+		
+		// Create Person & Respondant in database.	
 		person.persistMe();
 		respondant.setPerson(person);
 		respondant.persistMe();
-		  
-		JSONObject output = new JSONObject();
-		output.put("applicant", respondant.getJSON());
-		output.put("delivery", respondant.getJSON());	
+
+		
+		// TODO - code to trigger an email to applicant if delivery message says so.
+		// if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant")) respondant.sendEmailInvitation(uriInfo);
 	
-		// Perform business logic  
+    	JSONObject jAccount = new JSONObject();
+    	jAccount.put("account_ats_id", account.getAccountAtsId());
+    	jAccount.put("account_id", account.getAccountId());
+    	jAccount.put("account_name", account.getAccountName());
+
+    	JSONObject jApplicant = new JSONObject();
+    	jApplicant.put("applicant_ats_id", respondant.getRespondantAtsId());
+    	jApplicant.put("applicant_id", respondant.getRespondantId());
+    	
+    	delivery = new JSONObject();
+    	delivery.put("assessment_url", EmailUtility.getAssessmentLink(respondant));
+    	
+		JSONObject output = new JSONObject();
+		output.put("account", jAccount);
+		output.put("applicant", jApplicant);
+		output.put("delivery", delivery);	
 	
 		logger.log(Level.INFO, output.toString());
 		return output.toString();
