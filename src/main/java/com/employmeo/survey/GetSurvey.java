@@ -1,5 +1,7 @@
 package com.employmeo.survey;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.FormParam;
@@ -34,7 +36,7 @@ public class GetSurvey {
 		  
 		  if (respondant.getRespondantStatus() < Respondant.STATUS_STARTED) {
 			  respondant.setRespondantStatus(Respondant.STATUS_STARTED);
-//				respondant.setStartTime(startTime);
+			  respondant.setRespondantStartTime(new Timestamp (new Date().getTime()));
 			  respondant.mergeMe();
 		  }
 

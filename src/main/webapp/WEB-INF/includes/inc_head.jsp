@@ -24,7 +24,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?&key=AIzaSyA2bSTr1nfJEneqGPFjpJTASqy8P7cVyrc&libraries=places"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?&key=AIzaSyA2bSTr1nfJEneqGPFjpJTASqy8P7cVyrc&libraries=places"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/geocomplete/1.7.0/jquery.geocomplete.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.0.1/Chart.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>

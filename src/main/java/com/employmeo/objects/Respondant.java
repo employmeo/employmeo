@@ -342,6 +342,7 @@ public class Respondant extends PersistantObject implements Serializable {
 		json.put("respondant_profile_b", this.profileB);
 		json.put("respondant_profile_c", this.profileC);
 		json.put("respondant_profile_d", this.profileD);
+		json.put("respondant_redirect_url", this.respondantRedirectUrl);
 
 		if (this.account != null) json.put("respondant_account_id", this.account.getAccountId());		
 		if (this.survey != null) json.put("respondant_survey_id", this.survey.getSurveyId());
