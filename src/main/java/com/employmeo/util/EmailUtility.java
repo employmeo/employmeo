@@ -6,6 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.employmeo.objects.Respondant;
 import com.sendgrid.*;
 
@@ -76,5 +78,20 @@ public class EmailUtility {
 		return link.toString();
 	}
 
+
+	public static void sendEmailInvitation(Respondant respondant) {
+		// TODO switch over to a maintainable template on sendgrid.
+		String link = EmailUtility.getAssessmentLink(respondant);
+		String body = "Dear " + respondant.getPerson().getPersonFname() + ",\n" +
+		 			"\n" +
+		  			"Congratulations, we are excited to invite you to complete a preliminary " +
+		  			"assessment for this position.\nThis assessment can be completed on a " + 
+		  			"mobile device or in a browser at this link: \n" + link;
+
+		EmailUtility.sendMessage(respondant.getPerson().getPersonEmail(), "Invitation to Apply", body);		  
+
+	}
+
+	
 	
 }

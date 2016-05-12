@@ -263,7 +263,7 @@ var atsdata = {
 		      "applicant_ats_id":"1386047",
 		      "fname":"ANDREW",
 		      "lname":"GARFIELD",
-		      "email":"jdave1201@gmail.com",
+		      "email":"sridharkaza@gmail.com",
 		      "address":{  
 		         "street":"124 FIFTH AVENUE ",
 		         "city":"JACKSONVILLE",

@@ -39,7 +39,8 @@ public class ATSOrder {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost (JSONObject json)
 	{
-		JSONObject applicant = null;
+    	logger.info(json.toString());
+    	JSONObject applicant = null;
 	    Account account = null;
 	    Person person = new Person();
 		Respondant respondant = new Respondant();
@@ -71,9 +72,9 @@ public class ATSOrder {
 
     	JSONObject delivery = json.optJSONObject("delivery");
     	// get the redirect method, score posting and email handling for this assessment
-    	if (delivery.has("scores_email_address")) respondant.setRespondantEmailRecipient(delivery.getString("scores_email_address")); 
-    	if (delivery.has("scores_redirect_url")) respondant.setRespondantRedirectUrl(delivery.getString("scores_redirect_url")); 
-    	if (delivery.has("scores_post_url")) respondant.setRespondantScorePostMethod(delivery.getString("scores_post_url"));  	
+    	if (delivery.has("scores_email_address")) respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address")); 
+    	if (delivery.has("scores_redirect_url")) respondant.setRespondantRedirectUrl(delivery.optString("scores_redirect_url")); 
+    	if (delivery.has("scores_post_url")) respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));  	
     	
 		respondant.setRespondantAccountId(account.getAccountId());   	
 		respondant.setRespondantSurveyId(survey.getSurveyId());
@@ -88,7 +89,7 @@ public class ATSOrder {
 
 		
 		// TODO - code to trigger an email to applicant if delivery message says so.
-		// if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant")) respondant.sendEmailInvitation(uriInfo);
+		if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant")) EmailUtility.sendEmailInvitation(respondant);
 	
     	JSONObject jAccount = new JSONObject();
     	jAccount.put("account_ats_id", account.getAccountAtsId());
