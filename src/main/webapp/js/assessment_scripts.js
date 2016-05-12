@@ -87,6 +87,20 @@ function getPlainSurveyForNewRespondant(form) {
       });	
 }
 
+function submitSurvey() {
+	var redirect = 'http://employmeo.com';
+	if (respondant.respondant_redirect_url != null) redirect = respondant.respondant_redirect_url;
+    $.ajax({
+        type: "POST",
+        async: true,
+        url: "/survey/submitassessment",
+        data: {'respondant_id' : respondant.respondant_id},
+        success: function(data)
+        {
+            window.location.assign(respondant.redirect_url);
+        }
+      });	
+}
 //
 function createPlainNewRespondant(surveyId, accountId) {
   // code to create a form to fill out for a new survey respondant	
@@ -482,7 +496,7 @@ function getSurveyNav(pagecount, totalpages) {
 	if (pagecount == totalpages) {
 		nextbutton.attr('disabled', true);
 		$(nextbutton).text('Finished');
-		nextbutton.attr('onClick','mySwipe.next();');
+		nextbutton.attr('onClick','submitSurvey();');
 	} else if (pagecount > 1) {
 		nextbutton.attr('disabled', true);
 	}
