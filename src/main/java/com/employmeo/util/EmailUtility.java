@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
+import org.json.JSONObject;
 
 import com.employmeo.objects.Respondant;
 import com.sendgrid.*;
@@ -68,15 +68,6 @@ public class EmailUtility {
 		return;
 	}
 
-	public static String getAssessmentLink(Respondant respondant) {
-		String link = null;
-		try {
-			link = new URL(BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_id=" + respondant.getRespondantId()).toString();
-		} catch (Exception e) {
-			link = BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_id=" + respondant.getRespondantId();
-		}
-		return link.toString();
-	}
 
 
 	public static void sendEmailInvitation(Respondant respondant) {
@@ -92,6 +83,54 @@ public class EmailUtility {
 
 	}
 
+	public static void sendResults(String emailto, JSONObject applicant) {
+		String plink = applicant.getString("portal_link");
+		//String rlink = applicant.getString("render_link");
+
+		String body = "Dear User,\n" +
+		 			"\n" +
+		  			"The assessment for applicant " + applicant.getString("applicant_id") + 
+		  			" has been submitted and scored. The results are now available on the portal at:\n" +
+		 			plink + "\n";
+
+		EmailUtility.sendMessage(emailto, "Assessment Complete", body);		  
+		
+	}
 	
-	
+
+/****
+ * Section to generate external links (uses environment variables)
+ */
+
+
+	public static String getAssessmentLink(Respondant respondant) {
+		String link = null;
+		try {
+			link = new URL(BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_id=" + respondant.getRespondantId()).toString();
+		} catch (Exception e) {
+			link = BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_id=" + respondant.getRespondantId();
+		}
+		return link.toString();
+	}
+
+	public static String getPortalLink(Respondant respondant) {
+		String link = null;
+		try {
+			link = new URL(BASE_SURVEY_URL + "/respondant_score.jsp" + "?&respondant_id=" + respondant.getRespondantId()).toString();
+		} catch (Exception e) {
+			link = BASE_SURVEY_URL + "/respondant_score.jsp" + "?&respondant_id=" + respondant.getRespondantId();
+		}
+		return link.toString();
+	}
+
+	public static String getRenderLink(JSONObject applicant) {
+		String link = null;
+		try {
+			link = new URL(BASE_SURVEY_URL + "/render.html" + "?&scores=" + applicant.getJSONArray("scores").toString()).toString();
+		} catch (Exception e) {
+			link = BASE_SURVEY_URL + "/render.html" + "?&scores=" + applicant.getJSONArray("scores").toString();
+		}
+		return link.toString();
+	}
+
 }

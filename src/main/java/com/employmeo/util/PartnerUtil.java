@@ -137,8 +137,8 @@ public class PartnerUtil {
 			applicant.accumulate("scores", cf);
 		}
 		
-		applicant.put("portal_link", "link not set");
-		applicant.put("render_link", "link not set");
+		applicant.put("portal_link", EmailUtility.getPortalLink(respondant));
+		applicant.put("render_link", EmailUtility.getRenderLink(applicant));
 		
 		JSONObject message = new JSONObject();
 		message.put("account", jAccount);

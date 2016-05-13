@@ -2,7 +2,6 @@ package com.employmeo.survey;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -20,11 +19,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
 
-import com.employmeo.objects.Account;
-import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
+import com.employmeo.util.EmailUtility;
 import com.employmeo.util.PartnerUtil;
-import com.employmeo.util.PredictionUtil;
 
 @Path("submitassessment")
 public class SubmitAssessment {
@@ -59,7 +56,9 @@ public class SubmitAssessment {
 				// TODO... call the scoring logic for Respondant
 				JSONObject message = PartnerUtil.getScoresMessage(respondant);
 				String postmethod = respondant.getRespondantScorePostMethod();
-				if (postmethod == null) postmethod = "https://employmeo.herokuapp.com/integration/echo";
+				if (postmethod == null || postmethod.isEmpty())
+					postmethod = "https://employmeo.herokuapp.com/integration/echo";
+				
 				Client client = ClientBuilder.newClient();
 				WebTarget target = client.target(postmethod);
 				try {
@@ -68,7 +67,9 @@ public class SubmitAssessment {
 				} catch (Exception e) {
 					logger.severe("failed posting scores to: " + postmethod);
 				}
-				
+				if (respondant.getRespondantEmailRecipient() != null) {
+					EmailUtility.sendResults(respondant.getRespondantEmailRecipient(), message.getJSONObject("applicant"));
+				}
 			}
 		});		
 	}

@@ -30,6 +30,7 @@ public class GetPositions {
 	  @Consumes(MediaType.APPLICATION_JSON)
 	  public String doPost (JSONObject json)
 	  {  
+			logger.info("processing with:\n" + json.toString());   
 		    Account account = null;
 		    
 	    	try { // the required parameters

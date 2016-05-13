@@ -282,6 +282,34 @@ var atsdata = {
 		   "position":null
 		};
 
+var emailuser = {  
+		   "account":{  
+		      "account_ats_id":"1234",
+		      "account_name":"FR Demo Account"
+		   },
+		   "applicant":{  
+		      "applicant_ats_id":"1386047",
+		      "fname":"ANDREW",
+		      "lname":"GARFIELD",
+		      "email":"sridharkaza@gmail.com",
+		      "address":{  
+		         "street":"124 FIFTH AVENUE ",
+		         "city":"JACKSONVILLE",
+		         "zip":"70684",
+		         "state":"CT"
+		      }
+		   },
+		   "delivery":{  
+		      "email_applicant":true,
+		      "redirect_url":null,
+		      "scores_post_url":null,
+		      "scores_email_notify":false,
+		      "scores_email_address": "sridharkaza@gmail.com"
+		   },
+		   "location":null,
+		   "position":null
+		};
+
 var moreatsdata = {
 		account : {
 			account_ats_id : '1234',
