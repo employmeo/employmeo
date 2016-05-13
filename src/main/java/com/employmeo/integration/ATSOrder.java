@@ -39,7 +39,7 @@ public class ATSOrder {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost (JSONObject json)
 	{
-    	logger.info(json.toString());
+		logger.info("processing with:\n" + json.toString());   
     	JSONObject applicant = null;
 	    Account account = null;
 	    Person person = new Person();

@@ -68,6 +68,12 @@ function buildPlainSurveyWithRespondantId(respondantId) {
       });
 }
 
+function nextPage() {
+	$('#survey').carousel("next");
+}
+function prevPage() {
+	$('#survey').carousel("prev");
+}
 function getPlainSurveyForNewRespondant(form) {
     $.ajax({
         type: "POST",
@@ -97,7 +103,7 @@ function submitSurvey() {
         data: {'respondant_id' : respondant.respondant_id},
         success: function(data)
         {
-            window.location.assign(respondant.redirect_url);
+            window.location.assign(redirect);
         }
       });	
 }
@@ -239,7 +245,7 @@ function createPlainNewRespondant(surveyId, accountId) {
 		}).append(form));
 	infopage.appendTo(deck);
 	
-	prepSurvey();
+	//prepSurvey();
 	$('#address').geocomplete({details:'form'});
 }
 
@@ -262,7 +268,9 @@ function assemblePlainSurvey(collection) {
 	var qlimit = 5; // questions per page
 	totalpages = Math.ceil(questions.length / qlimit) + 1;
 	
-	var card = $('<div />', {});
+	var card = $('<div />', {
+		'class' : 'item active'
+	});
 	
 	card.append(getHrDiv());
 	card.append($('<div />', {
@@ -276,7 +284,7 @@ function assemblePlainSurvey(collection) {
 	var qcount = 0;
 	var qpp = 0;
 	card = $('<div />', {
-		'class' : 'questionpage'
+		'class' : 'questionpage item'
 	});
 	card.append(getHrDiv());
 	pagination[pagecount] = new Array();
@@ -292,7 +300,7 @@ function assemblePlainSurvey(collection) {
 			pagination[pagecount] = new Array();
 			qpp = 0;
 			card = $('<div />', {
-				'class' : 'questionpage'
+				'class' : 'questionpage item'
 			});
 			card.append(getHrDiv());				
 		}
@@ -315,7 +323,7 @@ function assemblePlainSurvey(collection) {
 		'height' : '75px'}));
 	card.appendTo(deck);
 
-	prepSurvey();
+	//prepSurvey();
 	responses = new Array();
 }
 
@@ -477,7 +485,7 @@ function getSurveyNav(pagecount, totalpages) {
 			'id' : 'prevbtn-' + pagecount, 
 			'class' : 'btn btn-primary',
 			'text' : "<< Back",
-			'onClick':'mySwipe.prev();'
+			'onClick':'prevPage();'
 		}));
 	}
 	var centernav = $('<div />', {
@@ -491,7 +499,7 @@ function getSurveyNav(pagecount, totalpages) {
 		'id' : 'nextbtn-' + pagecount, 
 		'class' : 'btn btn-primary',
 		'text' : "Next >>",
-		'onClick':'mySwipe.next();'
+		'onClick':'nextPage();'
 	});
 	if (pagecount == totalpages) {
 		nextbutton.attr('disabled', true);
@@ -601,7 +609,7 @@ function submitAnswer(form) {
               saveResponse(data);
            }
          });    
-    mySwipe.next();  
+    nextPage();  
 }
 
 function assembleVisualSurvey(collection) {
@@ -622,7 +630,7 @@ function assembleVisualSurvey(collection) {
 		 'class' : "qpanel-footer text-center",
 	}).append($('<h4/>', {	'text': 'Swipe Left to Begin  ' }).append($('<i/>',{
 		'class': "fa fa-play-circle-o", 
-		'onClick':'mySwipe.next();'
+		'onClick':'nextPage();'
 		})
 	));
 	qpanel.append(header);
@@ -671,7 +679,7 @@ function assembleVisualSurvey(collection) {
 	card.append(qpanel);
 	card.appendTo(deck);
 
-	prepSurvey();
+	//prepSurvey();
 	responses = new Array();
 }
 

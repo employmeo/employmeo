@@ -30,14 +30,14 @@ public class GetScore {
     private final Response ACCOUNT_MATCH = Response.status(Response.Status.CONFLICT).entity("{ message: 'Applicant ID not found for Account ID' }").build();
     private static Logger logger = Logger.getLogger("RestService");
 	
-	  @POST
-	  @Produces(MediaType.APPLICATION_JSON)
-	  @Consumes(MediaType.APPLICATION_JSON)
-	  public String doPost (JSONObject json)
-	  {  
-		  Account account = null;
-		  Respondant respondant = null;
-		   
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String doPost (JSONObject json)
+	{
+		Account account = null;
+		Respondant respondant = null;
+		logger.info("processing with:\n" + json.toString());   
 	    try { // the required parameters
 	    	account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
 	    	respondant = PartnerUtil.getRespondantFrom(json.getJSONObject("applicant"));
@@ -48,10 +48,7 @@ public class GetScore {
 	      if (account.getAccountId() != respondant.getRespondantAccountId()) {
 	    		throw new WebApplicationException(ACCOUNT_MATCH);	    	  
 	      }
-	      
-		  JSONObject jresp = respondant.getJSON();	      
-		  jresp.put("scores", respondant.scoreMe());
-	  
-		  return jresp.toString();
+	       
+		  return PartnerUtil.getScoresMessage(respondant).toString();
 	  }	  
 }

@@ -1,5 +1,7 @@
 package com.employmeo.util;
 
+import java.util.Iterator;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -12,6 +14,7 @@ import org.json.JSONObject;
 import com.employmeo.objects.Account;
 import com.employmeo.objects.Location;
 import com.employmeo.objects.Position;
+import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Survey;
 
@@ -100,4 +103,49 @@ public class PartnerUtil {
 		return respondant;
 	}
 
+	public static JSONObject getScoresMessage(Respondant respondant) {
+
+		JSONObject scores = respondant.scoreMe();
+		PredictionUtil.scoreRespondant(respondant);
+
+		Account account = respondant.getRespondantAccount();
+		JSONObject jAccount = new JSONObject();
+		JSONObject applicant = new JSONObject();
+		
+		jAccount.put("account_ats_id", account.getAccountAtsId());
+		jAccount.put("account_id", account.getAccountId());
+		jAccount.put("account_name", account.getAccountName());
+
+		applicant.put("applicant_ats_id", respondant.getRespondantAtsId());
+		applicant.put("applicant_id", respondant.getRespondantAtsId());
+		applicant.put("applicant_profile", respondant.getRespondantProfile());
+		applicant.put("applicant_profile_a", respondant.getProfileA());
+		applicant.put("applicant_profile_b", respondant.getProfileB());
+		applicant.put("applicant_profile_c", respondant.getProfileC());
+		applicant.put("applicant_profile_d", respondant.getProfileD());
+		applicant.put("label_profile_a", PositionProfile.getProfileDefaults(PositionProfile.PROFILE_A).getString("profile_name"));
+		applicant.put("label_profile_b", PositionProfile.getProfileDefaults(PositionProfile.PROFILE_B).getString("profile_name"));
+		applicant.put("label_profile_c", PositionProfile.getProfileDefaults(PositionProfile.PROFILE_C).getString("profile_name"));
+		applicant.put("label_profile_d", PositionProfile.getProfileDefaults(PositionProfile.PROFILE_D).getString("profile_name"));
+		
+		Iterator<String> it = scores.keys();
+		while (it.hasNext()) {
+			String label = it.next();
+			JSONObject cf = new JSONObject();
+			cf.put("corefactor_name", label);
+			cf.put("corefactor_score", scores.getDouble(label));
+			applicant.accumulate("scores", cf);
+		}
+		
+		applicant.put("portal_link", "link not set");
+		applicant.put("render_link", "link not set");
+		
+		JSONObject message = new JSONObject();
+		message.put("account", jAccount);
+		message.put("applicant", applicant);
+
+		return message;
+		
+	}
+	
 }
