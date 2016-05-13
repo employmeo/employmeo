@@ -1,14 +1,21 @@
 package com.employmeo.util;
 
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.employmeo.objects.Account;
@@ -19,6 +26,7 @@ import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Survey;
 
 public class PartnerUtil {
+    private static Logger logger = Logger.getLogger("PartnerUtility");
 
 	public static Account getAccountFrom(JSONObject jAccount) {
 		Account account = null;
@@ -85,7 +93,6 @@ public class PartnerUtil {
 	}
 
 	public static Respondant getRespondantFrom(JSONObject applicant) {
-		// TODO Auto-generated method stub
 		Respondant respondant = null;
 		String applicantAtsId = applicant.optString("applicant_ats_id");
 		if (applicantAtsId != null) {
@@ -97,7 +104,7 @@ public class PartnerUtil {
 	      	  respondant = q.getSingleResult();
 	        } catch (NoResultException nre) {}
 		} else {
-			// Try to grab account by account_id
+			// Try to grab account by employmeo respondant_id
 			respondant = Respondant.getRespondantById(applicant.optLong("applicant_id"));
 		}
 		return respondant;
@@ -106,6 +113,7 @@ public class PartnerUtil {
 	public static JSONObject getScoresMessage(Respondant respondant) {
 
 		JSONObject scores = respondant.scoreMe();
+    	logger.info("got scores: " + scores.toString());
 		PredictionUtil.scoreRespondant(respondant);
 
 		Account account = respondant.getRespondantAccount();
@@ -127,19 +135,22 @@ public class PartnerUtil {
 		applicant.put("label_profile_b", PositionProfile.getProfileDefaults(PositionProfile.PROFILE_B).getString("profile_name"));
 		applicant.put("label_profile_c", PositionProfile.getProfileDefaults(PositionProfile.PROFILE_C).getString("profile_name"));
 		applicant.put("label_profile_d", PositionProfile.getProfileDefaults(PositionProfile.PROFILE_D).getString("profile_name"));
+
 		
 		Iterator<String> it = scores.keys();
+		JSONArray scoreset = new JSONArray();
 		while (it.hasNext()) {
 			String label = it.next();
 			JSONObject cf = new JSONObject();
 			cf.put("corefactor_name", label);
 			cf.put("corefactor_score", scores.getDouble(label));
-			applicant.accumulate("scores", cf);
+			scoreset.put(cf);
 		}
-		
+
+		applicant.put("scores", scoreset);
 		applicant.put("portal_link", EmailUtility.getPortalLink(respondant));
 		applicant.put("render_link", EmailUtility.getRenderLink(applicant));
-		
+	
 		JSONObject message = new JSONObject();
 		message.put("account", jAccount);
 		message.put("applicant", applicant);
@@ -148,4 +159,20 @@ public class PartnerUtil {
 		
 	}
 	
+	public static void postScoresToPartner(Respondant respondant, JSONObject message) {
+
+		String postmethod = respondant.getRespondantScorePostMethod();
+		if (postmethod == null || postmethod.isEmpty())
+			postmethod = "https://employmeo.herokuapp.com/integration/echo";
+		
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(postmethod);
+		try {
+			String result = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(message.toString(),MediaType.APPLICATION_JSON),String.class);
+			logger.info("posted scores to echo with result:\n" + result);
+		} catch (Exception e) {
+			logger.severe("failed posting scores to: " + postmethod);
+		}
+
+	}
 }

@@ -382,6 +382,7 @@ public class Respondant extends PersistantObject implements Serializable {
 			  System.out.println("CANT SCORE INCOMPLETE ASSESSMENT FOR:\n" + this.getJSONString());
 		  } else {
 			  if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
+				  System.out.println("Pulling up old scores for:\n" + this.getJSONString());
 				  EntityManager em = DBUtil.getEntityManager();
 				  TypedQuery<RespondantScore> q = em.createQuery("SELECT r FROM RespondantScore r WHERE r.rsRespondantId = :respondantId", RespondantScore.class);
 		          q.setParameter("respondantId", this.getRespondantId());		  
@@ -391,6 +392,7 @@ public class Respondant extends PersistantObject implements Serializable {
 					  scores.put(corefactor.getCorefactorName(),rs.get(i).getRsValue());					  
 				  }
 			  } else {
+				  System.out.println("Do scoring for:\n" + this.getJSONString());
 		  
 				  List<Response> responses = this.getResponses();
 				  int[] count = new int[20];

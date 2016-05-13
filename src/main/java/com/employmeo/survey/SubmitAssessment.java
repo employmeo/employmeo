@@ -36,6 +36,8 @@ public class SubmitAssessment {
 			@FormParam("respondant_id") Long respondantId
 			)
 	{
+    	logger.info("Survey Submitted for Respondant: " + respondantId);
+    	
     	Respondant respondant = Respondant.getRespondantById(respondantId);
     	if (respondant.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
     		respondant.setRespondantStatus(Respondant.STATUS_COMPLETED);
@@ -49,25 +51,18 @@ public class SubmitAssessment {
 	 }
 
 
-	private void postScores(Respondant respondant) {
+	private static void postScores(Respondant respondant) {
 		TASK_EXECUTOR.submit(new Runnable() {
 			@Override
 			public void run() {
-				// TODO... call the scoring logic for Respondant
+				// Kick off scoring. Future version could involve time consuming external calls
 				JSONObject message = PartnerUtil.getScoresMessage(respondant);
-				String postmethod = respondant.getRespondantScorePostMethod();
-				if (postmethod == null || postmethod.isEmpty())
-					postmethod = "https://employmeo.herokuapp.com/integration/echo";
 				
-				Client client = ClientBuilder.newClient();
-				WebTarget target = client.target(postmethod);
-				try {
-					String result = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(message.toString(),MediaType.APPLICATION_JSON),String.class);
-					logger.info("posted scores to echo with result:\n" + result);
-				} catch (Exception e) {
-					logger.severe("failed posting scores to: " + postmethod);
-				}
-				if (respondant.getRespondantEmailRecipient() != null) {
+				// Push to Partner Service if requested
+				PartnerUtil.postScoresToPartner(respondant, message);
+				
+				if (respondant.getRespondantEmailRecipient() != null && 
+						!respondant.getRespondantEmailRecipient().isEmpty()) {
 					EmailUtility.sendResults(respondant.getRespondantEmailRecipient(), message.getJSONObject("applicant"));
 				}
 			}

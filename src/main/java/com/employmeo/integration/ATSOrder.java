@@ -1,6 +1,5 @@
 package com.employmeo.integration;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -39,7 +38,7 @@ public class ATSOrder {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost (JSONObject json)
 	{
-		logger.info("processing with:\n" + json.toString());   
+		logger.info("ATS Requesting Assessment with: " + json.toString());   
     	JSONObject applicant = null;
 	    Account account = null;
 	    Person person = new Person();
@@ -72,25 +71,28 @@ public class ATSOrder {
 
     	JSONObject delivery = json.optJSONObject("delivery");
     	// get the redirect method, score posting and email handling for this assessment
-    	if (delivery.has("scores_email_address")) respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address")); 
-    	if (delivery.has("scores_redirect_url")) respondant.setRespondantRedirectUrl(delivery.optString("scores_redirect_url")); 
-    	if (delivery.has("scores_post_url")) respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));  	
+    	if (delivery.has("scores_email_address")) 
+    		respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address")); 
+    	if (delivery.has("scores_redirect_url")) 
+    		respondant.setRespondantRedirectUrl(delivery.optString("scores_redirect_url")); 
+    	if (delivery.has("scores_post_url")) 
+    		respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));  	
     	
 		respondant.setRespondantAccountId(account.getAccountId());   	
 		respondant.setRespondantSurveyId(survey.getSurveyId());
 		respondant.setRespondantLocationId(location.getLocationId());// ok for null location
 		respondant.setRespondantPositionId(position.getPositionId());// ok for null location
 		
-		
 		// Create Person & Respondant in database.	
 		person.persistMe();
 		respondant.setPerson(person);
 		respondant.persistMe();
 
-		
-		// TODO - code to trigger an email to applicant if delivery message says so.
-		if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant")) EmailUtility.sendEmailInvitation(respondant);
-	
+		// Trigger an email to applicant if delivery message says so.
+		if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant")) 
+			EmailUtility.sendEmailInvitation(respondant);
+
+		// Assemble the response object to notify that action is complete
     	JSONObject jAccount = new JSONObject();
     	jAccount.put("account_ats_id", account.getAccountAtsId());
     	jAccount.put("account_id", account.getAccountId());
@@ -99,7 +101,7 @@ public class ATSOrder {
     	JSONObject jApplicant = new JSONObject();
     	jApplicant.put("applicant_ats_id", respondant.getRespondantAtsId());
     	jApplicant.put("applicant_id", respondant.getRespondantId());
-    	
+
     	delivery = new JSONObject();
     	delivery.put("assessment_url", EmailUtility.getAssessmentLink(respondant));
     	
@@ -108,7 +110,7 @@ public class ATSOrder {
 		output.put("applicant", jApplicant);
 		output.put("delivery", delivery);	
 	
-		logger.log(Level.INFO, output.toString());
+		logger.info("ATS Request for Assessment Complate: " + respondant.getRespondantAtsId());
 		return output.toString();
   }
     
