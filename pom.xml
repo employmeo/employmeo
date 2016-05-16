@@ -80,7 +80,7 @@
 				      <phase>package</phase>
 				      <goals><goal>copy-dependencies</goal></goals>
 				    </execution>
-	                <!-- execution>
+	                <execution>
 	                    <phase>package</phase>
 	                    <goals><goal>copy</goal></goals>
 	                    <configuration>
@@ -93,7 +93,7 @@
 	                            </artifactItem>
 	                        </artifactItems>
 	                    </configuration>
-	                </execution-->
+	                </execution>
 	            </executions>
 	        </plugin>	      
        	</plugins>
