@@ -17,7 +17,7 @@ import java.util.*;
 @WebFilter(
 		filterName = "autoLoginFilter" ,
 		urlPatterns = {"*.jsp"},
-		initParams = @WebInitParam(name="unrestrictedPages", value = "/take_survey.jsp,/login.jsp,/test.jsp,/error.jsp")
+		initParams = @WebInitParam(name="unrestrictedPages", value = "/login.jsp,/error.jsp,/error404.jsp")
 		)
 public class EmpAutoLoginFilter implements Filter {
 

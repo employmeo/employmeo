@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
 	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>com.employmeo</groupId>
 	<artifactId>adminserver</artifactId>
 	<name>Admin Server</name>
 	<description>Employmeo Core Program Components</description>
 	<version>1.0</version>
 	<packaging>war</packaging>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<json-version>20151123</json-version>
 		<tomcat-version>8.0.30</tomcat-version>
 	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
@@ -76,7 +80,7 @@
 				      <phase>package</phase>
 				      <goals><goal>copy-dependencies</goal></goals>
 				    </execution>
-	                <execution>
+	                <!-- execution>
 	                    <phase>package</phase>
 	                    <goals><goal>copy</goal></goals>
 	                    <configuration>
@@ -89,7 +93,7 @@
 	                            </artifactItem>
 	                        </artifactItems>
 	                    </configuration>
-	                </execution>
+	                </execution-->
 	            </executions>
 	        </plugin>	      
        	</plugins>

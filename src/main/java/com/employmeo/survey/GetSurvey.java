@@ -38,6 +38,9 @@ public class GetSurvey {
 			  respondant.setRespondantStatus(Respondant.STATUS_STARTED);
 			  respondant.setRespondantStartTime(new Timestamp (new Date().getTime()));
 			  respondant.mergeMe();
+		  } else if (respondant.getRespondantStatus() >= Respondant.STATUS_COMPLETED) {
+			  // TODO put in better logic here.
+			  json.put("message", "stop survey!");
 		  }
 
 		  Survey survey = respondant.getSurvey();

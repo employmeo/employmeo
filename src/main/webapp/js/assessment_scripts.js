@@ -1,6 +1,7 @@
 //
 // Global Variables and actions for the survey page(s)
 //
+var workwithme;
 var respondant;
 var survey;
 var questions;
@@ -57,7 +58,6 @@ function buildPlainSurveyWithRespondantId(respondantId) {
         },
         beforeSend: function() {
         	$('#wait').removeClass('hidden');
-        	console.log('loading div on');
         },
         success: function(data)
         {
@@ -65,7 +65,6 @@ function buildPlainSurveyWithRespondantId(respondantId) {
         },
         complete: function() {
         	$('#wait').addClass('hidden');
-        	console.log('loading div off');
         }
       });
 }
@@ -327,6 +326,19 @@ function assemblePlainSurvey(collection) {
 	card.appendTo(deck);
 
 	responses = new Array();
+	
+	if (collection.responses != null) {
+		for (var i=0;i<collection.responses.length;i++) {
+			saveResponse(collection.responses[i]);
+			var radios =$('form[name=question_'+collection.responses[i].response_question_id+
+    		'] :input[name=response_value][value=' + collection.responses[i].response_value + ']');
+		    $(radios).prop('checked', true);
+		}
+		
+		for (var i=0;i<totalpages;i++) {
+			isPageComplete(i);
+		}
+	}
 }
 
 function getPlainResponseForm(question, respondant, qcount, pagecount) {

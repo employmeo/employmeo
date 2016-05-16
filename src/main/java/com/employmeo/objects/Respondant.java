@@ -258,6 +258,10 @@ public class Respondant extends PersistantObject implements Serializable {
 	public List<Response> getResponses() {
 		return this.responses;
 	}
+
+	public void addRespons(Response response) {
+		this.responses.add(response);
+	}
 	
 	public void setRespondantAtsId (String atsId) {
 		this.respondantAtsId = atsId;

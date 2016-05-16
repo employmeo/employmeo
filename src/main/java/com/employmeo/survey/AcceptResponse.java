@@ -8,6 +8,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Response;
 
 @Path("response")
@@ -59,6 +60,7 @@ public class AcceptResponse {
 			  response.mergeMe();
 		  } else {
 			  response.persistMe();
+			  Respondant.getRespondantById(respondantId).addRespons(response);
 		  }
 
 		  return response.getJSONString(); 
