@@ -57,6 +57,7 @@ function buildPlainSurveyWithRespondantId(respondantId) {
         },
         beforeSend: function() {
         	$('#wait').removeClass('hidden');
+        	console.log('loading div on');
         },
         success: function(data)
         {
@@ -64,6 +65,7 @@ function buildPlainSurveyWithRespondantId(respondantId) {
         },
         complete: function() {
         	$('#wait').addClass('hidden');
+        	console.log('loading div off');
         }
       });
 }
@@ -74,6 +76,7 @@ function nextPage() {
 function prevPage() {
 	$('#survey').carousel("prev");
 }
+
 function getPlainSurveyForNewRespondant(form) {
     $.ajax({
         type: "POST",
@@ -245,7 +248,7 @@ function createPlainNewRespondant(surveyId, accountId) {
 		}).append(form));
 	infopage.appendTo(deck);
 	
-	//prepSurvey();
+
 	$('#address').geocomplete({details:'form'});
 }
 
@@ -323,18 +326,7 @@ function assemblePlainSurvey(collection) {
 		'height' : '75px'}));
 	card.appendTo(deck);
 
-	//prepSurvey();
 	responses = new Array();
-}
-
-
-function prepSurvey() {
-	var elem = document.getElementById('survey');
-	window.mySwipe = Swipe(elem, {
-		callback: function() {
-			
-		}	
-	});
 }
 
 function getPlainResponseForm(question, respondant, qcount, pagecount) {
@@ -553,8 +545,6 @@ function saveResponse(response) {
 }
 
 
-
-
 // ON HOLD - VISUAL SURVEY BUILDING FUNCTIONS FOR LATER
 
 function buildVisualSurveyWithRespondantId(respondantId) {
@@ -679,7 +669,6 @@ function assembleVisualSurvey(collection) {
 	card.append(qpanel);
 	card.appendTo(deck);
 
-	//prepSurvey();
 	responses = new Array();
 }
 

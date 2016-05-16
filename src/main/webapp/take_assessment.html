@@ -27,7 +27,7 @@
 	<span style="font-size:18px;font-family:Comfortaa;">Loading</span><br>
 	<i class="fa fa-spinner fa-5x fa-spin"></i>
 	</div>
-    <div id='survey' style='max-width:900px;margin:0 auto' class='carousel slide'>
+    <div id='survey' style='max-width:900px;margin:0 auto' class='carousel slide' data-interval='false' data-wrap='false'>
       <div id='wrapper' class='carousel-inner'></div>
 	</div>
 <script>
@@ -41,6 +41,7 @@ $(document).ready(function() {
 	}
 	$('#survey').on('swipeleft', function(e) {nextPage();});
 	$('#survey').on('swiperight', function(e) {prevPage();});
+	$('#survey').carousel('pause');
 });
 </script>
 </html>
