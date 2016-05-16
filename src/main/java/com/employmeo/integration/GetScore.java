@@ -32,7 +32,7 @@ public class GetScore {
 	{
 		Account account = null;
 		Respondant respondant = null;
-		logger.info("processing with:\n" + json.toString());   
+		logger.info("processing with: " + json.toString());   
 	    try { // the required parameters
 	    	account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
 	    	respondant = PartnerUtil.getRespondantFrom(json.getJSONObject("applicant"));

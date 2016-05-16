@@ -103,7 +103,9 @@ public class Account extends PersistantObject implements Serializable {
 	public void setAccountType(int accountType) {
 		this.accountType = accountType;
 	}
-
+	public List<AccountSurvey> getAccountSurveys() {
+		return this.accountSurveys;
+	}
 	public List<Survey> getSurveys() {
 		List<Survey> surveyset = new ArrayList<Survey>();
 		for (int i=0;i<this.accountSurveys.size();i++) surveyset.add(accountSurveys.get(i).getSurvey());

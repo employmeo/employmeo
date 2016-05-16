@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.employmeo.objects.Account;
+import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Survey;
 import com.employmeo.util.PartnerUtil;
 
@@ -30,7 +31,7 @@ public class GetAssessments {
 	  @Consumes(MediaType.APPLICATION_JSON)
 	  public String doPost (JSONObject json)
 	  {  
-			logger.info("processing with:\n" + json.toString());   
+			logger.info("processing with: " + json.toString());   
 		    Account account = null;
 		    
 	    	try { // the required parameters
@@ -39,12 +40,15 @@ public class GetAssessments {
 	    		throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
 	    	}
 
-	    	JSONArray response = new JSONArray();
+	      JSONArray response = new JSONArray();
 		  
 		  if (account.getSurveys().size()>0) {
-			  List<Survey> surveys = account.getSurveys();
+			  List<AccountSurvey> surveys = account.getAccountSurveys();
 			  for (int i=0;i<surveys.size();i++) {
-				  response.put(surveys.get(i).getJSON());
+				  JSONObject survey = new JSONObject();
+				  survey.put("assessment_name", surveys.get(i).getSurvey().getSurveyName());
+				  survey.put("assessment_asid", surveys.get(i).getAsId());				  
+				  response.put(survey);
 			  }
 		  } 
 		  return response.toString();
