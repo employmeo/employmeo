@@ -282,6 +282,17 @@ var atsdata = {
 		   "position":null
 		};
 
+var getscore = {  
+		   "account":{  
+		      "account_ats_id":"1234",
+		      "account_name":"FR Demo Account"
+		   },
+		   "applicant":{  
+		      "applicant_ats_id":"1386047"
+		   }
+};
+
+
 var emailuser = {  
 		   "account":{  
 		      "account_ats_id":"1234",

@@ -17,7 +17,6 @@ import org.json.JSONArray;
 import com.employmeo.objects.Account;
 import com.employmeo.objects.Survey;
 import com.employmeo.objects.User;
-import com.employmeo.util.EmailServletResponse;
 import com.employmeo.util.EmailUtility;
 import com.sendgrid.SendGrid;
 

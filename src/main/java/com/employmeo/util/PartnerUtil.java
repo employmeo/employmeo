@@ -125,7 +125,7 @@ public class PartnerUtil {
 		jAccount.put("account_name", account.getAccountName());
 
 		applicant.put("applicant_ats_id", respondant.getRespondantAtsId());
-		applicant.put("applicant_id", respondant.getRespondantAtsId());
+		applicant.put("applicant_id", respondant.getRespondantId());
 		applicant.put("applicant_profile", respondant.getRespondantProfile());
 		applicant.put("applicant_profile_a", respondant.getProfileA());
 		applicant.put("applicant_profile_b", respondant.getProfileB());

@@ -17,6 +17,7 @@ import com.employmeo.objects.Account;
 import com.employmeo.objects.Person;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.User;
+import com.employmeo.util.EmailUtility;
 
 @Path("inviteapplicant")
 @PermitAll
@@ -69,7 +70,7 @@ public class InviteApplicant {
 		  json.put("person", applicant.getJSON());
 		  json.put("respondant", respondant.getJSON());	
 		  
-		  respondant.sendEmailInvitation(reqt);
+		  EmailUtility.sendEmailInvitation(respondant);
 		  
 		  return json.toString();
 

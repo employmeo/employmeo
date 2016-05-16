@@ -1,21 +1,13 @@
 package com.employmeo.objects;
 
 import java.io.Serializable;
-import java.net.URL;
-
 import javax.persistence.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONObject;
-
 import com.employmeo.util.DBUtil;
-import com.employmeo.util.EmailServletResponse;
-import com.employmeo.util.EmailUtility;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.List;
 
 
@@ -391,9 +383,9 @@ public class Respondant extends PersistantObject implements Serializable {
 					  scores.put(corefactor.getCorefactorName(),rs.get(i).getRsValue());					  
 				  }
 			  } else {
-				  System.out.println("Do scoring for:\n" + this.getJSONString());
 		  
 				  List<Response> responses = this.getResponses();
+				  if ((responses == null) || (responses.size() == 0)) return scores; // return no scores when survey incomplete
 				  int[] count = new int[20];
 				  int[] score = new int[20];
 				  
@@ -403,9 +395,10 @@ public class Respondant extends PersistantObject implements Serializable {
 					  count[cfId]++;
 					  score[cfId]+=response.getResponseValue();
 				  }
-	
+
 				  for (int i=0; i<20; i++) {
 					  if (count[i]>0) {
+									
 						  RespondantScore rs = new RespondantScore();
 						  rs.setPK(i, this.getRespondantId());
 						  rs.setRsQuestionCount(count[i]);
@@ -422,24 +415,4 @@ public class Respondant extends PersistantObject implements Serializable {
 		  return scores;
 	}
 
-	public void sendEmailInvitation(HttpServletRequest req) {
-		// TODO switch over to a maintainable template on sendgrid.
-		String link = EmailUtility.getAssessmentLink(this);
-		String body = "Dear " + this.person.getPersonFname() + ",\n" +
-		 			"\n" +
-		  			"Congratulations, we are excited to invite you to complete a preliminary " +
-		  			"assessment for this position.\nThis assessment can be completed on a " + 
-		  			"mobile device or in a browser at this link: \n" + link;
-		try {
-			  req.getSession().setAttribute("applicant", this.person);
-			  req.getSession().setAttribute("link", link);
-			  EmailServletResponse htmlpart = new EmailServletResponse();
-			  req.getRequestDispatcher("/WEB-INF/emails/inviteapplicant.jsp").forward(req, htmlpart);
-			  EmailUtility.sendMessage(this.person.getPersonEmail(), "Invitation to Apply", body, htmlpart);
-		} catch (Exception e) {
-			  // if using the jsp email template fails, just send basic body text.
-			  EmailUtility.sendMessage(this.person.getPersonEmail(), "Invitation to Apply", body);		  
-		}
-	}
-	
 }
