@@ -38,6 +38,9 @@ $RECYCLE.BIN/
 .TemporaryItems
 .Trashes
 .VolumeIcon.icns
+.classpath
+.project
+.tomcatplugin
 
 # Directories potentially created on remote AFP share
 .AppleDB
