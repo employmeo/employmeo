@@ -63,7 +63,7 @@ public class SubmitAssessment {
 				
 				if (respondant.getRespondantEmailRecipient() != null && 
 						!respondant.getRespondantEmailRecipient().isEmpty()) {
-					EmailUtility.sendResults(respondant.getRespondantEmailRecipient(), message.getJSONObject("applicant"));
+					EmailUtility.sendResults(respondant, message.getJSONObject("applicant"));
 				}
 			}
 		});		

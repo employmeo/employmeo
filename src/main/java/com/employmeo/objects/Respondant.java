@@ -379,10 +379,9 @@ public class Respondant extends PersistantObject implements Serializable {
 		  JSONObject scores = new JSONObject();
 		  
 		  if (this.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
-			  System.out.println("CANT SCORE INCOMPLETE ASSESSMENT FOR:\n" + this.getJSONString());
+			  return scores; // return no scores when survey incomplete
 		  } else {
 			  if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
-				  System.out.println("Pulling up old scores for:\n" + this.getJSONString());
 				  EntityManager em = DBUtil.getEntityManager();
 				  TypedQuery<RespondantScore> q = em.createQuery("SELECT r FROM RespondantScore r WHERE r.rsRespondantId = :respondantId", RespondantScore.class);
 		          q.setParameter("respondantId", this.getRespondantId());		  
@@ -443,8 +442,4 @@ public class Respondant extends PersistantObject implements Serializable {
 		}
 	}
 	
-	public void postScoresToATS() {
-		// TODO Stub code to send the final scores somewhere...
-	}
-
 }
