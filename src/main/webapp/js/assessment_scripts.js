@@ -61,7 +61,12 @@ function buildPlainSurveyWithRespondantId(respondantId) {
         },
         success: function(data)
         {
-           assemblePlainSurvey(data);
+        	console.log(data);
+        	if (data.message != null) {
+        		showAssessmentNotAvailable(data);
+        	} else {
+                assemblePlainSurvey(data);        		
+        	}
         },
         complete: function() {
         	$('#wait').addClass('hidden');
@@ -70,7 +75,12 @@ function buildPlainSurveyWithRespondantId(respondantId) {
 }
 
 function nextPage() {
-	$('#survey').carousel("next");
+	
+	if(isPageComplete($('.carousel-inner div.active').index())) {
+		$('#survey').carousel("next");
+	} else {
+		// TODO - some resistance?
+	}
 }
 function prevPage() {
 	$('#survey').carousel("prev");
@@ -109,6 +119,23 @@ function submitSurvey() {
         }
       });	
 }
+
+function showAssessmentNotAvailable(data) {
+	  // code to create a form to fill out for a new survey respondant	
+		var deck = document.getElementById('wrapper');
+		$(deck).empty();
+		totalpages = 1;
+		var card = $('<div />', {
+			'class' : 'item active'
+		});		
+		card.append(getHrDiv());
+		card.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12',
+			}).append($('<h3 />', { 'class' : 'text-center', 'text' : data.message})));
+		card.append(getHrDiv());
+		card.appendTo(deck);
+}
+
 //
 function createPlainNewRespondant(surveyId, accountId) {
   // code to create a form to fill out for a new survey respondant	
@@ -247,7 +274,6 @@ function createPlainNewRespondant(surveyId, accountId) {
 		}).append(form));
 	infopage.appendTo(deck);
 	
-
 	$('#address').geocomplete({details:'form'});
 }
 
@@ -335,7 +361,7 @@ function assemblePlainSurvey(collection) {
 		    $(radios).prop('checked', true);
 		}
 		
-		for (var i=0;i<totalpages;i++) {
+		for (var i=1;i<=totalpages;i++) {
 			isPageComplete(i);
 		}
 	}

@@ -2,7 +2,6 @@ package com.employmeo.objects;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
 
 import org.json.JSONObject;
 
@@ -10,11 +9,8 @@ import com.employmeo.util.DBUtil;
 
 public abstract class PersistantObject {
 
-	@PersistenceContext(unitName="employmeo")
-	protected EntityManager em;
-
 	public void persistMe() {
-		em = DBUtil.getEntityManager();
+		EntityManager em = DBUtil.getEntityManager();
 		EntityTransaction txn = em.getTransaction();
 		txn.begin();
 		em.persist(this);
@@ -22,12 +18,18 @@ public abstract class PersistantObject {
 	}
 	
 	public void mergeMe() {
-		em = DBUtil.getEntityManager();
+		EntityManager em = DBUtil.getEntityManager();
 		EntityTransaction txn = em.getTransaction();
 		txn.begin();
 		em.merge(this);
 		txn.commit();
 	}	
+
+	public void refreshMe() {
+		EntityManager em = DBUtil.getEntityManager();
+		em.refresh(this);
+	}
+	
 	public String getJSONString() {
 
 		return getJSON().toString();

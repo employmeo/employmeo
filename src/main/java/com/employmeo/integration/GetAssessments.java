@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 import com.employmeo.objects.Account;
 import com.employmeo.objects.AccountSurvey;
-import com.employmeo.objects.Survey;
 import com.employmeo.util.PartnerUtil;
 
 import java.util.List;

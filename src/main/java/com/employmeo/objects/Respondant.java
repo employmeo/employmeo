@@ -259,7 +259,7 @@ public class Respondant extends PersistantObject implements Serializable {
 		return this.responses;
 	}
 
-	public void addRespons(Response response) {
+	public void addResponse(Response response) {
 		this.responses.add(response);
 	}
 	
@@ -324,7 +324,6 @@ public class Respondant extends PersistantObject implements Serializable {
         try {
       	  respondant = q.getSingleResult();
         } catch (NoResultException nre) {}
-        
         return respondant;
 	}
 	

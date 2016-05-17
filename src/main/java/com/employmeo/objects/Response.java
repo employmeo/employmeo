@@ -60,8 +60,9 @@ public class Response extends PersistantObject implements Serializable {
 		return this.respondant;
 	}
 
-	public Respondant setRespondant(Respondant respondant) {
-		return this.respondant;
+	public void setRespondant(Respondant respondant) {
+		this.respondant = respondant;
+		this.responseRespondantId = respondant.getRespondantId();
 	}
 	
 	public Long getResponseRespondantId() {
@@ -69,11 +70,12 @@ public class Response extends PersistantObject implements Serializable {
 	}
 
 	public void setResponseRespondantId(String respondantId) {
-		this.responseRespondantId = new Long(respondantId);
+		this.setResponseRespondantId(new Long(respondantId));
 	}
 	
 	public void setResponseRespondantId(Long respondantId) {
 		this.responseRespondantId = respondantId;
+		this.respondant = Respondant.getRespondantById(respondantId);
 	}
 	
 	public Long getResponseQuestionId() {

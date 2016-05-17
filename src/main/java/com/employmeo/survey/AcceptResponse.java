@@ -59,8 +59,8 @@ public class AcceptResponse {
 			  response.setResponseId(responseId);
 			  response.mergeMe();
 		  } else {
+			  Respondant.getRespondantById(respondantId).addResponse(response);
 			  response.persistMe();
-			  Respondant.getRespondantById(respondantId).addRespons(response);
 		  }
 
 		  return response.getJSONString(); 

@@ -2,25 +2,12 @@ package com.employmeo.admin;
 
 import javax.annotation.security.PermitAll;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
-import org.json.JSONArray;
-
-import com.employmeo.objects.Account;
-import com.employmeo.objects.Survey;
-import com.employmeo.objects.User;
 import com.employmeo.util.EmailUtility;
 import com.sendgrid.SendGrid;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

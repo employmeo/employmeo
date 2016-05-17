@@ -49,7 +49,7 @@
 .row .legend {font-size:18px;}
 
 .questionpage {
-	overflow-y: scroll;
+	overflow-y: inherit;
 }
 
 .questiontext {
