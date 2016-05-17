@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 public class DBUtil {
 
 	private static EntityManagerFactory emf;
+	private static EntityManager em;
 	
 	static {
 
@@ -31,7 +32,10 @@ public class DBUtil {
 	}
 
 	public static EntityManager getEntityManager() {
-		return emf.createEntityManager();
+		if (em == null) {
+			em = emf.createEntityManager();
+		}
+		return em;
 	}
 
 	

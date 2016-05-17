@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 import com.employmeo.util.DBUtil;
+import com.employmeo.util.ScoringUtil;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -24,7 +25,8 @@ public class Respondant extends PersistantObject implements Serializable {
 	public static final int STATUS_INVITED = 1;
 	public static final int STATUS_STARTED = 5;
 	public static final int STATUS_COMPLETED = 10;
-	public static final int STATUS_SCORED = 15;
+	public static final int STATUS_SCORED = 13;
+	public static final int STATUS_PREDICTED = 15;
 	public static final int STATUS_REJECTED = 16;
 	public static final int STATUS_OFFERED = 17;
 	public static final int STATUS_DECLINED = 18;
@@ -80,6 +82,11 @@ public class Respondant extends PersistantObject implements Serializable {
 	//bi-directional many-to-one association to Responses
 	@OneToMany(mappedBy="respondant")
 	private List<Response> responses;
+
+	//bi-directional many-to-one association to Responses
+	@OneToMany(mappedBy="respondant")
+	private List<RespondantScore> respondantScores;
+
 	
 	// Scoring info
 	@Column(name="respondant_profile")
@@ -263,6 +270,15 @@ public class Respondant extends PersistantObject implements Serializable {
 		this.responses.add(response);
 	}
 	
+	public List<RespondantScore> getRespondantScores() {
+		return this.respondantScores;
+	}
+
+	public void addRespondantScore(RespondantScore score) {
+		this.respondantScores.add(score);
+	}
+
+	
 	public void setRespondantAtsId (String atsId) {
 		this.respondantAtsId = atsId;
 	}
@@ -318,13 +334,13 @@ public class Respondant extends PersistantObject implements Serializable {
 	
 	public static Respondant getRespondantById(Long lookupId) {
 		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<Respondant> q = em.createQuery("SELECT r FROM Respondant r WHERE r.respondantId = :respondantId", Respondant.class);
-        q.setParameter("respondantId", lookupId);
-        Respondant respondant = null;
-        try {
-      	  respondant = q.getSingleResult();
-        } catch (NoResultException nre) {}
-        return respondant;
+//		TypedQuery<Respondant> q = em.createQuery("SELECT r FROM Respondant r WHERE r.respondantId = :respondantId", Respondant.class);
+//       q.setParameter("respondantId", lookupId);
+//        Respondant respondant = null;
+//        try {
+//      	  respondant = q.getSingleResult();
+//        } catch (NoResultException nre) {}
+        return em.find(Respondant.class, lookupId);
 	}
 	
 	public JSONObject getJSON() {
@@ -368,53 +384,23 @@ public class Respondant extends PersistantObject implements Serializable {
 	 *  Special section for unique functionality 
 	 *  for the Respondant Object
 	 */
-
 	
-	public JSONObject scoreMe() {
+	public JSONObject getAssessmentScore() {
 		  JSONObject scores = new JSONObject();
 		  
 		  if (this.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
 			  return scores; // return no scores when survey incomplete
-		  } else {
-			  if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
-				  EntityManager em = DBUtil.getEntityManager();
-				  TypedQuery<RespondantScore> q = em.createQuery("SELECT r FROM RespondantScore r WHERE r.rsRespondantId = :respondantId", RespondantScore.class);
-		          q.setParameter("respondantId", this.getRespondantId());		  
-				  List<RespondantScore> rs = q.getResultList();
-				  for (int i=0; i<rs.size(); i++) {
-					  Corefactor corefactor = Corefactor.getCorefactorById(rs.get(i).getRsCfId());			  
-					  scores.put(corefactor.getCorefactorName(),rs.get(i).getRsValue());					  
-				  }
-			  } else {
-		  
-				  List<Response> responses = this.getResponses();
-				  if ((responses == null) || (responses.size() == 0)) return scores; // return no scores when survey incomplete
-				  int[] count = new int[20];
-				  int[] score = new int[20];
-				  
-				  for (int i=0;i<responses.size();i++) {
-					  Response response = responses.get(i);
-					  Integer cfId = Question.getQuestionById(response.getResponseQuestionId()).getQuestionCorefactorId();
-					  count[cfId]++;
-					  score[cfId]+=response.getResponseValue();
-				  }
-
-				  for (int i=0; i<20; i++) {
-					  if (count[i]>0) {
-									
-						  RespondantScore rs = new RespondantScore();
-						  rs.setPK(i, this.getRespondantId());
-						  rs.setRsQuestionCount(count[i]);
-						  Corefactor corefactor = Corefactor.getCorefactorById(i);
-						  rs.setRsValue((double) Math.round(100.0 *((double)score[i]/(double)count[i]))/ 100.0);
-						  rs.mergeMe();
-						  scores.put(corefactor.getCorefactorName(),rs.getRsValue());
-					  }
-				  }
-				  this.setRespondantStatus(Respondant.STATUS_SCORED);
-				  this.mergeMe();
-			  }
+		  } else if (this.getRespondantStatus() == Respondant.STATUS_COMPLETED) {
+			  ScoringUtil.scoreAssessment(this);
 		  }
+		  
+		  if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
+				  for (int i=0; i<getRespondantScores().size(); i++) {
+					  Corefactor corefactor = Corefactor.getCorefactorById(getRespondantScores().get(i).getRsCfId());			  
+					  scores.put(corefactor.getCorefactorName(),getRespondantScores().get(i).getRsValue());					  
+				  }
+		  }
+		  
 		  return scores;
 	}
 

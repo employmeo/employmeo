@@ -25,6 +25,10 @@ public class RespondantScore extends PersistantObject implements Serializable {
 	@Column(name="rs_respondant_id", insertable=true, updatable=false)
 	private Long rsRespondantId;
 	
+	@ManyToOne
+	@JoinColumn(name="rs_respondant_id", insertable=false, updatable=false)
+	private Respondant respondant;
+	
 	@Column(name="rs_question_count")
 	private Integer rsQuestionCount;
 
@@ -42,6 +46,7 @@ public class RespondantScore extends PersistantObject implements Serializable {
 		this.id = id;
 		this.rsCfId = id.getRsCfId();
 		this.rsRespondantId = id.getRsRespondantId();
+		this.respondant = Respondant.getRespondantById(this.rsRespondantId) ;
 	}
 	
 	public void setPK(int cfid, long respondantId) {
@@ -57,6 +62,10 @@ public class RespondantScore extends PersistantObject implements Serializable {
 
 	public Long getRsRespondantId() {
 		return this.rsRespondantId;
+	}
+
+	public Respondant getRespondant() {
+		return this.respondant;
 	}
 
 	public Integer getRsQuestionCount() {

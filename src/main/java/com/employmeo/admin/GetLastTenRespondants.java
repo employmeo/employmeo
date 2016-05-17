@@ -65,7 +65,7 @@ public class GetLastTenRespondants {
 		  List<Respondant> respondants = query.getResultList();
 		  for (int j=0;j<respondants.size();j++) {
 			  JSONObject jresp = respondants.get(j).getJSON();
-			  jresp.put("scores", respondants.get(j).scoreMe());
+			  jresp.put("scores", respondants.get(j).getAssessmentScore());
 
 			  response.put(jresp);
 		  }

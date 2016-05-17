@@ -92,11 +92,16 @@ public class UpdateDash {
 				if (label == null) label = labels.get(0);
 				int index = labels.indexOf(label);
 				switch (status) {
+					case Respondant.STATUS_TERMINATED:
+					case Respondant.STATUS_QUIT:
 					case Respondant.STATUS_HIRED:
 						totalHired+=count;
 						hiredByProfile[index]+=count;
+					case Respondant.STATUS_OFFERED:
+					case Respondant.STATUS_DECLINED:
 					case Respondant.STATUS_REJECTED:
 					case Respondant.STATUS_SCORED:
+					case Respondant.STATUS_PREDICTED:
 						totalScored += count;
 						scoredByProfile[index]+=count;
 					case Respondant.STATUS_COMPLETED:

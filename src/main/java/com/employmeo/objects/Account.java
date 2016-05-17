@@ -227,45 +227,14 @@ public class Account extends PersistantObject implements Serializable {
 		return json;
 	}
 	
-	public static Account getAccountById(String lookupId) {
-		
-		return getAccountById(new Long(lookupId));
-		
+	public static Account getAccountById(String lookupId) {		
+		return getAccountById(new Long(lookupId));		
 	}
 	
 	public static Account getAccountById(Long lookupId) {
-
-		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<Account> q = em.createQuery("SELECT a FROM Account a WHERE a.accountId = :accountId", Account.class);
-        q.setParameter("accountId", lookupId);
-        Account account = null;
-        try {
-      	  account = q.getSingleResult();
-        } catch (NoResultException nre) {}
-        
-        return account;
+		EntityManager em = DBUtil.getEntityManager();     
+        return em.find(Account.class, lookupId);
 	}
 	
-	public List<Respondant> getRespondants() {
-		return getRespondants(Respondant.STATUS_SCORED, Respondant.STATUS_SCORED,100);
-	}
-
-	public List<Respondant> getRespondants(int maxResults) {
-		return getRespondants(-1, 99, maxResults);
-	}
-	public List<Respondant> getRespondants(int status, int maxResults) {
-		return getRespondants(status, status, maxResults);
-	}
-
-	public List<Respondant> getRespondants(int statusMin, int statusMax, int maxResults) {
-		
-		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<Respondant> q = em.createQuery("SELECT r FROM Respondant r WHERE r.respondantAccountId = :account_id and r.respondantStatus >= :statusMin and r.respondantStatus <= :statusMax ORDER BY r.respondantCreatedDate DESC", Respondant.class);
-        q.setParameter("account_id", this.accountId);
-        q.setParameter("statusMin", statusMin);
-        q.setParameter("statusMax", statusMax);
-        q.setMaxResults(maxResults);
-        return q.getResultList();
-	}
 	
 }

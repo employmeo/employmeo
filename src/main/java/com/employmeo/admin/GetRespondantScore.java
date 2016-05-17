@@ -32,7 +32,7 @@ public class GetRespondantScore {
 		  Respondant respondant = Respondant.getRespondantById(respondantId);
 	  
 		  if (respondant != null) {
-			  JSONObject scores = respondant.scoreMe();
+			  JSONObject scores = respondant.getAssessmentScore();
 			  JSONObject jresp = respondant.getJSON();
 			  json.put("respondant", jresp);
 			  json.put("scores", scores);

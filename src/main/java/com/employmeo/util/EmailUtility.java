@@ -85,6 +85,7 @@ public class EmailUtility {
 				+ "assessment for this position.\nThis assessment can be completed on a "
 				+ "mobile device or in a browser at this link: \n" + link;
 		email.setText(body);
+		email.setHtml(body);
 
 		email.addSubstitution("[LINK_TO_ASSESSMENT]", new String[] { link });
 		email.addSubstitution("[APPLICANT_NAME]", new String[] { respondant.getPerson().getPersonFname() });
@@ -121,6 +122,7 @@ public class EmailUtility {
 		String body = "Dear User,\n" + "\n" + "The assessment for applicant " + applicantName
 				+ " has been submitted and scored. The results are now available on the portal at:\n" + plink + "\n";
 		email.setText(body);
+		email.setHtml(body);
 
 		email.addSubstitution("[LINK_TO_RESULTS]", new String[] { plink });
 		email.addSubstitution("[APPLICANT_NAME]", new String[] { applicantName });

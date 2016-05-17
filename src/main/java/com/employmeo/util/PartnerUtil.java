@@ -112,9 +112,9 @@ public class PartnerUtil {
 
 	public static JSONObject getScoresMessage(Respondant respondant) {
 
-		JSONObject scores = respondant.scoreMe();
+		JSONObject scores = respondant.getAssessmentScore();
     	logger.info("got scores: " + scores.toString());
-		PredictionUtil.scoreRespondant(respondant);
+		ScoringUtil.predictRespondant(respondant);
 
 		Account account = respondant.getRespondantAccount();
 		JSONObject jAccount = new JSONObject();
