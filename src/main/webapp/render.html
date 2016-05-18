@@ -53,7 +53,7 @@
 		var data = JSON.parse(urlParams.scores);
 		var scores = new Object();
 		for (var i=0; i<data.length; i++) {
-			scores[data[i].corefactor_name] = data[i].corefactor_value;
+			scores[data[i].corefactor_name] = data[i].corefactor_score;
 		}
 		renderAssessmentScore(scores);
 	});
