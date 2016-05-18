@@ -13,15 +13,15 @@ var startPage = '/index.jsp';
 
 //basic user / account functions (login/logout/etc)
 function login() {
-	
+
 	$.ajax({
 		type: "POST",
 		async: true,
 		data : $('#loginform').serialize(),
 		url: "/admin/login",
 		xhrFields: {
-            withCredentials: true
-        },
+			withCredentials: true
+		},
 		success: function(data) {
 			window.location.assign(startPage);
 		},
@@ -37,8 +37,8 @@ function logout() {
 		async: true,
 		url: "/admin/logout",
 		xhrFields: {
-            withCredentials: true
-        },
+			withCredentials: true
+		},
 		success: function(data) {
 			console.log(data);
 			window.location.assign('/login.jsp');
@@ -58,7 +58,7 @@ function getUserFname() {
 }
 
 
-// section for updating selectors
+//section for updating selectors
 function updatePositionsSelect() {
 	$.ajax({
 		type: "POST",
@@ -121,60 +121,60 @@ function updateSurveysSelect() {
 function initializeDatePicker(callback) {
 
 	var cb = function(start, end, label) {
-      $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-      $('#fromdate').val(start.format('YYYY-MM-DD'));
-      $('#todate').val(end.format('YYYY-MM-DD'));
-      callback();
-    }
+		$('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+		$('#fromdate').val(start.format('YYYY-MM-DD'));
+		$('#todate').val(end.format('YYYY-MM-DD'));
+		callback();
+	}
 
-    var optionSet1 = {
-      startDate: moment().subtract(29, 'days'),
-      endDate: moment(),
-      minDate: '01/01/2012',
-      maxDate: moment().format('MM/DD/YYYY'),
-      dateLimit: {
-        days: 365
-      },
-      showDropdowns: true,
-      showWeekNumbers: true,
-      timePicker: false,
-      timePickerIncrement: 1,
-      timePicker12Hour: true,
-      ranges: {
-        'This Month': [moment().startOf('month'), moment().endOf('month')],
-        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-        'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-        'Last 180 Days': [moment().subtract(179, 'days'), moment()]
-      },
-      opens: 'left',
-      buttonClasses: ['btn btn-default'],
-      applyClass: 'btn-small btn-primary',
-      cancelClass: 'btn-small',
-      format: 'MM/DD/YYYY',
-      separator: ' to ',
-      locale: {
-        applyLabel: 'Submit',
-        cancelLabel: 'Clear',
-        fromLabel: 'From',
-        toLabel: 'To',
-        customRangeLabel: 'Custom',
-        daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        firstDay: 1
-      }
-    };
-    $('#reportrange span').html(moment().subtract(89, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
-    $('#fromdate').val(moment().subtract(89, 'days').format('YYYY-MM-DD'));
-    $('#todate').val(moment().format('YYYY-MM-DD'));
+	var optionSet1 = {
+			startDate: moment().subtract(29, 'days'),
+			endDate: moment(),
+			minDate: '01/01/2012',
+			maxDate: moment().format('MM/DD/YYYY'),
+			dateLimit: {
+				days: 365
+			},
+			showDropdowns: true,
+			showWeekNumbers: true,
+			timePicker: false,
+			timePickerIncrement: 1,
+			timePicker12Hour: true,
+			ranges: {
+				'This Month': [moment().startOf('month'), moment().endOf('month')],
+				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+				'Last 180 Days': [moment().subtract(179, 'days'), moment()]
+			},
+			opens: 'left',
+			buttonClasses: ['btn btn-default'],
+			applyClass: 'btn-small btn-primary',
+			cancelClass: 'btn-small',
+			format: 'MM/DD/YYYY',
+			separator: ' to ',
+			locale: {
+				applyLabel: 'Submit',
+				cancelLabel: 'Clear',
+				fromLabel: 'From',
+				toLabel: 'To',
+				customRangeLabel: 'Custom',
+				daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+				monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+				firstDay: 1
+			}
+	};
+	$('#reportrange span').html(moment().subtract(89, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+	$('#fromdate').val(moment().subtract(89, 'days').format('YYYY-MM-DD'));
+	$('#todate').val(moment().format('YYYY-MM-DD'));
 
-    $('#reportrange').daterangepicker(optionSet1, cb);
+	$('#reportrange').daterangepicker(optionSet1, cb);
 
 	return;
 }
 
 
-// Section for inviting new applicants
+//Section for inviting new applicants
 function inviteApplicant(e) {
 	$.ajax({
 		type: "POST",
@@ -210,12 +210,12 @@ function initRespondantsTable() {
 		order: [[ 0, 'desc' ]],
 		columns: [
 		          { className: 'text-center', responsivePriority: 1, title: 'Score', 
-			        	data: 'respondant_profile_icon', 
-			        	render : function ( data, type, row ) {
-			        		return '<div class="profilemini ' + row.respondant_profile_class +
-			        		       '"><i class="fa '+ data + '"></i></div>';
-			        	}
-			      },
+		        	  data: 'respondant_profile_icon', 
+		        	  render : function ( data, type, row ) {
+		        		  return '<div class="profilemini ' + row.respondant_profile_class +
+		        		  '"><i class="fa '+ data + '"></i></div>';
+		        	  }
+		          },
 		          { responsivePriority: 2, className: 'text-left', title: 'First Name', data: 'respondant_person_fname'},
 		          { responsivePriority: 3, className: 'text-left', title: 'Last Name', data: 'respondant_person_lname'},
 		          { responsivePriority: 6, className: 'text-left', title: 'Email', data: 'respondant_person_email'},
@@ -314,7 +314,7 @@ function updateSurveyQuestions(survey) {
 
 function updateDash() {
 	$.ajax({
-	    type: "POST",
+		type: "POST",
 		async: true,
 		url: "/admin/updatedash",
 		data: $('#refinequery').serialize(),
@@ -331,7 +331,7 @@ function updateDash() {
 			updateHistory(getHistoryData());
 		}
 	});
-	
+
 }
 
 
@@ -339,13 +339,13 @@ function refreshDashApplicants(dataApplicants) {
 	// Build Applicants Widget
 	var dashApplicants = $("#dashApplicants").get(0).getContext("2d");
 	var appDoughnutChart = new Chart(dashApplicants, {
-		   type: 'doughnut',
-		   data: dataApplicants,
-		   options: {
-			   cutoutPercentage : 35,
-			   responsive : true,
-			   legend: { display: false }
-		   }});
+		type: 'doughnut',
+		data: dataApplicants,
+		options: {
+			cutoutPercentage : 35,
+			responsive : true,
+			legend: { display: false }
+		}});
 }
 
 function refreshDashHires(dataHires) {
@@ -355,9 +355,9 @@ function refreshDashHires(dataHires) {
 		type: 'doughnut', 
 		data: dataHires, 
 		options: {
-		   cutoutPercentage : 35,
-		   responsive : true,
-		   legend: { display: false }
+			cutoutPercentage : 35,
+			responsive : true,
+			legend: { display: false }
 		}});
 }
 
@@ -368,7 +368,7 @@ function refreshProgressBars(dataApplicants, dataHires) {
 	$('#risingstarbar').attr('aria-valuenow',rate);
 	$('#risingstarbar').attr('style','width:'+rate+'%;');
 	$('#risingstarrate').html(rate + '%');
-	
+
 	rate = Math.round(100*dataHires.datasets[0].data[2] / dataApplicants.datasets[0].data[2]);
 	$('#longtimerbar').attr('aria-valuenow',rate);
 	$('#longtimerbar').attr('style','width:'+rate+'%;');
@@ -383,7 +383,7 @@ function refreshProgressBars(dataApplicants, dataHires) {
 	$('#redflagbar').attr('aria-valuenow',rate);
 	$('#redflagbar').attr('style','width:'+rate+'%;');
 	$('#redflagrate').html(rate + '%');
-	
+
 }
 
 function updateHistory(historyData) {
@@ -408,34 +408,7 @@ function updateHistory(historyData) {
 }
 
 function showApplicantScoring(applicantData) {
-	var mydata = new Array();
-	var mylabels = new Array();
-	var scores = applicantData.scores;
-	var i=0;
-	for (var key in scores) {
-		if (scores.hasOwnProperty(key)) {
-			mylabels[i] = key;
-			mydata[i] = applicantData.scores[key];
-			i++;
-		}
-	}
-
-	refreshPositionProfile({
-		labels: mylabels,
-		datasets: [
-		        {
-		            label: applicantData.respondant_person_fname + ' ' + applicantData.respondant_person_lname,
-		            backgroundColor: applicantOverlay,
-		            borderColor: applicantColor,
-		            pointBackgroundColor: applicantHighlight,
-		            pointBorderColor: applicantColor,
-		            pointHoverBackgroundColor: applicantColor,
-		            pointHoverBorderColor: applicantHighlight,
-		            data: mydata
-		        }
-		    ]
-		});
-
+	renderAssessmentScore(applicantData.scores);
 	refreshPositionTenure(getPositionTenureData()); // use stub code
 }
 
@@ -476,7 +449,7 @@ function refreshPositionProfile(dataPositionProfile) {
 }
 
 
-// Payroll tools section
+//Payroll tools section
 function uploadPayroll(e) {
 	$('#csvFile').parse({
 		config : {
@@ -507,7 +480,7 @@ function uploadPayroll(e) {
 }
 
 
-// Respondant scoring section
+//Respondant scoring section
 function getScore(respondantId) {
 	$.ajax({
 		type: "POST",
@@ -518,129 +491,87 @@ function getScore(respondantId) {
 		},
 		success: function(data)
 		{
-			data.position = getPositionDetails(data.scores);
-			refreshRespondantProfile(data);
-			createProfileSquares(data);
+			respondant = data.respondant;
+			presentRespondantScores(data);
 		}
 	});    
 
 }
 
-function createProfileSquares(dataScores) {
-
-	var profiles = dataScores.position.position_profiles;
-	var max = 0;
-	for (var i in profiles) {
-		var pname = profiles[i].profile_name;
-		$('#profilesquares > .' + profiles[i].profile_class).each(function() {
-			$(this).data('index', i);
-			var profileData = new Array();
-			$(this).data('profile', profiles[i]);							
-			var index = 0;
-			for (var key in dataScores.position.position_corefactors) {
-				profileData[index] = profiles[i].profile_scores[dataScores.position.position_corefactors[key]];
-				index++;
-			}
-			if ($(this).hasClass('square')) {
-				$(this).find('.squaretext').text(profiles[i].profile_probability+'%');
-			}
-			$(this).on('touchstart click', function(e) {
-				e.preventDefault();
-					var profile = $(this).data('profile');
-					$('.square').removeClass("selected");
-					$(this).addClass("selected");
-					
-					var profileTenureData = profile.profile_tenure_data;
-					profileTenureData.datasets[0].label = profile.profile_name;
-					profileTenureData.datasets[0].backgroundColor = profile.profile_color;
-					profileTenureData.datasets[0].borderColor = profile.profile_color;
-					profileTenureData.datasets[0].hoverBackgroundColor = profile.profile_overlay;
-					profileTenureData.datasets[0].hoverBorderColor = profile.profile_highlight;		
-					refreshPositionTenure(profileTenureData);
-
-					profileChart.config.data.datasets[0].hidden = true;
-					profileChart.config.data.datasets[1].hidden = true;
-					profileChart.config.data.datasets[2].hidden = true;
-					profileChart.config.data.datasets[3].hidden = true;
-					profileChart.config.data.datasets[$(this).data('index')].hidden = false;
-					profileChart.update();
-			});
-			if(profiles[i].profile_probability > max) {
-				max = profiles[i].profile_probability;
-				$(this).click();
-			}
-			
-		});
-	}
-}
-
-function refreshRespondantProfile(dataScores) {
-	respondantProfile = $("#respondantProfile").get(0).getContext("2d");	
-	var scores = dataScores.scores;
-	respondant = dataScores.respondant;
+function presentRespondantScores(dataScores) {
 	$('#candidatename').text(respondant.respondant_person_fname + ' ' + respondant.respondant_person_lname);
 	$('#candidateemail').text(respondant.respondant_person_email);
 	$('#candidateaddress').text(respondant.respondant_person_address);
 	$('#candidateposition').text(respondant.respondant_position_name);
 	$('#candidatelocation').text(respondant.respondant_location_name);
+	$('#assessmentname').text(respondant.respondant_survey_name);
+	$('#assessmentdate').text(respondant.respondant_created_date);
+
+	renderAssessmentScore(dataScores.scores);
+	renderPredictionElements(dataScores.scores);
+	renderPredictionChart(dataScores.scores);
+}
+
+function renderAssessmentScore(scores) {
+
+	$('#assessmentresults').empty();
+	for (var key in scores) {
+		var row = $('<tr />');
+		row.append($('<th />', {'style':'width:100px;', 'text': key }))
+		var progress = $('<div />', {'class' : 'progress'}).append($('<div />', {
+			'class': 'progress-bar progress-bar-success progress-bar-striped',
+			'role': 'progressbar',
+			'aria-valuenow' : scores[key],
+			'aria-valuemin' : "1",
+			'aria-valuemax' : "11",
+			'style' : 'width: ' + scores[key]/0.11 + '%;',
+			'text' : scores[key]
+		})); 
+		row.append($('<td />').append(progress));
+		$('#assessmentresults').append(row);
+	}
+
+}
+
+function renderPredictionElements(scores) {
+	$('#corefactorsused').empty();
+	var title = $('<div />', {
+		'class' : 'form-group'
+	});
+	title.append($('<h4 />', {
+		'class' : 'text-center',
+		'text' : 'Corefactors'
+	}));
+	$('#corefactorsused').append(title);
+	for (var key in scores) {
+		console.log(key, scores[key]);
+		var group = $('<div />', {
+			'class' : 'form-group'
+		});
+
+		group.append($('<label />', {
+			'class' : 'control-label col-md-6 col-sm-6 col-xs-6',
+			'text' : key
+		}));
+
+		group.append($('<div />',{
+			'class':'col-md-6 col-sm-6 col-xs-6'
+		}).append($('<input />',{
+			'class':'form-control text-right',
+			'disabled' : true,
+			'value' : scores[key],
+			'type' : 'text'
+		})));
+
+		$('#corefactorsused').append(group);
+	}
+}
+
+function renderPredictionChart(scores) {
 	$('#candidateicon').html('<i class="fa ' + respondant.respondant_profile_icon +'"></i>');
 	$('#candidateicon').addClass(respondant.respondant_profile_class);
 
-	var position = dataScores.position;
-	var data = new Array();
-	var index = 0;
-	for (var key in position.position_corefactors) {
-		data[index] = scores[position.position_corefactors[key]];
-		index++;
-	}
-
-	var dataset = new Array();
-
-	var profiles = 0;
-	for (var num in position.position_profiles) {
-		var profile = position.position_profiles[num];
-		var profileData = new Array();
-		index = 0;
-		for (var key in position.position_corefactors) {
-			profileData[index] = profile.profile_scores[position.position_corefactors[key]];
-			index++;
-		}
-		dataset[profiles] = {	        
-				label: profile.profile_name,
-				backgroundColor: profile.profile_overlay,
-				borderColor: profile.profile_highlight,
-				hoverBackgroundColor: profile.profile_color,
-				hoverBorderColor: profile.profile_color,
-				pointBacgroundColor: profile.profile_highlight,
-				pointBorderColor: profile.profile_color,
-				data: profileData
-		};
-		profiles++;
-
-	}
-	dataset[profiles] = {
-			label: respondant.respondant_person_fname,
-			backgroundColor: applicantOverlay,
-			borderColor: applicantHighlight,
-			hoverBackgroundColor: applicantColor,
-			hoverBorderColor: applicantColor,
-			pointBacgroundColor: applicantColor,
-			pointBorderColor: applicantColor,
-			data: data
-	};
-
-	var respondantData = {
-			labels: position.position_corefactors,
-			datasets: dataset	};
-
-	profileChart = new Chart(respondantProfile, { type : 'radar', data: respondantData, options: { 
-		responsive : true,
-		legend: { display: false },
-		scale: { 
-			gridLines: {display: false},
-			scaleLabel: {display: true, fontFamily: "'Comfortaa'", fontSize: 16}, 
-			ticks: {beginAtZero: true, suggestedMax: 5}}
-	}});	
+	refreshPositionTenure(getPositionTenureData()); // use stub code
 }
 
 
@@ -661,10 +592,10 @@ function lookupLastTenCandidates() {
 				}).append($('<i />', {'class' : "fa " + respondants[i].respondant_profile_icon }));
 
 				var ico = $('<a />', {
-					 'class' : "pull-left",
-					 'href' : '/respondant_score.jsp?&respondant_id=' + respondants[i].respondant_id
+					'class' : "pull-left",
+					'href' : '/respondant_score.jsp?&respondant_id=' + respondants[i].respondant_id
 				}).append(div);
-				
+
 				var badge = $('<div />', { 'class' : 'media-body' });
 				$('<a />', {
 					'class' : 'title',
@@ -677,7 +608,7 @@ function lookupLastTenCandidates() {
 				$('<p />', {
 					'html' : '\<small\>' + respondants[i].respondant_location_name + '\<\/small\>'
 				}).appendTo(badge);
-				
+
 				li.append(ico);
 				li.append(badge);
 				$('#recentcandidates').append(li);

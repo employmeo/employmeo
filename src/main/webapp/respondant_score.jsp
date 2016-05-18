@@ -1,104 +1,135 @@
 <%@ include file="/WEB-INF/includes/inc_head.jsp"%>
-                <div class="">
-                    <div class="page-title">
-                        <div class="title_left">
-                            <h3>Candidate Results</h3>
-                        </div>
-                        <div class="title_right">
-                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search for...">
-                                    <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Go!</button>
-                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="clearfix"></div>
-
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                            <div class="x_panel">
-                                <div class="x_title">
-                                    <h2>Assessment Score</h2>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="x_content">
-                                    <div class="col-md-3 col-sm-3 col-xs-12">
-										<div class="row content">
-						  					<div class="profilebadge" id='candidateicon'>
-						    					<i class="fa fa-spinner fa-spin"></i></div>
-	                        				<div style='float:left; padding-left:5px;width:72%;'> <h3 id="candidatename">Candidate Name</h3>
-	                        				</div>
-										</div>
-										<div class="row content">
-	                        	                <ul class="list-unstyled user_data">
-	                        	                	<li></li>
-                                            		<li><span id='candidateemail'>email address</span> <i class="fa fa-envelope user-profile-icon"></i></li>
-                                            		<li><span id='candidateaddress'>address</span> <i class="fa fa-map-marker user-profile-icon"></i></li>
-                                        		</ul>
-                                        </div>
-										<div class="row content"><hr></div>
-  					<div class="row content">
-  					<h4>Profile Probability</h4>
-  					<span id='candidateemail'>position</span>, <span id='candidateemail'>location applied to</span>
-					</div>
-  					<div class="row content">
-  					<div id="profilesquares">
-					<div class="square btn-success">
-					  <div class="squarecontent"><div class="squaretable"><div class="squaretext text-center"><i class="fa fa-spinner fa-spin"></i></div></div></div></div>
-					<div class="square btn-info">
-					  <div class="squarecontent"><div class="squaretable"><div class="squaretext text-center"><i class="fa fa-spinner fa-spin"></i></div></div></div></div>
-					<div class="square btn-warning">
-					  <div class="squarecontent"><div class="squaretable"><div class="squaretext text-center"><i class="fa fa-spinner fa-spin"></i></div></div></div></div>
-					<div class="square btn-danger">
-					  <div class="squarecontent"><div class="squaretable"><div class="squaretext text-center"><i class="fa fa-spinner fa-spin"></i></div></div></div></div>
-					</div>
-					</div>
-<hr>
-
-
-
-                                    </div>
-                                    <div class="col-md-9 col-sm-9 col-xs-12">
-                                        <div class="profile_title">
-                                             <div class="col-md-12"><h2>Applicant Profile</h2></div>
-                                        </div>
-                                        <div class="profile_content">
-                                        	<div><canvas id="respondantProfile"></canvas></div>
-                                        </div>
-                                     </div>
-                                     <div class="col-md-12 col-sm-12 col-xs-12">
-                                        <div class="profile_title">
-                                             <div class="col-md-12"><h2>Similar Candidates</h2></div>
-                                        </div>
-                                        <div class="profile_content">
-                                        	<div><canvas id="positionTenure"></canvas></div></div>
-                                        </div>
-                                     </div>
-                                    </div>
-                                </div>
-                            </div>
+<div class="">
+	<div class="page-title">
+		<div class="title_left">
+			<h3>Candidate Results</h3>
+		</div>
+		<div class="title_right">
+			<div
+				class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search for...">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">Go!</button>
+					</span>
+				</div>
 			</div>
+		</div>
+	</div>
+	<div class="clearfix"></div>
+	<div class="row">
+		<div class="col-md-4 col-sm-4 col-xs-12">
+			<div class="x_panel">
+				<div class="x_content">
+				<div class='row'>
+					<h3 id='candidatename'></h3>
+				</div></div>
+				<div class="x_content">
+					<div class='row'>
+						<table class="table table-hover" id='candidatedetails'>
+							<tbody>
+								<tr title="email address">
+									<td><span><i class="fa fa-envelope"></i></span></td>
+									<td><span id='candidateemail'></span></td>
+								</tr>
+								<tr title="home address">
+									<td><span><i class="fa fa-home"></i></span></td>
+									<td><span id='candidateaddress'></span></td>
+								</tr>
+								<tr title="position applied to">
+									<td><span><i class="fa fa-briefcase"></i></span></td>
+									<td><span id='candidateposition'></span></td>
+								</tr>
+								<tr title="location applied to">
+									<td><span><i class="fa fa-map-marker"></i></span></td>
+									<td><span id='candidatelocation'></span></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-8 col-sm-8 col-xs-12">
+			<div class='x_panel'>
+				<div class="x_title">
+					<h3>Assessment Score</h3>
+					<div class="clearfix"></div>
+
+				</div>
+				<div class="x_content">
+					<div>
+						<span id='assessmentdate' class='pull-right'>Date</span>
+						<h4 id='assessmentname'>Assessment</h4>
+						<hr>
+					</div>
+					<div>
+						<table class='table table-hover'>
+							<thead>
+								<tr>
+									<td><h4>Core Factor</h4></td>
+									<td><h4>Score</h4></td>
+								</tr>
+							</thead>
+							<tbody id='assessmentresults'>
+							</tbody>
+						</table>
+						<hr>
+					</div>
+					<div class='hidden'>
+						<canvas id="respondantProfile"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class='row'>
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class='x_panel' id='analyticspanel'>
+				<div class='x_title'>
+					<div class="profilebadge pull-right" id='candidateicon'>
+						<i class="fa fa-spinner fa-spin"></i>
+					</div>
+					<h3>Predictive Analytics</h3>
+					<div class="clearfix"></div>
+				</div>
+				<div class='x_content'>
+					<div class="col-md-4 col-sm-4 col-xs-12">
+						<div class='row content' style='background-color: #EFEFEF;'>
+						<form id='corefactorsused' class='form-horizontal form-label-left'>
+						</form>
+						</div>
+					</div>
+					<div class="col-md-8 col-sm-8 col-xs-12">
+						<div><span id='projectedtenure' class='pull-right'>11.6 Months</span>
+						<h4>Tenure Projection</h4></div>
+						<div>Percent By Month<hr></div>	
+						<div>
+							<canvas id="positionTenure"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 <%@ include file="/WEB-INF/includes/inc_header.jsp"%>
 <script>
-var urlParams; 
-(window.onpopstate = function () {
-    var match,
-        pl     = /\+/g,  // Regex for replacing addition symbol with a space
-        search = /([^&=]+)=?([^&]*)/g,
-        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-        query  = window.location.search.substring(1);
+	var urlParams;
+	(window.onpopstate = function() {
+		var match, pl = /\+/g, // Regex for replacing addition symbol with a space
+		search = /([^&=]+)=?([^&]*)/g, decode = function(s) {
+			return decodeURIComponent(s.replace(pl, " "));
+		}, query = window.location.search.substring(1);
 
-    urlParams = {};
-    while (match = search.exec(query))
-       urlParams[decode(match[1])] = decode(match[2]);
-})();
-var respondantId = urlParams.respondant_id;
-if (respondantId != null) {
-  getScore(respondantId);
-}
+		urlParams = {};
+		while (match = search.exec(query))
+			urlParams[decode(match[1])] = decode(match[2]);
+	})();
+	var respondantId = urlParams.respondant_id;
+	if (respondantId != null) {
+		getScore(respondantId);
+	}
 </script>
 
 </html>
