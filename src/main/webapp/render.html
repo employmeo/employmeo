@@ -22,11 +22,11 @@
 </head>
 
 <body>
-<div class='container-fluid'>
+<div class='container-fluid' style='background-color:#FFFFFF'>
 							<table class='table table-hover'>
 								<thead>
 									<tr>
-										<td><h4>Core Factor</h4></td>
+										<td style='width:120px'><h4>Core Factor</h4></td>
 										<td><h4>Score</h4></td>
 									</tr>
 								</thead>
@@ -36,6 +36,7 @@
 </div>
 </body>
 <script type="text/javascript">
+
 	$(document).ready(function() {
 		var urlParams;
 		(window.onpopstate = function() {
@@ -49,7 +50,11 @@
 				urlParams[decode(match[1])] = decode(match[2]);
 		})();
 		console.log(urlParams);
-		var scores = { 'dude' : 1, 'dude 2' : 3};
+		var data = JSON.parse(urlParams.scores);
+		var scores = new Object();
+		for (var i=0; i<data.length; i++) {
+			scores[data[i].corefactor_name] = data[i].corefactor_value;
+		}
 		renderAssessmentScore(scores);
 	});
 </script>
