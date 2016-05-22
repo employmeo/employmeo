@@ -8,52 +8,51 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.Date;
 
-
 /**
  * The persistent class for the payroll_summary database table.
  * 
  */
 @Entity
-@Table(name="payroll_summary")
-@NamedQuery(name="PayrollSummary.findAll", query="SELECT p FROM PayrollSummary p")
+@Table(name = "payroll_summary")
+@NamedQuery(name = "PayrollSummary.findAll", query = "SELECT p FROM PayrollSummary p")
 public class PayrollSummary extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="payroll_person_id")
+	@Column(name = "payroll_person_id")
 	private Long payrollPersonId;
 
-	@Column(name="payroll_bonus_wages")
+	@Column(name = "payroll_bonus_wages")
 	private BigDecimal payrollBonusWages;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name="payroll_end_date")
+	@Column(name = "payroll_end_date")
 	private Date payrollEndDate;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name="payroll_hire_date")
+	@Column(name = "payroll_hire_date")
 	private Date payrollHireDate;
 
-	@Column(name="payroll_latest_wage_rate")
+	@Column(name = "payroll_latest_wage_rate")
 	private BigDecimal payrollLatestWageRate;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name="payroll_start_date")
+	@Column(name = "payroll_start_date")
 	private Date payrollStartDate;
 
-	@Column(name="payroll_start_wage_rate")
+	@Column(name = "payroll_start_wage_rate")
 	private BigDecimal payrollStartWageRate;
 
-	@Column(name="payroll_still_employed")
+	@Column(name = "payroll_still_employed")
 	private byte payrollStillEmployed;
 
-	@Column(name="payroll_total_hours")
+	@Column(name = "payroll_total_hours")
 	private BigDecimal payrollTotalHours;
 
-	@Column(name="payroll_total_wages")
+	@Column(name = "payroll_total_wages")
 	private BigDecimal payrollTotalWages;
 
-	@Column(name="payroll_weekly_hours")
+	@Column(name = "payroll_weekly_hours")
 	private BigDecimal payrollWeeklyHours;
 
 	public PayrollSummary() {

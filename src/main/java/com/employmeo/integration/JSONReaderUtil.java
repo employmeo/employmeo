@@ -23,7 +23,7 @@ public class JSONReaderUtil<T> implements MessageBodyReader<T> {
 
 	@Override
 	public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
-		  return true;
+		return true;
 	}
 
 	@Override
@@ -31,26 +31,27 @@ public class JSONReaderUtil<T> implements MessageBodyReader<T> {
 			InputStream is) throws IOException, WebApplicationException {
 
 		StringBuilder sb = new StringBuilder();
-	    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-	    String read;
-	    while((read=br.readLine()) != null) {
-	        sb.append(read);   
-	    }
-	    br.close();
-	    
-	    if (String.class == generic) return type.cast(sb.toString());
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		String read;
+		while ((read = br.readLine()) != null) {
+			sb.append(read);
+		}
+		br.close();
 
-	    if (JSONObject.class == generic) {
-	    	JSONObject json = null;
-	    	try {
-	    		json = new JSONObject(sb.toString());
-	    	} catch (Exception e) {
-		    	throw new WebApplicationException(Response.Status.BAD_REQUEST);
-		    }
-	    	return type.cast(json);
-	    }
+		if (String.class == generic)
+			return type.cast(sb.toString());
 
-	    // If not converting to String or JSON, return null.
-	    return null;
+		if (JSONObject.class == generic) {
+			JSONObject json = null;
+			try {
+				json = new JSONObject(sb.toString());
+			} catch (Exception e) {
+				throw new WebApplicationException(Response.Status.BAD_REQUEST);
+			}
+			return type.cast(json);
+		}
+
+		// If not converting to String or JSON, return null.
+		return null;
 	}
 }

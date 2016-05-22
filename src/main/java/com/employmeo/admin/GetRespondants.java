@@ -29,58 +29,66 @@ import java.util.List;
 @Path("getrespondants")
 @PermitAll
 public class GetRespondants {
-	
-	  @POST
-	  @Produces(MediaType.APPLICATION_JSON)
-	  public String doPost (
-			    @Context final HttpServletRequest reqt,
-			    @Context final HttpServletResponse resp,
-			    @DefaultValue("-1") @FormParam("location_id") Long locationId,
-			    @DefaultValue("-1") @FormParam("position_id") Long positionId,
-			    @DefaultValue("2015-01-01") @FormParam("fromdate") String fromDate,
-			    @DefaultValue("2020-12-31") @FormParam("todate") String toDate 
-			    )
-	  {  
-		  JSONArray response = new JSONArray();
 
-		  HttpSession sess = reqt.getSession();
-		  User user = (User) sess.getAttribute("User");		  
-		  if (user == null) {
-			  resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			  return null;
-	  	  } // else if (false) { // {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
+			@DefaultValue("-1") @FormParam("location_id") Long locationId,
+			@DefaultValue("-1") @FormParam("position_id") Long positionId,
+			@DefaultValue("2015-01-01") @FormParam("fromdate") String fromDate,
+			@DefaultValue("2020-12-31") @FormParam("todate") String toDate) {
+		JSONArray response = new JSONArray();
 
-  		  Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
-		  Timestamp to = new Timestamp(Date.valueOf(toDate).getTime());	  // losing rest of day (need to add a day)
-		  String locationSQL = "";
-		  String positionSQL = "";
-		  if (locationId > -1) locationSQL = "AND r.respondantLocationId = :locationId ";
-		  if (positionId > -1) positionSQL = "AND r.respondantPositionId = :positionId ";
+		HttpSession sess = reqt.getSession();
+		User user = (User) sess.getAttribute("User");
+		if (user == null) {
+			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		} // else if (false) { //
+			// {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
-		  EntityManager em = DBUtil.getEntityManager();		  
-		  String dateSQL = "AND r.respondantCreatedDate >= :fromDate AND r.respondantCreatedDate <= :toDate ";
-		  String sql = "SELECT r from Respondant r WHERE " +
-				  	   "r.respondantStatus >= :status AND r.respondantAccountId = :accountId " +
-				  	   locationSQL + positionSQL + dateSQL +
-				  	   "ORDER BY r.respondantCreatedDate DESC";
-		  TypedQuery<Respondant> query = em.createQuery(sql, Respondant.class);
-		  query.setParameter("accountId", user.getAccount().getAccountId());
-		  if (locationId > -1) query.setParameter("locationId", locationId);
-		  if (positionId > -1) query.setParameter("positionId", positionId);
-		  query.setParameter("fromDate", from);
-		  query.setParameter("toDate", to);
-		  query.setParameter("status", Respondant.STATUS_SCORED);
-			    
-		  List<Respondant> respondants = query.getResultList();
-		  for (int j=0;j<respondants.size();j++) {
-			  JSONObject jresp = respondants.get(j).getJSON();
-			  jresp.put("scores", respondants.get(j).getAssessmentScore());
-			  jresp.put("position", respondants.get(j).getPosition().getJSON());
+		Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
+		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime()); // losing
+																		// rest
+																		// of
+																		// day
+																		// (need
+																		// to
+																		// add a
+																		// day)
+		String locationSQL = "";
+		String positionSQL = "";
+		if (locationId > -1)
+			locationSQL = "AND r.respondantLocationId = :locationId ";
+		if (positionId > -1)
+			positionSQL = "AND r.respondantPositionId = :positionId ";
 
-			  response.put(jresp);
-		  }
-		   
-		  return response.toString();
-	  }
-	  
+		EntityManager em = DBUtil.getEntityManager();
+		String dateSQL = "AND r.respondantCreatedDate >= :fromDate AND r.respondantCreatedDate <= :toDate ";
+		String sql = "SELECT r from Respondant r WHERE "
+				+ "r.respondantStatus >= :status AND r.respondantAccountId = :accountId " + locationSQL + positionSQL
+				+ dateSQL + "ORDER BY r.respondantCreatedDate DESC";
+		TypedQuery<Respondant> query = em.createQuery(sql, Respondant.class);
+		query.setParameter("accountId", user.getAccount().getAccountId());
+		if (locationId > -1)
+			query.setParameter("locationId", locationId);
+		if (positionId > -1)
+			query.setParameter("positionId", positionId);
+		query.setParameter("fromDate", from);
+		query.setParameter("toDate", to);
+		query.setParameter("status", Respondant.STATUS_PREDICTED);
+
+		List<Respondant> respondants = query.getResultList();
+		for (int j = 0; j < respondants.size(); j++) {
+			respondants.get(j).getAssessmentScore();
+			JSONObject jresp = respondants.get(j).getJSON();
+			jresp.put("scores", respondants.get(j).getAssessmentScore());
+			jresp.put("position", respondants.get(j).getPosition().getJSON());
+
+			response.put(jresp);
+		}
+
+		return response.toString();
+	}
+
 }

@@ -9,53 +9,52 @@ import com.employmeo.util.DBUtil;
 
 import java.util.List;
 
-
 /**
  * The persistent class for the questions database table.
  * 
  */
 @Entity
-@Table(name="questions")
-@NamedQuery(name="Question.findAll", query="SELECT q FROM Question q")
+@Table(name = "questions")
+@NamedQuery(name = "Question.findAll", query = "SELECT q FROM Question q")
 public class Question extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="QUESTION_ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "QUESTION_ID")
 	private Long questionId;
 
-	@Column(name="MODIFIED_DATE")
+	@Column(name = "MODIFIED_DATE")
 	private int modifiedDate;
 
-	@Column(name="QUESTION_DESCRIPTION")
+	@Column(name = "QUESTION_DESCRIPTION")
 	private String questionDescription;
 
-	@Column(name="QUESTION_DISPLAY_ID")
+	@Column(name = "QUESTION_DISPLAY_ID")
 	private Long questionDisplayId;
 
-	@Column(name="QUESTION_TEXT")
+	@Column(name = "QUESTION_TEXT")
 	private String questionText;
 
-	@Column(name="QUESTION_TYPE")
+	@Column(name = "QUESTION_TYPE")
 	private int questionType;
-	
-	@Column(name="QUESTION_COREFACTOR_ID")
+
+	@Column(name = "QUESTION_COREFACTOR_ID")
 	private int questionCorefactorId;
-	
-	@Column(name="QUESTION_DIRECTION")
+
+	@Column(name = "QUESTION_DIRECTION")
 	private int questionDirection;
 
-	//bi-directional many-to-one association to Answer
-	@OneToMany(mappedBy="question",fetch=FetchType.EAGER)
+	// bi-directional many-to-one association to Answer
+	@OneToMany(mappedBy = "question", fetch = FetchType.EAGER)
 	private List<Answer> answers;
 
-	//bi-directional many-to-one association to Response
-	@OneToMany(mappedBy="question")
+	// bi-directional many-to-one association to Response
+	@OneToMany(mappedBy = "question")
 	private List<Response> responses;
 
-	//bi-directional many-to-one association to SurveyQuestion
-	@OneToMany(mappedBy="question")
+	// bi-directional many-to-one association to SurveyQuestion
+	@OneToMany(mappedBy = "question")
 	private List<SurveyQuestion> surveyQuestions;
 
 	public Question() {
@@ -190,24 +189,26 @@ public class Question extends PersistantObject implements Serializable {
 
 		return surveyQuestion;
 	}
-	
+
 	public static Question getQuestionById(String lookupId) {
-		
+
 		return getQuestionById(new Long(lookupId));
-		
+
 	}
-	
+
 	public static Question getQuestionById(Long lookupId) {
 
 		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<Question> q = em.createQuery("SELECT q FROM Question q WHERE q.questionId = :questionId", Question.class);
-        q.setParameter("questionId", lookupId);
-        Question question = null;
-        try {
-      	  question = q.getSingleResult();
-        } catch (NoResultException nre) {}
-        
-        return question;
+		TypedQuery<Question> q = em.createQuery("SELECT q FROM Question q WHERE q.questionId = :questionId",
+				Question.class);
+		q.setParameter("questionId", lookupId);
+		Question question = null;
+		try {
+			question = q.getSingleResult();
+		} catch (NoResultException nre) {
+		}
+
+		return question;
 	}
 
 	@Override
@@ -220,11 +221,10 @@ public class Question extends PersistantObject implements Serializable {
 		json.put("question_type", this.questionType);
 		json.put("question_corefactor_id", this.questionCorefactorId);
 		json.put("question_direction", this.questionDirection);
-		for (int i=0; i<this.answers.size();i++) {
+		for (int i = 0; i < this.answers.size(); i++) {
 			json.accumulate("answers", this.answers.get(i).getJSON());
 		}
 		return json;
 	}
-	
 
 }

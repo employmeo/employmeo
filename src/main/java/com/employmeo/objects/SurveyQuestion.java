@@ -5,42 +5,41 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
-
 /**
  * The persistent class for the survey_questions database table.
  * 
  */
 @Entity
-@Table(name="survey_questions")
-@NamedQuery(name="SurveyQuestion.findAll", query="SELECT s FROM SurveyQuestion s")
+@Table(name = "survey_questions")
+@NamedQuery(name = "SurveyQuestion.findAll", query = "SELECT s FROM SurveyQuestion s")
 public class SurveyQuestion extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="SQ_ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "SQ_ID")
 	private String sqId;
 
-	@Column(name="SQ_DEPENDENCY")
+	@Column(name = "SQ_DEPENDENCY")
 	private boolean sqDependency;
 
-	@Column(name="SQ_REQUIRED")
+	@Column(name = "SQ_REQUIRED")
 	private boolean sqRequired;
 
-	@Column(name="SQ_SEQENCE")
+	@Column(name = "SQ_SEQENCE")
 	private int sqSeqence;
-	
-	@Column(name="SQ_PAGE")
+
+	@Column(name = "SQ_PAGE")
 	private int sqPage;
 
-	//bi-directional many-to-one association to Question
+	// bi-directional many-to-one association to Question
 	@ManyToOne
-	@JoinColumn(name="SQ_QUESTION_ID")
+	@JoinColumn(name = "SQ_QUESTION_ID")
 	private Question question;
 
-	//bi-directional many-to-one association to Survey
+	// bi-directional many-to-one association to Survey
 	@ManyToOne
-	@JoinColumn(name="SURVEY_ID")
+	@JoinColumn(name = "SURVEY_ID")
 	private Survey survey;
 
 	public SurveyQuestion() {
@@ -85,7 +84,7 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 	public void setSqPage(int sqPage) {
 		this.sqPage = sqPage;
 	}
-	
+
 	public Question getQuestion() {
 		return this.question;
 	}

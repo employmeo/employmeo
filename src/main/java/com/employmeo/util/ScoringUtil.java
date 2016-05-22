@@ -13,7 +13,8 @@ public class ScoringUtil {
 	public static void scoreAssessment(Respondant respondant) {
 
 		List<Response> responses = respondant.getResponses();
-		if ((responses == null) || (responses.size() == 0)) return; // return nothing when survey incomplete
+		if ((responses == null) || (responses.size() == 0))
+			return; // return nothing when survey incomplete
 		int[] count = new int[20];
 		int[] score = new int[20];
 
@@ -40,7 +41,7 @@ public class ScoringUtil {
 	}
 
 	public static void predictRespondant(Respondant respondant) {
-
+		if (respondant.getRespondantStatus() <= Respondant.STATUS_SCORED) respondant.refreshMe();
 		if (respondant.getRespondantStatus() == Respondant.STATUS_SCORED) {
 
 			// TODO - replace random logic with real scoring algorithm
@@ -50,9 +51,9 @@ public class ScoringUtil {
 			// Location.getLocationById(respondant.getRespondantLocationId());
 
 			double d = Math.random();
-			double b = Math.random();
-			double c = Math.random();
-			double a = Math.random();
+			double c = Math.random() * 2;
+			double b = Math.random() * 1.5;
+			double a = Math.random() / 1.5;
 			double highest = 0;
 
 			respondant.setProfileD(d / (a + b + c + d));
@@ -61,7 +62,7 @@ public class ScoringUtil {
 
 			respondant.setProfileC(c / (a + b + c + d));
 			if (c > highest) {
-				highest = d;
+				highest = c;
 				respondant.setRespondantProfile(PositionProfile.PROFILE_C);
 			}
 

@@ -8,40 +8,39 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.Date;
 
-
 /**
  * The persistent class for the PAYROLL_ENTRY database table.
  * 
  */
 @Entity
-@Table(name="PAYROLL_ENTRY")
-@NamedQuery(name="PayrollEntry.findAll", query="SELECT p FROM PayrollEntry p")
+@Table(name = "PAYROLL_ENTRY")
+@NamedQuery(name = "PayrollEntry.findAll", query = "SELECT p FROM PayrollEntry p")
 public class PayrollEntry extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="PAYROLL_ENTRY_ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "PAYROLL_ENTRY_ID")
 	private Long payrollEntryId;
 
-	@Column(name="PAYROLL_ENTRY_BONUS_PAY")
+	@Column(name = "PAYROLL_ENTRY_BONUS_PAY")
 	private BigDecimal payrollEntryBonusPay;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name="PAYROLL_ENTRY_PERIOD_END")
+	@Column(name = "PAYROLL_ENTRY_PERIOD_END")
 	private Date payrollEntryPeriodEnd;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name="PAYROLL_ENTRY_PERIOD_START")
+	@Column(name = "PAYROLL_ENTRY_PERIOD_START")
 	private Date payrollEntryPeriodStart;
 
-	@Column(name="PAYROLL_ENTRY_PERSON_ID")
+	@Column(name = "PAYROLL_ENTRY_PERSON_ID")
 	private Long payrollEntryPersonId;
 
-	@Column(name="PAYROLL_ENTRY_TOTAL_HOURS")
+	@Column(name = "PAYROLL_ENTRY_TOTAL_HOURS")
 	private BigDecimal payrollEntryTotalHours;
 
-	@Column(name="PAYROLL_ENTRY_TOTAL_WAGES")
+	@Column(name = "PAYROLL_ENTRY_TOTAL_WAGES")
 	private BigDecimal payrollEntryTotalWages;
 
 	public PayrollEntry() {

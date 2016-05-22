@@ -19,57 +19,53 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import com.employmeo.objects.User;
 import com.employmeo.util.SecurityUtil;
 
-
 @Path("login")
 public class Login {
-	
-	private final Response LOGIN_FAILED = Response.status(Response.Status.UNAUTHORIZED).entity("{ message: 'Login failed' }").build();
+
+	private final Response LOGIN_FAILED = Response.status(Response.Status.UNAUTHORIZED)
+			.entity("{ message: 'Login failed' }").build();
 
 	@POST
 	@PermitAll
-	public Response doPost (
-			    @Context final HttpServletRequest reqt,
-			    @Context final HttpServletResponse resp,
-			    @FormParam("email") String email,
-			    @FormParam("password") String password,
-			    @DefaultValue("false") @FormParam("rememberme") boolean persistLogin
-			    )
-	{  
-	      // Collect Expected Input Fields From Form:
-		  // Validate required fields
+	public Response doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
+			@FormParam("email") String email, @FormParam("password") String password,
+			@DefaultValue("false") @FormParam("rememberme") boolean persistLogin) {
+		// Collect Expected Input Fields From Form:
+		// Validate required fields
 
-		  // Execute business logic (lookup the user by email and password)
-		  User user = SecurityUtil.login(email, password);
-	      if (user.getUserId() !=null) {
+		// Execute business logic (lookup the user by email and password)
+		User user = SecurityUtil.login(email, password);
+		if (user.getUserId() != null) {
 
-	    	  EmpAutoLoginFilter.login(user, reqt);
-	  	  	  ResponseBuilder rb = Response.status(Response.Status.ACCEPTED).entity(user.getJSONString());
+			EmpAutoLoginFilter.login(user, reqt);
+			ResponseBuilder rb = Response.status(Response.Status.ACCEPTED).entity(user.getJSONString());
 
-	    	  if (persistLogin) {
-	        	  String hashword = user.getUserPassword();
-	        	  String encodedHash = hashword;
-	        	  String encodedEmail = email;
-	        	  try {
-	        		  encodedEmail = URLEncoder.encode(user.getUserEmail(),"UTF-8");
-	        		  encodedHash = URLEncoder.encode(hashword,"UTF-8");	        		  
-	        	  } catch (UnsupportedEncodingException e) {}
-	        	  Cookie uCookie = new Cookie("email", encodedEmail, "/", reqt.getServerName());
-	    		  Cookie pCookie = new Cookie("hashword", encodedHash, "/", reqt.getServerName());
-	    		  rb.cookie(new NewCookie(uCookie,"email",60*60*24*90,false));
-	    		  rb.cookie(new NewCookie(pCookie,"hashword",60*60*24*90,false));
-			  } else {
-	    		  Cookie uCookie = new Cookie("email", null, "/", reqt.getServerName());
-	    		  Cookie pCookie = new Cookie("hashword", null, "/", reqt.getServerName());
-	    		  rb.cookie(new NewCookie(uCookie,"email",0,false));
-	    		  rb.cookie(new NewCookie(pCookie,"hashword",0,false));	  
-	          }
-	  		  Cookie nCookie = new Cookie("user_fname", user.getUserFname(), "/", reqt.getServerName());
-    		  rb.cookie(new NewCookie(nCookie,"user_fname",60*60*24*90,false));
-    	      return rb.build();
-		  }
+			if (persistLogin) {
+				String hashword = user.getUserPassword();
+				String encodedHash = hashword;
+				String encodedEmail = email;
+				try {
+					encodedEmail = URLEncoder.encode(user.getUserEmail(), "UTF-8");
+					encodedHash = URLEncoder.encode(hashword, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+				}
+				Cookie uCookie = new Cookie("email", encodedEmail, "/", reqt.getServerName());
+				Cookie pCookie = new Cookie("hashword", encodedHash, "/", reqt.getServerName());
+				rb.cookie(new NewCookie(uCookie, "email", 60 * 60 * 24 * 90, false));
+				rb.cookie(new NewCookie(pCookie, "hashword", 60 * 60 * 24 * 90, false));
+			} else {
+				Cookie uCookie = new Cookie("email", null, "/", reqt.getServerName());
+				Cookie pCookie = new Cookie("hashword", null, "/", reqt.getServerName());
+				rb.cookie(new NewCookie(uCookie, "email", 0, false));
+				rb.cookie(new NewCookie(pCookie, "hashword", 0, false));
+			}
+			Cookie nCookie = new Cookie("user_fname", user.getUserFname(), "/", reqt.getServerName());
+			rb.cookie(new NewCookie(nCookie, "user_fname", 60 * 60 * 24 * 90, false));
+			return rb.build();
+		}
 
-	      return LOGIN_FAILED;
-  
-	  }	  
-	  
+		return LOGIN_FAILED;
+
+	}
+
 }

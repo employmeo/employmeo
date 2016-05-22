@@ -19,27 +19,24 @@ import com.employmeo.objects.Respondant;
 @Path("getscore")
 @PermitAll
 public class GetRespondantScore {
-	
-	  @POST
-	  @Produces(MediaType.APPLICATION_JSON)
-	  public String doPost (
-			    @Context final HttpServletRequest reqt,
-			    @Context final HttpServletResponse resp,
-			    @FormParam("respondant_id") Long respondantId
-			    )
-	  {  
-		  JSONObject json = new JSONObject();
-		  Respondant respondant = Respondant.getRespondantById(respondantId);
-	  
-		  if (respondant != null) {
-			  JSONObject scores = respondant.getAssessmentScore();
-			  JSONObject jresp = respondant.getJSON();
-			  json.put("respondant", jresp);
-			  json.put("scores", scores);
-			  Position position = Position.getPositionById(respondant.getRespondantPositionId());
-			  if (position != null) json.put("position", position.getJSON());
-		  }
-	  
-		  return json.toString();
-	  }	  
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
+			@FormParam("respondant_id") Long respondantId) {
+		JSONObject json = new JSONObject();
+		Respondant respondant = Respondant.getRespondantById(respondantId);
+
+		if (respondant != null) {
+			JSONObject scores = respondant.getAssessmentScore();
+			JSONObject jresp = respondant.getJSON();
+			json.put("respondant", jresp);
+			json.put("scores", scores);
+			Position position = Position.getPositionById(respondant.getRespondantPositionId());
+			if (position != null)
+				json.put("position", position.getJSON());
+		}
+
+		return json.toString();
+	}
 }

@@ -12,30 +12,29 @@ public abstract class PersistantObject {
 	public void persistMe() {
 		EntityManager em = DBUtil.getEntityManager();
 		EntityTransaction txn = em.getTransaction();
-		txn.begin();
+		if (!txn.isActive()) txn.begin();
 		em.persist(this);
-		txn.commit();
+		if (txn.isActive()) txn.commit();
 	}
-	
+
 	public void mergeMe() {
 		EntityManager em = DBUtil.getEntityManager();
 		EntityTransaction txn = em.getTransaction();
-		txn.begin();
+		if (!txn.isActive()) txn.begin();
 		em.merge(this);
-		txn.commit();
-	}	
+		if (txn.isActive()) txn.commit();
+	}
 
 	public void refreshMe() {
 		EntityManager em = DBUtil.getEntityManager();
 		em.refresh(this);
 	}
-	
+
 	public String getJSONString() {
 
 		return getJSON().toString();
 	}
 
 	public abstract JSONObject getJSON();
-
 
 }

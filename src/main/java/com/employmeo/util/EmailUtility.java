@@ -42,8 +42,7 @@ public class EmailUtility {
 		return;
 	}
 
-	public static void sendMessage(String from, String to, String subject, String content,
-			StringBuffer htmlpart) {
+	public static void sendMessage(String from, String to, String subject, String content, StringBuffer htmlpart) {
 		TASK_EXECUTOR.submit(new Runnable() {
 			@Override
 			public void run() {

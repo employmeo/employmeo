@@ -22,58 +22,49 @@ import com.employmeo.util.EmailUtility;
 @Path("inviteapplicant")
 @PermitAll
 public class InviteApplicant {
-	
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public String doPost (
-			    @Context final HttpServletRequest reqt,
-			    @Context final HttpServletResponse resp,
-			    @FormParam("email") String to,
-			    @FormParam("fname") String fname,
-			    @FormParam("lname") String lname,
-			    @FormParam("address") String address,
-			    @FormParam("lat") Double personLat,
-			    @FormParam("lng") Double personLng,
-			    @FormParam("survey_id") Long surveyId,
-			    @FormParam("position_id") Long positionId,
-			    @FormParam("location_id") Long locationId,
-			    @DefaultValue("false") @FormParam("rememberme") boolean persistLogin
-			    )
-	{  
-		  // Collect expected input fields
-		  User user = (User) reqt.getSession().getAttribute("User");
-		  if (user == null) {
-			  resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			  return null;
-	  	  }
-		  Account account = user.getAccount();
-		  
-		  // Perform business logic  
-		  Person applicant = new Person();
-		  applicant.setPersonEmail(to);
-		  applicant.setPersonFname(fname);
-		  applicant.setPersonLname(lname);
-		  applicant.setPersonAddress(address);
-		  applicant.setPersonLat(personLat);
-		  applicant.setPersonLong(personLng);
-		  applicant.persistMe();
-		  
-		  Respondant respondant = new Respondant();
-		  respondant.setPerson(applicant);
-		  respondant.setRespondantAccountId(account.getAccountId());
-		  respondant.setRespondantSurveyId(surveyId);
-		  respondant.setRespondantLocationId(locationId);// ok for null location
-		  respondant.setRespondantPositionId(positionId);// ok for null location
-		  respondant.persistMe();
-		  
-		  JSONObject json = new JSONObject();
-		  json.put("person", applicant.getJSON());
-		  json.put("respondant", respondant.getJSON());	
-		  
-		  EmailUtility.sendEmailInvitation(respondant);
-		  
-		  return json.toString();
+	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
+			@FormParam("email") String to, @FormParam("fname") String fname, @FormParam("lname") String lname,
+			@FormParam("address") String address, @FormParam("lat") Double personLat,
+			@FormParam("lng") Double personLng, @FormParam("survey_id") Long surveyId,
+			@FormParam("position_id") Long positionId, @FormParam("location_id") Long locationId,
+			@DefaultValue("false") @FormParam("rememberme") boolean persistLogin) {
+		// Collect expected input fields
+		User user = (User) reqt.getSession().getAttribute("User");
+		if (user == null) {
+			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+		Account account = user.getAccount();
 
-	  }	  
-	  
+		// Perform business logic
+		Person applicant = new Person();
+		applicant.setPersonEmail(to);
+		applicant.setPersonFname(fname);
+		applicant.setPersonLname(lname);
+		applicant.setPersonAddress(address);
+		applicant.setPersonLat(personLat);
+		applicant.setPersonLong(personLng);
+		applicant.persistMe();
+
+		Respondant respondant = new Respondant();
+		respondant.setPerson(applicant);
+		respondant.setRespondantAccountId(account.getAccountId());
+		respondant.setRespondantSurveyId(surveyId);
+		respondant.setRespondantLocationId(locationId);// ok for null location
+		respondant.setRespondantPositionId(positionId);// ok for null location
+		respondant.persistMe();
+
+		JSONObject json = new JSONObject();
+		json.put("person", applicant.getJSON());
+		json.put("respondant", respondant.getJSON());
+
+		EmailUtility.sendEmailInvitation(respondant);
+
+		return json.toString();
+
+	}
+
 }

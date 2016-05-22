@@ -7,45 +7,47 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-
 /**
  * The persistent class for the persons database table.
  * 
  */
 @Entity
-@Table(name="persons")
-@NamedQuery(name="Person.findAll", query="SELECT p FROM Person p")
+@Table(name = "persons")
+@NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")
 public class Person extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="person_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "person_id")
 	private Integer personId;
 
-	@Column(name="person_email")
+	@Column(name = "person_email")
 	private String personEmail;
 
-	@Column(name="person_fname")
+	@Column(name = "person_fname")
 	private String personFname;
 
-	@Column(name="person_lname")
+	@Column(name = "person_lname")
 	private String personLname;
 
-	@Column(name="person_ssn")
+	@Column(name = "person_ssn")
 	private String personSsn;
 
-	@Column(name="person_address")
+	@Column(name = "person_address")
 	private String personAddress;
 
-	@Column(name="person_lat")
+	@Column(name = "person_lat")
 	private double personLat;
-	
-	@Column(name="person_long")
+
+	@Column(name = "person_long")
 	private double personLong;
 
-	//bi-directional many-to-one association to Respondant
-	@OneToMany(mappedBy="person")
+	@Column(name = "person_ats_id")
+	private String personAtsId;
+
+	// bi-directional many-to-one association to Respondant
+	@OneToMany(mappedBy = "person")
 	private List<Respondant> respondants;
 
 	public Person() {
@@ -99,6 +101,13 @@ public class Person extends PersistantObject implements Serializable {
 		this.personSsn = personSsn;
 	}
 
+	public String getPersonAtsId() {
+		return this.personAtsId;
+	}
+
+	public void setPersonAtsId(String personAtsId) {
+		this.personAtsId = personAtsId;
+	}
 	public double getPersonLat() {
 		return this.personLat;
 	}
@@ -147,7 +156,7 @@ public class Person extends PersistantObject implements Serializable {
 		json.put("person_address", this.personAddress);
 		json.put("person_lat", this.personLat);
 		json.put("person_long", this.personLong);
-		
+
 		return json;
 	}
 

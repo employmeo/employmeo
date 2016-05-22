@@ -12,30 +12,25 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-
 @Path("logout")
 public class Logout {
 
+	@POST
+	@PermitAll
+	public Response doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp) {
 
-  @POST
-  @PermitAll
-  public Response doPost (
-			    @Context final HttpServletRequest reqt,
-			    @Context final HttpServletResponse resp
-			    )
-	  {  
+		ResponseBuilder rb = Response.status(Response.Status.ACCEPTED).entity("{ message: 'Logged Out' }");
+		Cookie uCookie = new Cookie("email", null, "/", reqt.getServerName());
+		rb.cookie(new NewCookie(uCookie, "email", 1, false));
+		Cookie pCookie = new Cookie("hashword", null, "/", reqt.getServerName());
+		rb.cookie(new NewCookie(pCookie, "hashword", 1, false));
+		Cookie nCookie = new Cookie("user_fname", null, "/", reqt.getServerName());
+		rb.cookie(new NewCookie(nCookie, "user_fname", 1, false));
 
-	      ResponseBuilder rb = Response.status(Response.Status.ACCEPTED).entity("{ message: 'Logged Out' }");
-		  Cookie uCookie = new Cookie("email", null, "/", reqt.getServerName());
-		  rb.cookie(new NewCookie(uCookie,"email",1,false));
-		  Cookie pCookie = new Cookie("hashword", null, "/", reqt.getServerName());
-		  rb.cookie(new NewCookie(pCookie,"hashword",1,false));
-		  Cookie nCookie = new Cookie("user_fname", null, "/", reqt.getServerName());
-		  rb.cookie(new NewCookie(nCookie,"user_fname",1,false));
-		  
-		  reqt.getSession().invalidate();;
+		reqt.getSession().invalidate();
+		;
 
-		  return rb.build();
-	  }
-	  
+		return rb.build();
+	}
+
 }

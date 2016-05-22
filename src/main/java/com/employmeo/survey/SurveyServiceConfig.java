@@ -5,7 +5,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 @ApplicationPath("survey")
 public class SurveyServiceConfig extends ResourceConfig {
-	public SurveyServiceConfig () {
+	public SurveyServiceConfig() {
 		packages("com.employmeo.survey");
 	}
 }

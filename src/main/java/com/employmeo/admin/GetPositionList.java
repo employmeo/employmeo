@@ -21,30 +21,26 @@ import java.util.List;
 @Path("getpositions")
 @PermitAll
 public class GetPositionList {
-	
-	  @POST
-	  @Produces(MediaType.APPLICATION_JSON)
-	  public String doPost (
-			    @Context final HttpServletRequest reqt,
-			    @Context final HttpServletResponse resp
-			    )
-	  {  
-		  HttpSession sess = reqt.getSession();
-		  User user = (User) sess.getAttribute("User");		  
-		  if (user == null) {
-			  resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			  return null;
-	  	  } 
 
-		  Account account = user.getAccount();
-		  JSONArray response = new JSONArray();
-		  
-		  if (account.getPositions().size()>0) {
-			  List<Position> positions = account.getPositions();
-			  for (int i=0;i<positions.size();i++) {
-				  response.put(positions.get(i).getJSON());
-			  }
-		  }  
-		  return response.toString();
-	  }	  
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp) {
+		HttpSession sess = reqt.getSession();
+		User user = (User) sess.getAttribute("User");
+		if (user == null) {
+			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+
+		Account account = user.getAccount();
+		JSONArray response = new JSONArray();
+
+		if (account.getPositions().size() > 0) {
+			List<Position> positions = account.getPositions();
+			for (int i = 0; i < positions.size(); i++) {
+				response.put(positions.get(i).getJSON());
+			}
+		}
+		return response.toString();
+	}
 }

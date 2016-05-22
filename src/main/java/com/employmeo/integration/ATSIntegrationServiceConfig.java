@@ -4,13 +4,12 @@ import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-
 @ApplicationPath("integration")
 public class ATSIntegrationServiceConfig extends ResourceConfig {
 
-	public ATSIntegrationServiceConfig () {
+	public ATSIntegrationServiceConfig() {
 		packages("com.employmeo.integration");
 		register(IntegrationAuthProvider.class);
 	}
-	
+
 }

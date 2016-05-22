@@ -26,51 +26,52 @@ import java.util.List;
 @Path("getlastten")
 @PermitAll
 public class GetLastTenRespondants {
-	
-	  @POST
-	  @Produces(MediaType.APPLICATION_JSON)
-	  public String doPost (
-			    @Context final HttpServletRequest reqt,
-			    @Context final HttpServletResponse resp,
-			    @DefaultValue("-1") @FormParam("location_id") Long locationId,
-			    @DefaultValue("-1") @FormParam("position_id") Long positionId
-			    )
-	  {  
-		  JSONArray response = new JSONArray();
 
-		  HttpSession sess = reqt.getSession();
-		  User user = (User) sess.getAttribute("User");		  
-		  if (user == null) {
-			  resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			  return null;
-	  	  } // else if (false) { // {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
+			@DefaultValue("-1") @FormParam("location_id") Long locationId,
+			@DefaultValue("-1") @FormParam("position_id") Long positionId) {
+		JSONArray response = new JSONArray();
 
-		  String locationSQL = "";
-		  String positionSQL = "";
-		  if (locationId > -1) locationSQL = "AND r.respondantLocationId = :locationId ";
-		  if (positionId > -1) positionSQL = "AND r.respondantPositionId = :positionId ";
+		HttpSession sess = reqt.getSession();
+		User user = (User) sess.getAttribute("User");
+		if (user == null) {
+			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		} // else if (false) { //
+			// {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
-		  EntityManager em = DBUtil.getEntityManager();		  
-		  String sql = "SELECT r from Respondant r WHERE " +
-				  	   "r.respondantStatus >= :status AND r.respondantAccountId = :accountId " +
-				  	   locationSQL + positionSQL +
-				  	   "ORDER BY r.respondantCreatedDate DESC";
-		  TypedQuery<Respondant> query = em.createQuery(sql, Respondant.class);
-		  query.setMaxResults(10);
-		  query.setParameter("accountId", user.getAccount().getAccountId());
-		  if (locationId > -1) query.setParameter("locationId", locationId);
-		  if (positionId > -1) query.setParameter("positionId", positionId);
-		  query.setParameter("status", Respondant.STATUS_COMPLETED);
-			    
-		  List<Respondant> respondants = query.getResultList();
-		  for (int j=0;j<respondants.size();j++) {
-			  JSONObject jresp = respondants.get(j).getJSON();
-			  jresp.put("scores", respondants.get(j).getAssessmentScore());
+		String locationSQL = "";
+		String positionSQL = "";
+		if (locationId > -1)
+			locationSQL = "AND r.respondantLocationId = :locationId ";
+		if (positionId > -1)
+			positionSQL = "AND r.respondantPositionId = :positionId ";
 
-			  response.put(jresp);
-		  }
-		   
-		  return response.toString();
-	  }
-	  
+		EntityManager em = DBUtil.getEntityManager();
+		String sql = "SELECT r from Respondant r WHERE "
+				+ "r.respondantStatus >= :status AND r.respondantAccountId = :accountId " + locationSQL + positionSQL
+				+ "ORDER BY r.respondantCreatedDate DESC";
+		TypedQuery<Respondant> query = em.createQuery(sql, Respondant.class);
+		query.setMaxResults(10);
+		query.setParameter("accountId", user.getAccount().getAccountId());
+		if (locationId > -1)
+			query.setParameter("locationId", locationId);
+		if (positionId > -1)
+			query.setParameter("positionId", positionId);
+		query.setParameter("status", Respondant.STATUS_PREDICTED);
+
+		List<Respondant> respondants = query.getResultList();
+		for (int j = 0; j < respondants.size(); j++) {
+			respondants.get(j).getAssessmentScore();
+			JSONObject jresp = respondants.get(j).getJSON();
+			jresp.put("scores", respondants.get(j).getAssessmentScore());
+
+			response.put(jresp);
+		}
+
+		return response.toString();
+	}
+
 }

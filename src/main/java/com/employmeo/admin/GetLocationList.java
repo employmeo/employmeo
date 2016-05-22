@@ -22,31 +22,27 @@ import java.util.List;
 @Path("getlocations")
 @PermitAll
 public class GetLocationList {
-	
-	  @POST
-	  @Produces(MediaType.APPLICATION_JSON)
-	  public String doPost (
-			    @Context final HttpServletRequest reqt,
-			    @Context final HttpServletResponse resp
-			    )
-	  {  
-		  HttpSession sess = reqt.getSession();
-		  User user = (User) sess.getAttribute("User");		  
-		  if (user == null) {
-			  resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			  return null;
-	  	  } 
 
-		  Account account = user.getAccount();
-		  JSONArray response = new JSONArray();
-		  
-		  if (account.getLocations().size()>0) {
-			  List<Location> locations = account.getLocations();
-			  for (int i=0;i<locations.size();i++) {
-				  response.put(locations.get(i).getJSON());
-			  }
-		  } 
-		  return response.toString();
-	  }	  
-	  
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp) {
+		HttpSession sess = reqt.getSession();
+		User user = (User) sess.getAttribute("User");
+		if (user == null) {
+			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+
+		Account account = user.getAccount();
+		JSONArray response = new JSONArray();
+
+		if (account.getLocations().size() > 0) {
+			List<Location> locations = account.getLocations();
+			for (int i = 0; i < locations.size(); i++) {
+				response.put(locations.get(i).getJSON());
+			}
+		}
+		return response.toString();
+	}
+
 }

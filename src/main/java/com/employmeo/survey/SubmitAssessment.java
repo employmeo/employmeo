@@ -22,46 +22,44 @@ import com.employmeo.util.PartnerUtil;
 @Path("submitassessment")
 public class SubmitAssessment {
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
-    private static Logger logger = Logger.getLogger("SurveyService");
+	private static Logger logger = Logger.getLogger("SurveyService");
 
-    @PermitAll
+	@PermitAll
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public String doPost (
-//			@FormParam("finish_time") TimeStamp finishTime,
-			@FormParam("respondant_id") Long respondantId
-			)
-	{
-    	logger.info("Survey Submitted for Respondant: " + respondantId);
-    	
-    	Respondant respondant = Respondant.getRespondantById(respondantId);
-    	if (respondant.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
-    		respondant.setRespondantStatus(Respondant.STATUS_COMPLETED);
-    		respondant.setRespondantFinishTime(new Timestamp (new Date().getTime()));
-    		respondant.mergeMe();
-    	}
-		    
-		postScores(respondant);
-		  
-		return respondant.getJSONString();
-	 }
+	public String doPost(
+			// @FormParam("finish_time") TimeStamp finishTime,
+			@FormParam("respondant_id") Long respondantId) {
+		logger.info("Survey Submitted for Respondant: " + respondantId);
 
+		Respondant respondant = Respondant.getRespondantById(respondantId);
+		if (respondant.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
+			respondant.setRespondantStatus(Respondant.STATUS_COMPLETED);
+			respondant.setRespondantFinishTime(new Timestamp(new Date().getTime()));
+			respondant.mergeMe();
+		}
+
+		postScores(respondant);
+
+		return respondant.getJSONString();
+	}
 
 	private static void postScores(Respondant respondant) {
 		TASK_EXECUTOR.submit(new Runnable() {
 			@Override
 			public void run() {
-				// Kick off scoring. Future version could involve time consuming external calls
+				// Kick off scoring. Future version could involve time consuming
+				// external calls
 				JSONObject message = PartnerUtil.getScoresMessage(respondant);
-				
+
 				// Push to Partner Service if requested
 				PartnerUtil.postScoresToPartner(respondant, message);
-				
-				if (respondant.getRespondantEmailRecipient() != null && 
-						!respondant.getRespondantEmailRecipient().isEmpty()) {
+
+				if (respondant.getRespondantEmailRecipient() != null
+						&& !respondant.getRespondantEmailRecipient().isEmpty()) {
 					EmailUtility.sendResults(respondant, message.getJSONObject("applicant"));
 				}
 			}
-		});		
+		});
 	}
 }

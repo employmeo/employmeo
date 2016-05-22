@@ -16,22 +16,21 @@ import org.json.JSONObject;
 
 @Path("echo")
 public class Echo {
-	
-    @Context
-    private UriInfo uriInfo;
-    @Context
-    private Response resp;
-    
-    private static Logger logger = Logger.getLogger("RestService");
 
-    @POST
-    @PermitAll
-    @Produces(MediaType.APPLICATION_JSON)
+	@Context
+	private UriInfo uriInfo;
+	@Context
+	private Response resp;
+
+	private static Logger logger = Logger.getLogger("RestService");
+
+	@POST
+	@PermitAll
+	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String doPost (JSONObject json)
-	{
-    	logger.info("Echo Called with: \n" + json.toString());
-    	return json.toString();
+	public String doPost(JSONObject json) {
+		logger.info("Echo Called with: \n" + json.toString());
+		return json.toString();
 	}
-   
+
 }

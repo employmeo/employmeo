@@ -21,32 +21,32 @@ import java.util.logging.Logger;
 
 @Path("getpositions")
 public class GetPositions {
-	
-    private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST).entity("{ message: 'Missing Required Parameters' }").build();
-    private static Logger logger = Logger.getLogger("RestService");
-	
-	  @POST
-	  @Produces(MediaType.APPLICATION_JSON)
-	  @Consumes(MediaType.APPLICATION_JSON)
-	  public String doPost (JSONObject json)
-	  {  
-			logger.info("processing with:\n" + json.toString());   
-		    Account account = null;
-		    
-	    	try { // the required parameters
-	    		account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));	    		
-	    	} catch (Exception e) {
-	    		throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
-	    	}
 
-		  JSONArray response = new JSONArray();
-		  
-		  if (account.getPositions().size()>0) {
-			  List<Position> positions = account.getPositions();
-			  for (int i=0;i<positions.size();i++) {
-				  response.put(positions.get(i).getJSON());
-			  }
-		  }  
-		  return response.toString();
-	  }	  
+	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
+			.entity("{ message: 'Missing Required Parameters' }").build();
+	private static Logger logger = Logger.getLogger("RestService");
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String doPost(JSONObject json) {
+		logger.info("processing with: " + json.toString());
+		Account account = null;
+
+		try { // the required parameters
+			account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
+		} catch (Exception e) {
+			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
+		}
+
+		JSONArray response = new JSONArray();
+
+		if (account.getPositions().size() > 0) {
+			List<Position> positions = account.getPositions();
+			for (int i = 0; i < positions.size(); i++) {
+				response.put(positions.get(i).getJSON());
+			}
+		}
+		return response.toString();
+	}
 }

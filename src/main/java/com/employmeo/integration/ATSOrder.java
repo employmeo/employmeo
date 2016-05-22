@@ -26,92 +26,98 @@ import com.employmeo.util.PartnerUtil;
 
 @Path("atsorder")
 public class ATSOrder {
-	
-    @Context
-    private UriInfo uriInfo;
-    
-    private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST).entity("{ message: 'Missing Required Parameters' }").build();
-    private static Logger logger = Logger.getLogger("RestService");
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
+	@Context
+	private UriInfo uriInfo;
+
+	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
+			.entity("{ message: 'Missing Required Parameters' }").build();
+	private static Logger logger = Logger.getLogger("RestService");
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String doPost (JSONObject json)
-	{
-		logger.info("ATS Requesting Assessment with: " + json.toString());   
-    	JSONObject applicant = null;
-	    Account account = null;
-	    Person person = new Person();
+	public String doPost(JSONObject json) {
+		logger.info("ATS Requesting Assessment with: " + json.toString());
+		JSONObject applicant = null;
+		Account account = null;
+		Person person = new Person();
 		Respondant respondant = new Respondant();
-	    
-    	try { // the required parameters
-    		account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
-    		applicant = json.getJSONObject("applicant");
-    		person.setPersonSsn(applicant.getString("applicant_ats_id"));
-    		respondant.setRespondantAtsId(applicant.getString("applicant_ats_id"));
-    		person.setPersonEmail(applicant.getString("email"));
-    		person.setPersonFname(applicant.getString("fname"));
-    		person.setPersonLname(applicant.getString("lname"));
-    		
-    		JSONObject personAddress = applicant.getJSONObject("address");
-    		AddressUtil.validate(personAddress);
-        	person.setPersonAddress(personAddress.optString("formatted_address"));
-    		person.setPersonLat(personAddress.optDouble("lat"));
-    		person.setPersonLong(personAddress.optDouble("lng"));
 
-    	} catch (WebApplicationException we) {
-    		throw we;
-    	} catch (Exception e) {
-    		throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
-    	}
+		try { // the required parameters
+			account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
+			applicant = json.getJSONObject("applicant");
+			person.setPersonAtsId(applicant.getString("applicant_ats_id"));
+			respondant.setRespondantAtsId(applicant.getString("applicant_ats_id"));
+			person.setPersonEmail(applicant.getString("email"));
+			person.setPersonFname(applicant.getString("fname"));
+			person.setPersonLname(applicant.getString("lname"));
 
-	    Location location = PartnerUtil.getLocationFrom(json.optJSONObject("location"), account);   	
-	    Position position = PartnerUtil.getPositionFrom(json.optJSONObject("position"), account);
-	    Survey survey = PartnerUtil.getSurveyFrom(json.optJSONObject("assessment"), account);
+			JSONObject personAddress = applicant.getJSONObject("address");
+			AddressUtil.validate(personAddress);
+			person.setPersonAddress(personAddress.optString("formatted_address"));
+			person.setPersonLat(personAddress.optDouble("lat"));
+			person.setPersonLong(personAddress.optDouble("lng"));
 
-    	JSONObject delivery = json.optJSONObject("delivery");
-    	// get the redirect method, score posting and email handling for this assessment
-    	if (delivery.has("scores_email_address")) 
-    		respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address")); 
-    	if (delivery.has("scores_redirect_url")) 
-    		respondant.setRespondantRedirectUrl(delivery.optString("scores_redirect_url")); 
-    	if (delivery.has("scores_post_url")) 
-    		respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));  	
-    	
-		respondant.setRespondantAccountId(account.getAccountId());   	
+		} catch (WebApplicationException we) {
+			throw we;
+		} catch (Exception e) {
+			logger.warning(e.toString());
+			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
+		}
+
+		Location location = PartnerUtil.getLocationFrom(json.optJSONObject("location"), account);
+		Position position = PartnerUtil.getPositionFrom(json.optJSONObject("position"), account);
+		Survey survey = PartnerUtil.getSurveyFrom(json.optJSONObject("assessment"), account);
+
+		JSONObject delivery = json.optJSONObject("delivery");
+		// get the redirect method, score posting and email handling for this
+		// assessment
+		if (delivery.has("scores_email_address"))
+			respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
+		if (delivery.has("scores_redirect_url"))
+			respondant.setRespondantRedirectUrl(delivery.optString("scores_redirect_url"));
+		if (delivery.has("scores_post_url"))
+			respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));
+
+		respondant.setRespondantAccountId(account.getAccountId());
 		respondant.setRespondantSurveyId(survey.getSurveyId());
-		respondant.setRespondantLocationId(location.getLocationId());// ok for null location
-		respondant.setRespondantPositionId(position.getPositionId());// ok for null location
-		
-		// Create Person & Respondant in database.	
+		respondant.setRespondantLocationId(location.getLocationId());// ok for
+																		// null
+																		// location
+		respondant.setRespondantPositionId(position.getPositionId());// ok for
+																		// null
+																		// location
+
+		// Create Person & Respondant in database.
 		person.persistMe();
 		respondant.setPerson(person);
 		respondant.persistMe();
 
 		// Trigger an email to applicant if delivery message says so.
-		if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant")) 
+		if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant"))
 			EmailUtility.sendEmailInvitation(respondant);
 
 		// Assemble the response object to notify that action is complete
-    	JSONObject jAccount = new JSONObject();
-    	jAccount.put("account_ats_id", account.getAccountAtsId());
-    	jAccount.put("account_id", account.getAccountId());
-    	jAccount.put("account_name", account.getAccountName());
+		JSONObject jAccount = new JSONObject();
+		jAccount.put("account_ats_id", account.getAccountAtsId());
+		jAccount.put("account_id", account.getAccountId());
+		jAccount.put("account_name", account.getAccountName());
 
-    	JSONObject jApplicant = new JSONObject();
-    	jApplicant.put("applicant_ats_id", respondant.getRespondantAtsId());
-    	jApplicant.put("applicant_id", respondant.getRespondantId());
+		JSONObject jApplicant = new JSONObject();
+		jApplicant.put("applicant_ats_id", respondant.getRespondantAtsId());
+		jApplicant.put("applicant_id", respondant.getRespondantId());
 
-    	delivery = new JSONObject();
-    	delivery.put("assessment_url", EmailUtility.getAssessmentLink(respondant));
-    	
+		delivery = new JSONObject();
+		delivery.put("assessment_url", EmailUtility.getAssessmentLink(respondant));
+
 		JSONObject output = new JSONObject();
 		output.put("account", jAccount);
 		output.put("applicant", jApplicant);
-		output.put("delivery", delivery);	
-	
-		logger.info("ATS Request for Assessment Complate: " + respondant.getRespondantAtsId());
+		output.put("delivery", delivery);
+
+		logger.info("ATS Request for Assessment Complete: " + respondant.getRespondantAtsId());
 		return output.toString();
-  }
-    
+	}
+
 }

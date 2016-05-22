@@ -8,63 +8,61 @@ import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
 
-
 /**
  * The persistent class for the locations database table.
  * 
  */
 @Entity
-@Table(name="locations")
-@NamedQuery(name="Location.findAll", query="SELECT l FROM Location l")
+@Table(name = "locations")
+@NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l")
 public class Location extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="location_id")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name = "location_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long locationId;
 
-	@Column(name="location_name")
+	@Column(name = "location_name")
 	private String locationName;
-	
-	//bi-directional many-to-one association to Account
+
+	// bi-directional many-to-one association to Account
 	@ManyToOne
-	@JoinColumn(name="location_account_id",insertable=false,updatable=false)
-	private Account account;	
-	
-	@Column(name="location_account_id",insertable=true,updatable=false)
+	@JoinColumn(name = "location_account_id", insertable = false, updatable = false)
+	private Account account;
+
+	@Column(name = "location_account_id", insertable = true, updatable = false)
 	private Long locationAccountId;
-	
-	@Column(name="location_city")
+
+	@Column(name = "location_city")
 	private String locationCity;
 
-	@Column(name="location_fein")
+	@Column(name = "location_fein")
 	private String locationFein;
 
-	@Column(name="location_lat")
+	@Column(name = "location_lat")
 	private double locationLat;
 
-	@Column(name="location_long")
+	@Column(name = "location_long")
 	private double locationLong;
 
-	@Column(name="location_state")
+	@Column(name = "location_state")
 	private String locationState;
 
-	@Column(name="location_street1")
+	@Column(name = "location_street1")
 	private String locationStreet1;
 
-	@Column(name="location_street2")
+	@Column(name = "location_street2")
 	private String locationStreet2;
 
-	@Column(name="location_zip")
+	@Column(name = "location_zip")
 	private String locationZip;
 
-	@Column(name="location_ats_id")
+	@Column(name = "location_ats_id")
 	private String locationAtsId;
 
-	@Column(name="location_payroll_id")
+	@Column(name = "location_payroll_id")
 	private String locationPayrollId;
-
 
 	public Location() {
 	}
@@ -180,17 +178,19 @@ public class Location extends PersistantObject implements Serializable {
 	public void setAccount(Account account) {
 		this.account = account;
 	}
-	
+
 	public static Location getLocationById(Long lookupId) {
 		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<Location> q = em.createQuery("SELECT l FROM Location l WHERE l.locationId = :locationId", Location.class);
-        q.setParameter("locationId", lookupId);
-        Location location = null;
-        try {
-      	  location = q.getSingleResult();
-        } catch (NoResultException nre) {}
-        
-        return location;
+		TypedQuery<Location> q = em.createQuery("SELECT l FROM Location l WHERE l.locationId = :locationId",
+				Location.class);
+		q.setParameter("locationId", lookupId);
+		Location location = null;
+		try {
+			location = q.getSingleResult();
+		} catch (NoResultException nre) {
+		}
+
+		return location;
 	}
 
 	@Override
@@ -210,6 +210,5 @@ public class Location extends PersistantObject implements Serializable {
 		json.put("location_long", this.locationLong);
 		return json;
 	}
-
 
 }

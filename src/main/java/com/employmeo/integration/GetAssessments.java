@@ -22,34 +22,34 @@ import java.util.logging.Logger;
 @Path("getassessments")
 public class GetAssessments {
 
-	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST).entity("{ message: 'Missing Required Parameters' }").build();
-    private static Logger logger = Logger.getLogger("RestService");
-	
-	  @POST
-	  @Produces(MediaType.APPLICATION_JSON)
-	  @Consumes(MediaType.APPLICATION_JSON)
-	  public String doPost (JSONObject json)
-	  {  
-			logger.info("processing with: " + json.toString());   
-		    Account account = null;
-		    
-	    	try { // the required parameters
-	    		account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));	    		
-	    	} catch (Exception e) {
-	    		throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
-	    	}
+	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
+			.entity("{ message: 'Missing Required Parameters' }").build();
+	private static Logger logger = Logger.getLogger("RestService");
 
-	      JSONArray response = new JSONArray();
-		  
-		  if (account.getSurveys().size()>0) {
-			  List<AccountSurvey> surveys = account.getAccountSurveys();
-			  for (int i=0;i<surveys.size();i++) {
-				  JSONObject survey = new JSONObject();
-				  survey.put("assessment_name", surveys.get(i).getSurvey().getSurveyName());
-				  survey.put("assessment_asid", surveys.get(i).getAsId());				  
-				  response.put(survey);
-			  }
-		  } 
-		  return response.toString();
-	  }	  
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String doPost(JSONObject json) {
+		logger.info("processing with: " + json.toString());
+		Account account = null;
+
+		try { // the required parameters
+			account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
+		} catch (Exception e) {
+			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
+		}
+
+		JSONArray response = new JSONArray();
+
+		if (account.getSurveys().size() > 0) {
+			List<AccountSurvey> surveys = account.getAccountSurveys();
+			for (int i = 0; i < surveys.size(); i++) {
+				JSONObject survey = new JSONObject();
+				survey.put("assessment_name", surveys.get(i).getSurvey().getSurveyName());
+				survey.put("assessment_asid", surveys.get(i).getAsId());
+				response.put(survey);
+			}
+		}
+		return response.toString();
+	}
 }

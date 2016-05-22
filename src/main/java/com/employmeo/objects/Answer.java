@@ -5,37 +5,36 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
-
 /**
  * The persistent class for the answers database table.
  * 
  */
 @Entity
-@Table(name="answers")
-@NamedQuery(name="Answer.findAll", query="SELECT a FROM Answer a")
+@Table(name = "answers")
+@NamedQuery(name = "Answer.findAll", query = "SELECT a FROM Answer a")
 public class Answer extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="ANSWER_ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "ANSWER_ID")
 	private String answerId;
 
-	@Column(name="ANSWER_DESCRIPTION")
+	@Column(name = "ANSWER_DESCRIPTION")
 	private String answerDescription;
 
-	@Column(name="ANSWER_DISPLAY_ID")
+	@Column(name = "ANSWER_DISPLAY_ID")
 	private Long answerDisplayId;
 
-	@Column(name="ANSWER_TEXT")
+	@Column(name = "ANSWER_TEXT")
 	private String answerText;
 
-	@Column(name="ANSWER_VALUE")
+	@Column(name = "ANSWER_VALUE")
 	private int answerValue;
 
-	//bi-directional many-to-one association to Question
+	// bi-directional many-to-one association to Question
 	@ManyToOne
-	@JoinColumn(name="ANSWER_QUESTION_ID")
+	@JoinColumn(name = "ANSWER_QUESTION_ID")
 	private Question question;
 
 	public Answer() {

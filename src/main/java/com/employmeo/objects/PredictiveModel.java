@@ -5,51 +5,49 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
-
 /**
  * The persistent class for the predictive_model database table.
  * 
  */
 @Entity
-@Table(name="predictive_model")
-@NamedQuery(name="PredictiveModel.findAll", query="SELECT p FROM PredictiveModel p")
+@Table(name = "predictive_model")
+@NamedQuery(name = "PredictiveModel.findAll", query = "SELECT p FROM PredictiveModel p")
 public class PredictiveModel extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
 	private PredictiveModelPK id;
-	
-	@Column(name="pm_coefficient")
+
+	@Column(name = "pm_coefficient")
 	private double pmCoefficient;
 
-	@Column(name="pm_corefactor_id", insertable=true, updatable=false)
+	@Column(name = "pm_corefactor_id", insertable = true, updatable = false)
 	private Integer pmCorefactorId;
 
 	@ManyToOne
-	@JoinColumn(name="pm_corefactor_id", insertable=false, updatable=false)
+	@JoinColumn(name = "pm_corefactor_id", insertable = false, updatable = false)
 	private Corefactor corefactor;
 
-	@Column(name="pm_position_id", insertable=true, updatable=false)
+	@Column(name = "pm_position_id", insertable = true, updatable = false)
 	private Long pmPositionId;
 
 	@ManyToOne
-	@JoinColumn(name="pm_position_id", insertable=false, updatable=false)
+	@JoinColumn(name = "pm_position_id", insertable = false, updatable = false)
 	private Position position;
 
-	
-	@Column(name="pm_profile_a_score")
+	@Column(name = "pm_profile_a_score")
 	private double pmProfileAScore;
 
-	@Column(name="pm_profile_b_score")
+	@Column(name = "pm_profile_b_score")
 	private double pmProfileBScore;
 
-	@Column(name="pm_profile_c_score")
+	@Column(name = "pm_profile_c_score")
 	private double pmProfileCScore;
 
-	@Column(name="pm_profile_d_score")
+	@Column(name = "pm_profile_d_score")
 	private double pmProfileDScore;
 
-	@Column(name="pm_significance")
+	@Column(name = "pm_significance")
 	private double pmSignificance;
 
 	public PredictiveModel() {
@@ -73,7 +71,8 @@ public class PredictiveModel extends PersistantObject implements Serializable {
 	}
 
 	public Corefactor getCorefactor() {
-		if (this.corefactor == null) this.corefactor = Corefactor.getCorefactorById(this.pmCorefactorId);
+		if (this.corefactor == null)
+			this.corefactor = Corefactor.getCorefactorById(this.pmCorefactorId);
 		return this.corefactor;
 	}
 
@@ -87,7 +86,8 @@ public class PredictiveModel extends PersistantObject implements Serializable {
 	}
 
 	public Position getPosition() {
-		if (this.position == null) this.position = Position.getPositionById(this.pmPositionId);
+		if (this.position == null)
+			this.position = Position.getPositionById(this.pmPositionId);
 		return this.position;
 	}
 
@@ -112,8 +112,7 @@ public class PredictiveModel extends PersistantObject implements Serializable {
 		}
 		return score;
 	}
-	
-	
+
 	public double getPmProfileAScore() {
 		return this.pmProfileAScore;
 	}

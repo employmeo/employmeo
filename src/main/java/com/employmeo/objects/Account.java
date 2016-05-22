@@ -10,63 +10,81 @@ import com.employmeo.util.DBUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * The persistent class for the accounts database table.
  * 
  */
 @Entity
-@Table(name="accounts")
-@NamedQuery(name="Account.findAll", query="SELECT a FROM Account a")
+@Table(name = "accounts")
+@NamedQuery(name = "Account.findAll", query = "SELECT a FROM Account a")
 public class Account extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="account_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "account_id")
 	private Long accountId;
 
-	@Column(name="account_name")
+	@Column(name = "account_ats_partner")
+	private Long accountAtsPartner;
+
+	@Column(name = "account_default_email")
+	private String accountDefaultEmail;
+
+	@Column(name = "account_default_redirect")
+	private String accountDefaultRedirect;
+
+	@Column(name = "account_feature_scoring")
+	private Boolean accountFeatureScoring;
+
+	@Column(name = "account_sentby_text")
+	private String accountSentbyText;
+
+	@Column(name = "account_name")
 	private String accountName;
 
-	@Column(name="account_status")
+	@Column(name = "account_status")
 	private int accountStatus;
 
-	@Column(name="account_type")
+	@Column(name = "account_type")
 	private int accountType;
 
-	@Column(name="account_ats_id")
+	@Column(name = "account_ats_id")
 	private String accountAtsId;
 
-	@Column(name="account_default_location_id")
+	@Column(name = "account_default_location_id")
 	private long accountDefaultLocationId;
-	
-	@Column(name="account_default_position_id")
+
+	@Column(name = "account_default_position_id")
 	private long accountDefaultPositionId;
-	
-	@Column(name="account_default_asid")
+
+	@Column(name = "account_default_asid")
 	private long accountDefaultAsId;
-	
-	//bi-directional many-to-one association to Survey
-	@OneToMany(mappedBy="account", fetch = FetchType.EAGER)
+
+	// bi-directional many-to-one association to Survey
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
 	private List<AccountSurvey> accountSurveys;
 
-	//bi-directional many-to-one association to User
-	@OneToMany(mappedBy="account")
+	// bi-directional many-to-one association to Position
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+	private List<Position> positions;
+
+	// bi-directional many-to-one association to Position
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+	private List<Location> locations;
+
+	// bi-directional many-to-one association to User
+	@OneToMany(mappedBy = "account")
 	private List<User> users;
 
-	//bi-directional many-to-one association to Position
-	@OneToMany(mappedBy="account", fetch = FetchType.EAGER)
-	private List<Position> positions;
-	
-	//bi-directional many-to-one association to Position
-	@OneToMany(mappedBy="account", fetch = FetchType.EAGER)
-	private List<Location> locations;
-	
-	//bi-directional many-to-one association to Position	
-	@OneToMany(mappedBy="account")
-	//@OrderBy("respondant.respondantCreatedDate DESC")
+	// bi-directional many-to-one association to Position
+	@OneToMany(mappedBy = "account")
+	// @OrderBy("respondant.respondantCreatedDate DESC")
 	private List<Respondant> respondants;
+
+	// bi-directional many-to-one association to BillingItem
+	@OneToMany(mappedBy = "account")
+	private List<BillingItem> billingItems;
 
 	public Account() {
 	}
@@ -78,7 +96,6 @@ public class Account extends PersistantObject implements Serializable {
 	public void setAccountId(Long accountId) {
 		this.accountId = accountId;
 	}
-
 
 	public String getAccountName() {
 		return this.accountName;
@@ -103,37 +120,40 @@ public class Account extends PersistantObject implements Serializable {
 	public void setAccountType(int accountType) {
 		this.accountType = accountType;
 	}
+
 	public List<AccountSurvey> getAccountSurveys() {
 		return this.accountSurveys;
 	}
+
 	public List<Survey> getSurveys() {
 		List<Survey> surveyset = new ArrayList<Survey>();
-		for (int i=0;i<this.accountSurveys.size();i++) surveyset.add(accountSurveys.get(i).getSurvey());
+		for (int i = 0; i < this.accountSurveys.size(); i++)
+			surveyset.add(accountSurveys.get(i).getSurvey());
 		return surveyset;
 	}
-	
+
 	public Survey getDefaultSurvey() {
 		return AccountSurvey.getSurveyByASID(this.accountDefaultAsId);
 	}
 
-	/* At some point we'll need to create logic for setting one of the
-	 * existing account surveys as default, and logic to put a new 
-	 * survey into the account
+	/*
+	 * At some point we'll need to create logic for setting one of the existing
+	 * account surveys as default, and logic to put a new survey into the
+	 * account
 	 * 
-	public void setDefaultSurveyId(long surveyId) {
-		AccountSurvey as = new AccountSurvey();		
-		AccountSurvey.getSurveyByASID(this.accountDefaultAsId);
-	}
-	*/
+	 * public void setDefaultSurveyId(long surveyId) { AccountSurvey as = new
+	 * AccountSurvey(); AccountSurvey.getSurveyByASID(this.accountDefaultAsId);
+	 * }
+	 */
 
 	public void setDefaultLocation(long locationId) {
 		this.accountDefaultLocationId = locationId;
 	}
-	
+
 	public Location getDefaultLocation() {
 		return Location.getLocationById(this.accountDefaultLocationId);
 	}
-	
+
 	public void setDefaultPosition(long positionId) {
 		this.accountDefaultPositionId = positionId;
 	}
@@ -149,7 +169,47 @@ public class Account extends PersistantObject implements Serializable {
 	public void setAccountAtsId(String atsId) {
 		this.accountAtsId = atsId;
 	}
-	
+
+	public Long getAccountAtsPartner() {
+		return this.accountAtsPartner;
+	}
+
+	public void setAccountAtsPartner(Long accountAtsPartner) {
+		this.accountAtsPartner = accountAtsPartner;
+	}
+
+	public String getAccountDefaultEmail() {
+		return this.accountDefaultEmail;
+	}
+
+	public void setAccountDefaultEmail(String accountDefaultEmail) {
+		this.accountDefaultEmail = accountDefaultEmail;
+	}
+
+	public String getAccountDefaultRedirect() {
+		return this.accountDefaultRedirect;
+	}
+
+	public void setAccountDefaultRedirect(String accountDefaultRedirect) {
+		this.accountDefaultRedirect = accountDefaultRedirect;
+	}
+
+	public Boolean getAccountFeatureScoring() {
+		return this.accountFeatureScoring;
+	}
+
+	public void setAccountFeatureScoring(Boolean accountFeatureScoring) {
+		this.accountFeatureScoring = accountFeatureScoring;
+	}
+
+	public String getAccountSentbyText() {
+		return this.accountSentbyText;
+	}
+
+	public void setAccountSentbyText(String accountSentbyText) {
+		this.accountSentbyText = accountSentbyText;
+	}
+
 	public List<User> getUsers() {
 		return this.users;
 	}
@@ -170,8 +230,8 @@ public class Account extends PersistantObject implements Serializable {
 		user.setAccount(null);
 
 		return user;
-	}	
-	
+	}
+
 	public List<Position> getPositions() {
 		return this.positions;
 	}
@@ -208,14 +268,45 @@ public class Account extends PersistantObject implements Serializable {
 
 		return location;
 	}
-	
+
 	public Location removeLocation(Location location) {
 		getLocations().remove(location);
 		location.setAccount(null);
 
 		return location;
 	}
-	
+
+	public List<BillingItem> getBillingItems() {
+		return this.billingItems;
+	}
+
+	public void setBillingItems(List<BillingItem> billingItems) {
+		this.billingItems = billingItems;
+	}
+
+	public BillingItem addBillingItem(BillingItem billingItem) {
+		getBillingItems().add(billingItem);
+		billingItem.setAccount(this);
+
+		return billingItem;
+	}
+
+	public BillingItem removeBillingItem(BillingItem billingItem) {
+		getBillingItems().remove(billingItem);
+		billingItem.setAccount(null);
+
+		return billingItem;
+	}
+
+	public static Account getAccountById(String lookupId) {
+		return getAccountById(new Long(lookupId));
+	}
+
+	public static Account getAccountById(Long lookupId) {
+		EntityManager em = DBUtil.getEntityManager();
+		return em.find(Account.class, lookupId);
+	}
+
 	@Override
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
@@ -223,18 +314,7 @@ public class Account extends PersistantObject implements Serializable {
 		json.put("account_name", this.accountName);
 		json.put("account_status", this.accountStatus);
 		json.put("account_type", this.accountType);
-				
+
 		return json;
 	}
-	
-	public static Account getAccountById(String lookupId) {		
-		return getAccountById(new Long(lookupId));		
-	}
-	
-	public static Account getAccountById(Long lookupId) {
-		EntityManager em = DBUtil.getEntityManager();     
-        return em.find(Account.class, lookupId);
-	}
-	
-	
 }
