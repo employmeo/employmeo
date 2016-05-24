@@ -8,10 +8,9 @@
         <div class="panel-heading">Upload Payroll</div>
         <div class="panel-body">
         	<div>
-				<form class="form"><div class="input-group form-inline">
-                	<input type="file" placeholder="Select CSV" id="csvFile" name="csvFile" class="filestyle" data-size="sm" data-buttonName="btn-default">
-			    	<button class="btn-primary" type="button" onClick="uploadPayroll(this);"><i class="fa fa-upload"></i></button>
-				</div></form>
+        		<input type="file" id="csvFile" name="csvFile">
+			    <button class="btn-primary" type="button" onClick="uploadCSV();"><i class="fa fa-upload"></i></button>
+			    <span>Drop files here to upload</span>
 			</div>
 			<div><hr></div>
 			<div>

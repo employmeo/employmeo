@@ -45,6 +45,12 @@ public class Question extends PersistantObject implements Serializable {
 	@Column(name = "QUESTION_DIRECTION")
 	private int questionDirection;
 
+	@Column(name = "question_foreign_id")
+	private int questionForeignId;
+
+	@Column(name = "question_foreign_source")
+	private String questionForeignSource;
+
 	// bi-directional many-to-one association to Answer
 	@OneToMany(mappedBy = "question", fetch = FetchType.EAGER)
 	private List<Answer> answers;
@@ -88,16 +94,16 @@ public class Question extends PersistantObject implements Serializable {
 		return this.questionDisplayId;
 	}
 
-	public void setQuestionDisplayId(Long questionDisplayId) {
-		this.questionDisplayId = questionDisplayId;
+	public void setQuestionDisplayId(int foreignId) {
+		this.questionForeignId = foreignId;
 	}
 
-	public String getQuestionText() {
-		return this.questionText;
+	public String getQuestionForeignSource() {
+		return this.questionForeignSource;
 	}
 
-	public void setQuestionText(String questionText) {
-		this.questionText = questionText;
+	public void setQuestionForeignSource(String foreignSource) {
+		this.questionForeignSource = foreignSource;
 	}
 
 	public int getQuestionType() {
@@ -122,6 +128,22 @@ public class Question extends PersistantObject implements Serializable {
 
 	public void setQuestionDirection(int questionDirection) {
 		this.questionDirection = questionDirection;
+	}
+
+	public int getQuestionForeignId() {
+		return this.questionForeignId;
+	}
+
+	public void setQuestionDisplayId(Long questionDisplayId) {
+		this.questionDisplayId = questionDisplayId;
+	}
+
+	public String getQuestionText() {
+		return this.questionText;
+	}
+
+	public void setQuestionText(String questionText) {
+		this.questionText = questionText;
 	}
 
 	public List<Answer> getAnswers() {

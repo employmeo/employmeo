@@ -29,6 +29,12 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 	@Column(name = "as_account_id")
 	private Long asAccountId;
 
+	@Column(name = "as_display_name")
+	private String asDisplayName;
+
+	@Column(name = "as_price")
+	private Double asPrice;
+
 	@Column(name = "as_preamble_text")
 	private String asPreambleText;
 
@@ -120,7 +126,9 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 		aSurvey.put("survey_thankyou_text", this.asThankyouText);
 		aSurvey.put("survey_redirect_page", this.asRedirectPage);
 		aSurvey.put("survey_asid", this.asId);
-		// TODO Auto-generated method stub
+		aSurvey.put("survey_name", this.asDisplayName);
+		aSurvey.put("survey_price", this.asPrice);
+		
 		return aSurvey;
 	}
 

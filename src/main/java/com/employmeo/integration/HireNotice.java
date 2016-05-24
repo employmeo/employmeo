@@ -47,13 +47,15 @@ public class HireNotice {
 			String hireDate = json.getJSONObject("applicant").getString("applicant_change_date");
 			changeDate = Date.valueOf(hireDate);
 			if ((respondant == null) || (account == null)) {
-				throw new Exception();
+				throw new Exception("Can't find applicant or account.");
 			}
 		} catch (Exception e) {
+			logger.warning("Missing Parameters: " + e.getMessage());
 			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
 		}
 
 		if (account.getAccountId() != respondant.getRespondantAccountId()) {
+			logger.warning("Account does not match applicant");
 			throw new WebApplicationException(ACCOUNT_MATCH);
 		}
 

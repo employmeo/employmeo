@@ -106,8 +106,8 @@ label.star:before {
 input.thumbs-up, input.thumbs-down, input.check-square, input.radio-select { display: none; }
 label.thumbs-up, label.thumbs-down, label.check-square, label.radio-select {
   font-family: Comfortaa,FontAwesome;
-  padding: 10px;
-  font-size: 30px;
+  padding: 8px;
+  font-size: 18px;
   color: #444;
   transition: all .2s;
 }

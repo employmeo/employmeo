@@ -27,24 +27,24 @@ import com.employmeo.objects.User;
 
 public class RandomizerUtil {
 
+	// Basic Tool Settings
 	public static final String SERVER_NAME = "http://localhost:8080";
-	public static Logger logger = Logger.getLogger("TestingUtil");
-	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
-	private static final int THREAD_COUNT = 10;
+	private static final int THREAD_COUNT = 25;
 	private static final int LOOPS = 1;
 	private static final int DELAY = 100;
-	
+	public static JSONObject account = new JSONObject().put("account_ats_id", "1111");
+
+	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
+	public static Logger logger = Logger.getLogger("TestingUtil");
 	static Random rand = new Random();
 	static JSONArray jMnames = arrayFromRandomizer("names-male.json");
 	static JSONArray jFnames = arrayFromRandomizer("names-female.json");
 	static JSONArray jLnames = arrayFromRandomizer("names-surnames.json");
 	static JSONArray jCities = arrayFromRandomizer("zip-codes.json");
 	static JSONArray jStreets = arrayFromRandomizer("streets.json");
-	
 	static List<String> domains = Arrays.asList("company.com", "gmail.com", "yahoo.com", "aol.com", "hotmail.com",
 			"rocketmail.com", "facebook.com");
 	
-	public static JSONObject account = new JSONObject().put("account_ats_id", "1111");
 	public static JSONArray assessments = null;
 	public static JSONArray positions = null;
 	public static JSONArray locations = null;
@@ -52,84 +52,6 @@ public class RandomizerUtil {
 	public RandomizerUtil() {
 	}
 
-	public static String randomFname() {
-		if(rand.nextDouble() > 0.5) {
-			return jFnames.getString(rand.nextInt(jFnames.length()));
-		}
-		return jMnames.getString(rand.nextInt(jMnames.length()));
-
-	}
-
-	public static String randomLname() {
-		return jLnames.getString(rand.nextInt(jLnames.length()));
-	}
-
-	public static String randomEmail(User user) {
-		int i = rand.nextInt(domains.size());
-		String email = user.getUserFname() + "_" + user.getUserLname() + "@" + domains.get(i);
-		return email;
-	}
-
-	public static String randomEmail(Person person) {
-		int i = rand.nextInt(domains.size());
-		String email = person.getPersonFname() + "_" + person.getPersonLname() + "@" + domains.get(i);
-		return email;
-	}
-	
-	public static String randomEmail(String fname, String lname) {
-		int i = rand.nextInt(domains.size());
-		String email = fname + "_" + lname + "@" + domains.get(i);
-		return email;
-	}
-	
-	public static JSONObject randomAddress(double lat, double lng, double dist) {
-		return AddressUtil.getAddressFromLatLng(lat, lng);
-	}
-	
-	
-	public static synchronized JSONObject postJsonToService(Client client, JSONObject message, String service) {
-
-		String postmethod = SERVER_NAME + service;
-		WebTarget target = client.target(postmethod);
-		String result = target.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON), String.class);
-		
-		return new JSONObject(result);
-
-	}
-
-	public static synchronized JSONArray arrayFromService(Client client, JSONObject message, String service) {
-
-		String postmethod = SERVER_NAME + service;
-		WebTarget target = client.target(postmethod);
-		String result = target.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON), String.class);
-		
-		return new JSONArray(result);
-
-	}
-
-	public static synchronized JSONArray arrayFromRandomizer(String service) {
-		Client client = ClientBuilder.newClient();
-		String postmethod = "https://randomlists.com/data/" + service;
-		WebTarget target = client.target(postmethod);
-		String result = target.request(MediaType.APPLICATION_JSON).get(String.class);
-		
-		return new JSONObject(result).getJSONArray("data");
-
-	}
-	
-	public static synchronized JSONObject postFormToService(Client client, Form form, String service) {
-
-		String postmethod = SERVER_NAME + service;
-		WebTarget target = client.target(postmethod);
-		String result = target.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED), String.class);
-		
-		return new JSONObject(result);
-
-	}
-	
 	
 	public static void main (String[] args) {
 
@@ -164,12 +86,12 @@ public class RandomizerUtil {
 							Thread.sleep(waittime);
 							JSONObject result = postJsonToService(integrationClient, randomAtsOrder(), "/integration/atsorder");
 							appId = result.getJSONObject("applicant").getLong("applicant_id");
-logger.info("Thread (" + threadnum + ") Got Survey: " + appId);
+logger.info("Thread (" + threadnum + ") Received Assessment Link: " + appId);
 							Thread.sleep(waittime);
 							Client surveyClient = ClientBuilder.newClient();
 							takeSurvey(surveyClient, appId);
-logger.info("Thread (" + threadnum + ") Completed Survey: " + appId);
-							Thread.sleep(DELAY);
+logger.info("Thread (" + threadnum + ") Completed Assessment: " + appId);
+							Thread.sleep(100*DELAY);
 							hireDecision(integrationClient, result.getJSONObject("applicant"));
 logger.info("Thread (" + threadnum + ") Hire Decision for Applicant: " + appId);
 						} catch (Exception e) {
@@ -242,9 +164,94 @@ logger.info("Thread (" + threadnum + ") completed " + LOOPS + " loops.");
 		postJsonToService(client,hireNotice,"/integration/hirenotice");
 	}
 	
+	// Utilities for calling web services
+	
+	public static synchronized JSONObject postJsonToService(Client client, JSONObject message, String service) {
+
+		String postmethod = SERVER_NAME + service;
+		WebTarget target = client.target(postmethod);
+		String result = target.request(MediaType.APPLICATION_JSON)
+					.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON), String.class);
+		
+		return new JSONObject(result);
+
+	}
+
+	public static synchronized JSONArray arrayFromService(Client client, JSONObject message, String service) {
+
+		String postmethod = SERVER_NAME + service;
+		WebTarget target = client.target(postmethod);
+		String result = target.request(MediaType.APPLICATION_JSON)
+					.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON), String.class);
+		
+		return new JSONArray(result);
+
+	}
+
+	public static synchronized JSONArray arrayFromRandomizer(String service) {
+		Client client = ClientBuilder.newClient();
+		String postmethod = "https://randomlists.com/data/" + service;
+		WebTarget target = client.target(postmethod);
+		String result = target.request(MediaType.APPLICATION_JSON).get(String.class);
+		
+		return new JSONObject(result).getJSONArray("data");
+
+	}
+	
+	public static synchronized JSONObject postFormToService(Client client, Form form, String service) {
+
+		String postmethod = SERVER_NAME + service;
+		WebTarget target = client.target(postmethod);
+		String result = target.request(MediaType.APPLICATION_JSON)
+					.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED), String.class);
+		
+		return new JSONObject(result);
+
+	}	
+
+	// Section for random field value generation
+	
+	public static String randomFname() {
+		if(rand.nextDouble() > 0.5) {
+			return jFnames.getString(rand.nextInt(jFnames.length()));
+		}
+		return jMnames.getString(rand.nextInt(jMnames.length()));
+
+	}
+
+	public static String randomLname() {
+		return jLnames.getString(rand.nextInt(jLnames.length()));
+	}
+
+	public static String randomEmail(User user) {
+		int i = rand.nextInt(domains.size());
+		String email = user.getUserFname() + "_" + user.getUserLname() + "@" + domains.get(i);
+		return email;
+	}
+
+	public static String randomEmail(Person person) {
+		int i = rand.nextInt(domains.size());
+		String email = person.getPersonFname() + "_" + person.getPersonLname() + "@" + domains.get(i);
+		return email;
+	}
+	
+	public static String randomEmail(String fname, String lname) {
+		int i = rand.nextInt(domains.size());
+		String email = fname + "_" + lname + "@" + domains.get(i);
+		return email;
+	}
+	
+	public static JSONObject randomAddress(double lat, double lng, double dist) {
+		return AddressUtil.getAddressFromLatLng(lat, lng);
+	}
+	
 	private static int randomResponse(JSONObject question) {
-		int[] answers = {1, 6, 11};
-		return answers[rand.nextInt(answers.length)];
+		
+		if (question.has("answers")) {
+			JSONObject answers = randomJson(question.getJSONArray("answers"));
+			return answers.getInt("answer_value");
+		}
+		return rand.nextInt(11);
 	}
 	
 

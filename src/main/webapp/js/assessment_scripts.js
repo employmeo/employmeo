@@ -316,6 +316,9 @@ function assemblePlainSurvey(collection) {
 	});
 	card.append(getHrDiv());
 	pagination[pagecount] = new Array();
+	questions.sort(function(a,b) {
+		return parseFloat(a.question_display_id) - parseFloat(b.question_display_id);
+	});
 	$.each(questions, function(index, question) {
 		qcount++;
 		if (qpp == qlimit) {
@@ -400,8 +403,46 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 	
 	qtextdiv.append(questionlist);
 	form.append(qtextdiv);
-	
+
 	switch (question.question_type) {
+	case 6:
+	case 7:
+	case 9:
+	case 10:
+	case 11:
+	case 12:
+	case 13:
+		// basic multichoice
+		for (var ans=0;ans<question.answers.length;ans++) {
+			var answer = question.answers[ans];
+			var qrespdiv = $('<div />', {
+				'class' : 'col-xs-12 col-sm-12 col-md-12'
+			});
+			var radiobox = $('<input />', {
+				'id'   : 'radiobox-' + question.question_id +"-"+ answer.answer_value,
+				'type' : 'radio',
+				'class' : 'radio-select',
+				'name' : 'response_value',
+				'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
+				'value' :  answer.answer_value
+			});
+			var radiolabel = $('<label />', {
+				'for'   : 'radiobox-' + question.question_id +"-"+ answer.answer_value,
+				'class' : 'radio-select',
+				'text'  :  answer.answer_text
+			});
+		
+			qrespdiv.append(radiobox);
+			qrespdiv.append(radiolabel);
+
+			form.append(qrespdiv);
+		}
+		break;
+	case 14: // Rank
+		break;
+	case 15: // Alike / Unlike
+		break;
+	case 8:
 	default:
 		var qrespdiv = $('<div />', {
 			'class' : 'col-xs-12 col-sm-4 col-md-4'
@@ -415,7 +456,7 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 			'type' : 'radio',
 			'name' : 'response_value',
 			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : 11
+			'value' : 1
 		});
 		var yesboxlabel = $('<label />', {
 			'class' : 'yesbox',
@@ -442,7 +483,7 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 			'type' : 'radio',
 			'name' : 'response_value',
 			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : 6
+			'value' : 2
 		});
 		var sometimesboxlabel = $('<label />', {
 			'class' : 'sometimesbox',
@@ -469,7 +510,7 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 			'type' : 'radio',
 			'name' : 'response_value',
 			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : 1
+			'value' : 3
 		});
 		var noboxlabel = $('<label />', {
 			'class' : 'nobox',

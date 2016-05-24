@@ -41,6 +41,7 @@ public class PartnerUtil {
 			try {
 				account = q.getSingleResult();
 			} catch (NoResultException nre) {
+				logger.warning("Can't find account with atsId: " + accountAtsId);
 				throw new WebApplicationException(
 						Response.status(Status.PRECONDITION_FAILED).entity(jAccount.toString()).build());
 			}

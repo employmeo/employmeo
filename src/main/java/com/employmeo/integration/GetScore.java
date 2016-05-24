@@ -39,10 +39,12 @@ public class GetScore {
 			respondant = PartnerUtil.getRespondantFrom(json.getJSONObject("applicant"));
 			
 		} catch (Exception e) {
+			logger.warning(e.getMessage());
 			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
 		}
 
 		if (account.getAccountId() != respondant.getRespondantAccountId()) {
+			logger.warning("Account does not match Applicant");
 			throw new WebApplicationException(ACCOUNT_MATCH);
 		}
 

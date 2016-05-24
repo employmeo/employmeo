@@ -314,7 +314,15 @@ public class Account extends PersistantObject implements Serializable {
 		json.put("account_name", this.accountName);
 		json.put("account_status", this.accountStatus);
 		json.put("account_type", this.accountType);
-
+		json.put("account_", this.accountAtsId);
+		json.put("account_default_email",this.accountDefaultEmail);
+		json.put("account_default_location_id",this.accountDefaultLocationId);
+		json.put("account_default_position_id",this.accountDefaultPositionId);
+		json.put("account_feature_scoring",this.accountFeatureScoring);
+		json.put("account_default_redirect",this.accountDefaultRedirect);
+		json.put("account_sentby_text",this.accountSentbyText);
+		json.put("account_default_asid",this.accountDefaultAsId);
+		
 		return json;
 	}
 }

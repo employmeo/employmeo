@@ -254,117 +254,37 @@ function getPositionDetails(scores) {
 	return position;
 	
 }
-var atsdata = {  
-		   "account":{  
-		      "account_ats_id":"1234",
-		      "account_name":"FR Demo Account"
-		   },
-		   "applicant":{  
-		      "applicant_ats_id":"1386047",
-		      "fname":"ANDREW",
-		      "lname":"GARFIELD",
-		      "email":"sridharkaza@gmail.com",
-		      "address":{  
-		         "street":"124 FIFTH AVENUE ",
-		         "city":"JACKSONVILLE",
-		         "zip":"70684",
-		         "state":"CT"
-		      }
-		   },
-		   "delivery":{  
-		      "email_applicant":true,
-		      "redirect_url":null,
-		      "scores_post_url":null,
-		      "scores_email_notify":false,
-		      "scores_email_address":null
-		   },
-		   "location":null,
-		   "position":null
-		};
 
-var getscore = {  
-		   "account":{  
-		      "account_ats_id":"1234",
-		      "account_name":"FR Demo Account"
-		   },
-		   "applicant":{  
-		      "applicant_ats_id":"1386047"
-		   }
-};
+//Payroll tools section
+function uploadCSV() {
+	$('#csvFile').parse({
+		config : {
+			header: true,
+			dynamicTyping: true,
+			complete: function(results, file) {
 
-
-var emailuser = {  
-		   "account":{  
-		      "account_ats_id":"1234",
-		      "account_name":"FR Demo Account"
-		   },
-		   "applicant":{  
-		      "applicant_ats_id":"1386047",
-		      "fname":"ANDREW",
-		      "lname":"GARFIELD",
-		      "email":"sridharkaza@gmail.com",
-		      "address":{  
-		         "street":"124 FIFTH AVENUE ",
-		         "city":"JACKSONVILLE",
-		         "zip":"70684",
-		         "state":"CT"
-		      }
-		   },
-		   "delivery":{  
-		      "email_applicant":true,
-		      "redirect_url":null,
-		      "scores_post_url":null,
-		      "scores_email_notify":false,
-		      "scores_email_address": "sridharkaza@gmail.com"
-		   },
-		   "location":null,
-		   "position":null
-		};
-
-var moreatsdata = {
-		account : {
-			account_ats_id : '1234',
-			account_name : 'Test Client'
-		},
-		applicant : {
-			applicant_ats_id : "1234",
-			fname : "First",
-			lname : "Last",
-			email : "testuser@integration.employmeo.com",
-			address : {
-				street: "1234 Oak St",
-				city: "San Mateo",
-				state : "CA",
-				zip : "90066",
-				lat : 1.2,
-				lng : 1.2
+				$.ajax({
+					type: "POST",
+					async: true,
+				    headers: { 
+				        'Accept': 'application/json',
+				        'Content-Type': 'application/json'
+				    },
+				    dataType: 'json',
+				    url: "/admin/test",
+					data: JSON.stringify(results),
+					success: function(data) {console.log(data);}
+				});
+				
+				console.log("Parsing complete:", results, file);
 			}
 		},
-		assessment : {
-			assessment_asid : 3
-		},
-		delivery : {
-			email_applicant : false,
-			redirect_url : "http://employmeo.com",
-			scores_post_url : "http://portal.employmeo.com/integration/echo",
-			scores_email_notify : true,
-			scores_email_address : "info@employmeo.com"
-		},
-		location : {
-			location_ats_id : '1234',
-			location_name : 'Store 10',
-			address : {
-				street: "1234 Oak St",
-				city: "San Mateo",
-				state : "CA",
-				zip : "90066"
-			}
-		},
-		position : {
-			position_id : 1
-		},
-		application : {}
-};
+		before : function(file, inputElem){},
+		error: function(err, file, inputElem, reason){},
+		complete : {}
+
+	})
+}
 
 function testIntegrationService(user,pass,data,url) {
 	$.ajax({

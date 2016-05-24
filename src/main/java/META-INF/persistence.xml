@@ -25,10 +25,6 @@
 		<class>com.employmeo.objects.BillingItem</class>
       <properties>
          <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-         <!-- property name="eclipselink.connection-pool.default.initial" value="1" />
-         <property name="eclipselink.connection-pool.node2.min" value="16"/>
-         <property name="eclipselink.connection-pool.node2.max" value="16"/>
-         <property name="eclipselink.connection-pool.node2.url" value="jdbc:postgresql://ec2-54-225-199-108.compute-1.amazonaws.com:5432/d69d4tsc1nrle9?currentSchema=employmeo&amp;sslmode=require"/--> 
       </properties>
 	</persistence-unit>
 </persistence>
