@@ -29,10 +29,10 @@ public class RandomizerUtil {
 
 	// Basic Tool Settings
 	public static final String SERVER_NAME = "http://localhost:8080";
-	private static final int THREAD_COUNT = 25;
-	private static final int LOOPS = 5;
+	private static final int THREAD_COUNT = 1;
+	private static final int LOOPS = 1;
 	private static final int DELAY = 100;
-	public static JSONObject account = new JSONObject().put("account_ats_id", "1111");
+	public static JSONObject account = new JSONObject().put("account_ats_id", "1234");
 
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
 	public static Logger logger = Logger.getLogger("TestingUtil");
