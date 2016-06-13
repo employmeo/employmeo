@@ -48,14 +48,8 @@ public class GetRespondants {
 			// {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
 		Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
-		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime()); // losing
-																		// rest
-																		// of
-																		// day
-																		// (need
-																		// to
-																		// add a
-																		// day)
+		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime()); // must add a day
+
 		String locationSQL = "";
 		String positionSQL = "";
 		if (locationId > -1)

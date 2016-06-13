@@ -9,12 +9,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.json.JSONObject;
 
 import com.employmeo.objects.Account;
+import com.employmeo.objects.Partner;
 import com.employmeo.objects.Respondant;
 import com.employmeo.util.PartnerUtil;
 
@@ -26,17 +29,21 @@ public class GetScore {
 	private final Response ACCOUNT_MATCH = Response.status(Response.Status.CONFLICT)
 			.entity("{ message: 'Applicant ID not found for Account ID' }").build();
 	private static Logger logger = Logger.getLogger("RestService");
+	@Context
+	private SecurityContext sc;
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost(JSONObject json) {
+		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
 		Account account = null;
 		Respondant respondant = null;
 		logger.info("processing with: " + json.toString());
 		try { // the required parameters
-			account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
-			respondant = PartnerUtil.getRespondantFrom(json.getJSONObject("applicant"));
+			account = pu.getAccountFrom(json.getJSONObject("account"));
+			respondant = pu.getRespondantFrom(json.getJSONObject("applicant"));
+			if ((account == null) || (respondant == null)) throw new Exception ("Not Found: " + json);
 			
 		} catch (Exception e) {
 			logger.warning(e.getMessage());
@@ -48,6 +55,6 @@ public class GetScore {
 			throw new WebApplicationException(ACCOUNT_MATCH);
 		}
 
-		return PartnerUtil.getScoresMessage(respondant).toString();
+		return pu.getScoresMessage(respondant).toString();
 	}
 }

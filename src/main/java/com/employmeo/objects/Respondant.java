@@ -10,6 +10,11 @@ import com.employmeo.util.ScoringUtil;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
+import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
+import org.eclipse.persistence.annotations.ObjectTypeConverter;
+import org.eclipse.persistence.annotations.TypeConverter;
 
 /**
  * The persistent class for the respondants database table.
@@ -38,6 +43,10 @@ public class Respondant extends PersistantObject implements Serializable {
 	@Column(name = "respondant_id")
 	private Long respondantId;
 
+	@Column(name = "respondant_uuid", insertable = false, updatable = false, columnDefinition = "UUID")
+	@Convert(converter=com.employmeo.util.UuidConverter.class)
+	private UUID respondantUuid;
+	
 	// bi-directional many-to-one association to Account
 	@ManyToOne
 	@JoinColumn(name = "respondant_account_id", insertable = false, updatable = false)
@@ -53,11 +62,11 @@ public class Respondant extends PersistantObject implements Serializable {
 	private int respondantStatus = Respondant.STATUS_INVITED;
 
 	@ManyToOne
-	@JoinColumn(name = "respondant_survey_id", insertable = false, updatable = false)
-	private Survey survey;
+	@JoinColumn(name = "respondant_asid", insertable = false, updatable = false)
+	private AccountSurvey accountSurvey;
 
-	@Column(name = "respondant_survey_id", insertable = true, updatable = false)
-	private Long respondantSurveyId;
+	@Column(name = "respondant_asid", insertable = true, updatable = false)
+	private Long respondantAsid;
 
 	@ManyToOne
 	@JoinColumn(name = "respondant_position_id", insertable = false, updatable = false)
@@ -135,6 +144,10 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	public void setRespondantId(Long respondantId) {
 		this.respondantId = respondantId;
+	}
+
+	public UUID getRespondantUuid() {
+		return this.respondantUuid;
 	}
 
 	public Long getRespondantAccountId() {
@@ -259,21 +272,31 @@ public class Respondant extends PersistantObject implements Serializable {
 	}
 
 	public Long getRespondantSurveyId() {
-		return this.respondantSurveyId;
+		return getSurvey().getSurveyId();
 	}
 
-	public void setRespondantSurveyId(Long surveyId) {
-		this.respondantSurveyId = surveyId;
-	}
+//	public void setRespondantSurveyId(Long surveyId) {
+//		this.respondantSurveyId = surveyId;
+//	}
 
 	public Survey getSurvey() {
-		if (this.survey == null)
-			this.survey = Survey.getSurveyById(this.respondantSurveyId);
-		return this.survey;
+		return getAccountSurvey().getSurvey();
 	}
 
-	public void setSurvey(Survey survey) {
-		this.survey = survey;
+	public AccountSurvey getAccountSurvey() {
+		if (this.accountSurvey == null)
+			this.accountSurvey = AccountSurvey.getAccountSurveyByASID(this.respondantAsid);
+		return this.accountSurvey;
+	}
+
+	public void setAccountSurvey(AccountSurvey accountSurvey) {
+		this.accountSurvey = accountSurvey;
+		this.respondantAsid = accountSurvey.getAsId();
+	}
+
+	public void setRespondantAsid(Long asid) {
+		this.respondantAsid = asid;
+		this.accountSurvey = AccountSurvey.getAccountSurveyByASID(this.respondantAsid);
 	}
 
 	public Person getPerson() {
@@ -365,9 +388,25 @@ public class Respondant extends PersistantObject implements Serializable {
 		return em.find(Respondant.class, lookupId);
 	}
 
+	public static Respondant getRespondantByUuid(UUID uuid) {
+		EntityManager em = DBUtil.getEntityManager();
+		TypedQuery<Respondant> q = em.createQuery(
+				"SELECT r FROM Respondant r WHERE r.respondantUuid = :uuId",
+				Respondant.class);
+		q.setParameter("uuId", uuid);
+		Respondant respondant = null;
+		try {
+			respondant = q.getSingleResult();
+		} catch (Exception e) {
+			// Return null.
+		}
+		return respondant;
+	}
+	
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
 		json.put("respondant_id", this.respondantId);
+		json.put("respondant_uuid", this.respondantUuid.toString());
 		json.put("respondant_created_date", this.respondantCreatedDate);
 		json.put("respondant_status", this.respondantStatus);
 		json.put("respondant_profile", this.respondantProfile);
@@ -379,10 +418,10 @@ public class Respondant extends PersistantObject implements Serializable {
 
 		if (this.account != null)
 			json.put("respondant_account_id", this.account.getAccountId());
-		if (this.survey != null)
-			json.put("respondant_survey_id", this.survey.getSurveyId());
-		if (this.survey != null)
-			json.put("respondant_survey_name", this.survey.getSurveyName());
+		if (getAccountSurvey() != null) {
+			json.put("respondant_asid", this.respondantAsid);
+			json.put("respondant_survey_name", this.getAccountSurvey().getAsDisplayName());
+		}
 		if (this.getRespondantLocationId() != null)
 			json.put("respondant_location_id", this.getRespondantLocationId());
 		if (this.getLocation() != null)

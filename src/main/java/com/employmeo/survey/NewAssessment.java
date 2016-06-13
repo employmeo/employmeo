@@ -11,9 +11,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
 
+import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Person;
 import com.employmeo.objects.Respondant;
-import com.employmeo.objects.Survey;
 
 @Path("order")
 public class NewAssessment {
@@ -23,12 +23,11 @@ public class NewAssessment {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String doPost(@FormParam("email") String to, @FormParam("fname") String fname,
 			@FormParam("lname") String lname, @FormParam("address") String address, @FormParam("lat") Double personLat,
-			@FormParam("lng") Double personLong, @FormParam("survey_id") Long surveyId,
-			@FormParam("location_id") Long locationId, @FormParam("position_id") Long positionId,
-			@FormParam("account_id") Long accountId) {
+			@FormParam("lng") Double personLong, @FormParam("asid") Long asid,
+			@FormParam("location_id") Long locationId, @FormParam("position_id") Long positionId) {
 
 		// Validate input fields
-
+		AccountSurvey as = AccountSurvey.getAccountSurveyByASID(asid);
 		// Perform business logic
 		Person applicant = new Person();
 		applicant.setPersonEmail(to);
@@ -41,8 +40,8 @@ public class NewAssessment {
 
 		Respondant respondant = new Respondant();
 		respondant.setPerson(applicant);
-		respondant.setRespondantAccountId(accountId);
-		respondant.setRespondantSurveyId(surveyId);
+		respondant.setRespondantAccountId(as.getAsAccountId());
+		respondant.setRespondantAsid(asid);
 		respondant.setRespondantLocationId(locationId);// ok for null location
 		respondant.setRespondantPositionId(positionId);// ok for null location
 		respondant.persistMe();
@@ -50,7 +49,7 @@ public class NewAssessment {
 		JSONObject json = new JSONObject();
 		json.put("person", applicant.getJSON());
 		json.put("respondant", respondant.getJSON());
-		json.put("survey", Survey.getSurveyById(surveyId).getJSON());
+		json.put("survey", as.getJSON());
 
 		logger.log(Level.INFO, json.toString());
 		return json.toString();

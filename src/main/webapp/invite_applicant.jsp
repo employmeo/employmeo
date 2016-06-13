@@ -39,9 +39,9 @@
 				</div>
 			    <div class="col-xs-12 col-sm-12 col-md-6">
 					<h4>Application Details</h4><hr>
-				    <label for="position">Assessment:</label>
+				    <label for="asid">Assessment:</label>
 					<div class="form-group has-feedback">
-						<select class="form-control" id="survey_id" name="survey_id"></select>
+						<select class="form-control" id="asid" name="asid"></select>
 					</div>
 				    <label for="location">Location:</label>
 					<div class="form-group has-feedback">
@@ -70,9 +70,9 @@
 <%@ include file="/WEB-INF/includes/inc_header.jsp" %>
 
 <script>
-  updatePositionsSelect();
-  updateLocationsSelect();
-  updateSurveysSelect();
+  updatePositionsSelect(false);
+  updateLocationsSelect(false);
+  updateSurveysSelect(false);
   $('#address').geocomplete({details:'form'});
 </script>
 

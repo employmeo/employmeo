@@ -224,8 +224,8 @@
 <script type="text/javascript">
     $(document).ready(function() {
     	initializeDatePicker(updateDash);
-		updatePositionsSelect();
-		updateLocationsSelect();
+		updatePositionsSelect(false);
+		updateLocationsSelect(false);
 		updateDash();
 		lookupLastTenCandidates();
     });

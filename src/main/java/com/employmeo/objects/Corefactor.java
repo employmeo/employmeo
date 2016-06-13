@@ -55,6 +55,9 @@ public class Corefactor extends PersistantObject implements Serializable {
 	@Column(name = "corefactor_name")
 	private String corefactorName;
 
+	@Column(name = "corefactor_foreign_id")
+	private String corefactorForeignId;
+
 	public Corefactor() {
 	}
 
@@ -177,6 +180,15 @@ public class Corefactor extends PersistantObject implements Serializable {
 
 		EntityManager em = DBUtil.getEntityManager();
 		return em.find(Corefactor.class, lookupId);
+	}
+
+	public static Corefactor getCorefactorByForeignId(String id) {
+		Corefactor corefactor = null;
+		EntityManager em = DBUtil.getEntityManager();
+		TypedQuery<Corefactor> q = em.createQuery("SELECT c FROM Corefactor c WHERE c.corefactorForeignId = :id", Corefactor.class);
+		q.setParameter("id", id);
+		corefactor =  q.getSingleResult();
+		return corefactor;
 	}
 
 }

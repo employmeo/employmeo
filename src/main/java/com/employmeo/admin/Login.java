@@ -2,6 +2,7 @@ package com.employmeo.admin;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.logging.Logger;
 
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ public class Login {
 
 	private final Response LOGIN_FAILED = Response.status(Response.Status.UNAUTHORIZED)
 			.entity("{ message: 'Login failed' }").build();
+	private Logger logger = Logger.getLogger("AdminService");
 
 	@POST
 	@PermitAll
@@ -48,6 +50,7 @@ public class Login {
 					encodedEmail = URLEncoder.encode(user.getUserEmail(), "UTF-8");
 					encodedHash = URLEncoder.encode(hashword, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
+					logger.severe("UTF-8 unsupported");
 				}
 				Cookie uCookie = new Cookie("email", encodedEmail, "/", reqt.getServerName());
 				Cookie pCookie = new Cookie("hashword", encodedHash, "/", reqt.getServerName());
@@ -59,8 +62,12 @@ public class Login {
 				rb.cookie(new NewCookie(uCookie, "email", 0, false));
 				rb.cookie(new NewCookie(pCookie, "hashword", 0, false));
 			}
+			reqt.getRequestedSessionId();
 			Cookie nCookie = new Cookie("user_fname", user.getUserFname(), "/", reqt.getServerName());
+			Cookie sCookie = new Cookie("JSESSIONID", reqt.getSession().getId(), "/", reqt.getServerName());
 			rb.cookie(new NewCookie(nCookie, "user_fname", 60 * 60 * 24 * 90, false));
+			rb.cookie(new NewCookie(sCookie, "JSESSIONID", 60 * 60 * 2, false));
+
 			return rb.build();
 		}
 

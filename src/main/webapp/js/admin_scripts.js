@@ -57,9 +57,8 @@ function getUserFname() {
 	return "";
 }
 
-
 //section for updating selectors
-function updatePositionsSelect() {
+function updatePositionsSelect(detail) {
 	$.ajax({
 		type: "POST",
 		async: true,
@@ -73,12 +72,12 @@ function updatePositionsSelect() {
 					text : this.position_name 
 				}));
 			});
-			if ($('#position_id').val() != -1) changePositionTo($('#position_id').val());
+			if (detail) changePositionTo($('#position_id').val());
 		}
 	});
 }
 
-function updateLocationsSelect() {
+function updateLocationsSelect(detail) {
 	$.ajax({
 		type: "POST",
 		async: true,
@@ -92,12 +91,12 @@ function updateLocationsSelect() {
 					text : this.location_name 
 				}));
 			});
-//			if ($('#location_id').val() != -1) changeLocationTo($('#location_id').val());
+//			if (detail) changeLocationTo($('#location_id').val());
 		}
 	});
 }
 
-function updateSurveysSelect() {
+function updateSurveysSelect(detail) {
 	$.ajax({
 		type: "POST",
 		async: true,
@@ -106,14 +105,12 @@ function updateSurveysSelect() {
 		{
 			surveyList = data;
 			$.each(data, function (index, value) {
-				$('#survey_id').append($('<option />', { 
-					value: this.survey_id,
+				$('#asid').append($('<option />', { 
+					value: this.survey_asid,
 					text : this.survey_name
 				}));
 			});
-			if ($('#survey_id').val() != -1) {
-				changeSurveyTo($('#survey_id').val());
-			}
+			if (detail) changeSurveyTo($('#asid').val());
 		}
 	});
 }
@@ -260,9 +257,9 @@ function updateRespondantsTable() {
 }
 
 //Section for looking at / manipulating surveys
-function changeSurveyTo(survey_id) {
+function changeSurveyTo(asid) {
 	$(surveyList).each(function(li) {
-		if (survey_id == this.survey_id) {
+		if (asid == this.survey_asid) {
 			updateSurveyFields(this);
 			updateSurveyQuestions(this);
 		}		

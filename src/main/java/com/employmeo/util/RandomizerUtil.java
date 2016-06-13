@@ -15,9 +15,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.glassfish.jersey.internal.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,21 +30,28 @@ public class RandomizerUtil {
 	// Basic Tool Settings
 	public static final String SERVER_NAME = "http://localhost:8080";
 	private static final int THREAD_COUNT = 25;
-	private static final int LOOPS = 1;
+	private static final int LOOPS = 5;
 	private static final int DELAY = 100;
 	public static JSONObject account = new JSONObject().put("account_ats_id", "1111");
 
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
 	public static Logger logger = Logger.getLogger("TestingUtil");
-	static Random rand = new Random();
-	static JSONArray jMnames = arrayFromRandomizer("names-male.json");
-	static JSONArray jFnames = arrayFromRandomizer("names-female.json");
-	static JSONArray jLnames = arrayFromRandomizer("names-surnames.json");
-	static JSONArray jCities = arrayFromRandomizer("zip-codes.json");
-	static JSONArray jStreets = arrayFromRandomizer("streets.json");
-	static List<String> domains = Arrays.asList("company.com", "gmail.com", "yahoo.com", "aol.com", "hotmail.com",
-			"rocketmail.com", "facebook.com");
-	
+	public static Random rand = new Random();
+	public static JSONArray jMnames = arrayFromRandomizer("names-male.json");
+	public static JSONArray jFnames = arrayFromRandomizer("names-female.json");
+	public static JSONArray jLnames = arrayFromRandomizer("names-surnames.json");
+	public static JSONArray jCities = arrayFromRandomizer("zip-codes.json");
+	public static JSONArray jStreets = arrayFromRandomizer("streets.json");
+	public static List<String> domains = Arrays.asList(
+			  "company.com", "aol.com", "att.net", "comcast.net", "facebook.com", "gmail.com", "gmx.com", "googlemail.com",
+			  "google.com", "hotmail.com", "hotmail.co.uk", "mac.com", "me.com", "mail.com", "msn.com",
+			  "live.com", "sbcglobal.net", "verizon.net", "yahoo.com", "yahoo.co.uk",
+			  "email.com", "games.com", "gmx.net", "hush.com", "hushmail.com", "icloud.com", "inbox.com",
+			  "lavabit.com", "love.com", "outlook.com", "pobox.com", "rocketmail.com",
+			  "safe-mail.net", "wow.com", "ygm.com", "ymail.com", "zoho.com", "fastmail.fm",
+			  "yandex.com", "bellsouth.net", "charter.net", "comcast.net", "cox.net", "earthlink.net", "juno.com"
+			  );
+	public static NewCookie adminCookie = null;
 	public static JSONArray assessments = null;
 	public static JSONArray positions = null;
 	public static JSONArray locations = null;
@@ -61,19 +68,16 @@ public class RandomizerUtil {
 		integrationClient.register(feature);
 		
 		// Test out logging into the admin server, updating the dash, etc.
-		Form form = new Form();
-		form.param("email", "sri@employmeo.com");
-		form.param("password", "password");
-		postFormToService(adminClient, form, "/admin/login");
-		
+logger.info("Starting up with " + THREAD_COUNT + " threads and " + LOOPS + " loops.");
+		loginAdminService(adminClient);	
+logger.info("Completed admin login attempt.");
+
 		// Get Locations, etc for account...
 		locations = arrayFromService(integrationClient, new JSONObject().put("account",account), "/integration/getlocations");
 		positions = arrayFromService(integrationClient, new JSONObject().put("account",account), "/integration/getpositions");
 		assessments = arrayFromService(integrationClient, new JSONObject().put("account",account), "/integration/getassessments");
-		//Test out creating a new ats order...
-		// Client ID = 1234
 		
-		
+		// Launch multiple invite + complete + score + hire streams using ATS integrations
 		for (int i=0;i<THREAD_COUNT;i++) {
 			int threadnum = i;
 			TASK_EXECUTOR.submit(new Runnable() {
@@ -82,14 +86,16 @@ public class RandomizerUtil {
 					long waittime = DELAY + (long)(10000.0 * rand.nextDouble());
 					for (int j=0;j<LOOPS;j++) {
 					Long appId = null;
+					String link = null;
 						try {
 							Thread.sleep(waittime);
 							JSONObject result = postJsonToService(integrationClient, randomAtsOrder(), "/integration/atsorder");
 							appId = result.getJSONObject("applicant").getLong("applicant_id");
-logger.info("Thread (" + threadnum + ") Received Assessment Link: " + appId);
+							link = result.getJSONObject("delivery").getString("assessment_url");
+logger.info("Thread (" + threadnum + ") Received Assessment (" + appId + ") Link: " + link);
 							Thread.sleep(waittime);
 							Client surveyClient = ClientBuilder.newClient();
-							takeSurvey(surveyClient, appId);
+							takeSurvey(surveyClient, appId, link);
 logger.info("Thread (" + threadnum + ") Completed Assessment: " + appId);
 							Thread.sleep(100*DELAY);
 							hireDecision(integrationClient, result.getJSONObject("applicant"));
@@ -105,12 +111,14 @@ logger.info("Thread (" + threadnum + ") completed " + LOOPS + " loops.");
 	}
 	
 
-	public static void takeSurvey(Client client, Long appId) throws InterruptedException {
+	public static void takeSurvey(Client client, Long appId, String link) throws InterruptedException {
 		Form form = new Form();
-		form.param("respondant_id", appId.toString());
+		int idx = link.indexOf("=");
+		String uuid = link.substring(idx + 1);
+		form.param("respondant_uuid", uuid);
 		JSONObject survey = postFormToService(client,form, "/survey/getsurvey").getJSONObject("survey");
 		JSONArray questions = survey.getJSONArray("questions");
-		
+
 		for (int j=0;j<questions.length();j++) {
 			long waittime = DELAY + (long)(DELAY * rand.nextDouble());
 			Thread.sleep(waittime);
@@ -120,6 +128,8 @@ logger.info("Thread (" + threadnum + ") completed " + LOOPS + " loops.");
 			response.param("response_value", Integer.toString(randomResponse(questions.getJSONObject(j))));
 			postFormToService(client,response,"/survey/response");
 		}
+		form = new Form();
+		form.param("respondant_id", appId.toString());
 		postFormToService(client,form, "/survey/submitassessment");
 
 	}
@@ -207,8 +217,24 @@ logger.info("Thread (" + threadnum + ") completed " + LOOPS + " loops.");
 		
 		return new JSONObject(result);
 
-	}	
+	}
+	
 
+	public static void loginAdminService(Client client) {
+
+		Form form = new Form();
+		form.param("email", "sri@employmeo.com");
+		form.param("password", "password");
+		form.param("rememberme", "true");
+		String postmethod = SERVER_NAME + "/admin/login";
+		WebTarget target = client.target(postmethod);
+		target.request(MediaType.APPLICATION_JSON)
+					.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED));
+
+		return;
+
+	}
+	
 	// Section for random field value generation
 	
 	public static String randomFname() {
@@ -273,7 +299,7 @@ logger.info("Thread (" + threadnum + ") completed " + LOOPS + " loops.");
 		}
 		JSONObject applicant = new JSONObject();
 		
-		applicant.put("applicant_ats_id", Base64.encodeAsString(Double.toString(Math.random())));
+		applicant.put("applicant_ats_id", Long.toString(System.currentTimeMillis()));
 		applicant.put("fname", randomFname());
 		applicant.put("lname", randomLname());
 		applicant.put("email", randomEmail(applicant.getString("fname"),applicant.getString("lname")));

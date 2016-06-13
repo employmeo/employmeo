@@ -86,6 +86,6 @@ Content here
 </div></div></div>
 	<%@ include file="/WEB-INF/includes/inc_header.jsp"%>
 	<script type="text/javascript">
-		updatePositionsSelect();
+		updatePositionsSelect(true);
 	</script>
 </html>

@@ -18,8 +18,8 @@ import java.util.List;
 @NamedQuery(name = "Survey.findAll", query = "SELECT s FROM Survey s")
 public class Survey extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
-	public static final int TYPE_BASIC = 1;
-	public static final int TYPE_TIMED = 2;
+	public static final int TYPE_INTERNAL = 1;
+	public static final int TYPE_MERCER = 2;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,10 +53,6 @@ public class Survey extends PersistantObject implements Serializable {
 	// bi-directional many-to-one association to SurveyQuestion
 	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER)
 	private List<SurveyQuestion> surveyQuestions;
-
-	// bi-directional many-to-one association to Respondant
-	@OneToMany(mappedBy = "survey")
-	private List<Respondant> respondants;
 
 	public Survey() {
 	}
@@ -147,10 +143,6 @@ public class Survey extends PersistantObject implements Serializable {
 		getSurveyQuestions().remove(surveyQuestion);
 		surveyQuestion.setSurvey(null);
 		return surveyQuestion;
-	}
-
-	public List<Respondant> getSurveyRespondants() {
-		return this.respondants;
 	}
 
 	public static Survey getSurveyById(String lookupId) {

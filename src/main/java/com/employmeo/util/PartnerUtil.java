@@ -1,5 +1,6 @@
 package com.employmeo.util;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -21,15 +22,32 @@ import org.json.JSONObject;
 import com.employmeo.objects.Account;
 import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Location;
+import com.employmeo.objects.Partner;
 import com.employmeo.objects.Position;
 import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
-import com.employmeo.objects.Survey;
 
 public class PartnerUtil {
 	private static Logger logger = Logger.getLogger("PartnerUtility");
+	private Partner partner = null;
+	private static HashMap<Partner,PartnerUtil> utils = new HashMap<Partner,PartnerUtil>();
+	
+	public PartnerUtil(Partner partner) {
+		this.partner = partner;
+	}
+	
+	public static PartnerUtil getUtilFor(Partner lookupPartner) {
+		// TODO Auto-generated method stub
+		if (!utils.containsKey(lookupPartner))
+			utils.put(lookupPartner, new PartnerUtil(lookupPartner));
+		return utils.get(lookupPartner);
+	}
+	
+	public String getPrefix() {
+		return partner.getPartnerPrefix();
+	}
 
-	public static Account getAccountFrom(JSONObject jAccount) {
+	public Account getAccountFrom(JSONObject jAccount) {
 		Account account = null;
 		String accountAtsId = jAccount.optString("account_ats_id");
 		if (accountAtsId != null) {
@@ -37,7 +55,7 @@ public class PartnerUtil {
 			EntityManager em = DBUtil.getEntityManager();
 			TypedQuery<Account> q = em.createQuery("SELECT a FROM Account a WHERE a.accountAtsId = :accountAtsId",
 					Account.class);
-			q.setParameter("accountAtsId", accountAtsId);
+			q.setParameter("accountAtsId", partner.getPartnerPrefix() + accountAtsId);
 			try {
 				account = q.getSingleResult();
 			} catch (NoResultException nre) {
@@ -52,7 +70,7 @@ public class PartnerUtil {
 		return account;
 	}
 
-	public static Location getLocationFrom(JSONObject jLocation, Account account) {
+	public Location getLocationFrom(JSONObject jLocation, Account account) {
 		Location location = null;
 		String locationAtsId = null;
 		if (jLocation != null)
@@ -61,7 +79,7 @@ public class PartnerUtil {
 			EntityManager em = DBUtil.getEntityManager();
 			TypedQuery<Location> q = em.createQuery("SELECT l FROM Location l WHERE l.locationAtsId = :locationAtsId",
 					Location.class);
-			q.setParameter("locationAtsId", locationAtsId);
+			q.setParameter("locationAtsId", partner.getPartnerPrefix() + locationAtsId);
 			try {
 				location = q.getSingleResult();
 			} catch (NoResultException nre) {
@@ -69,7 +87,7 @@ public class PartnerUtil {
 				// Create a new location from address
 				JSONObject address = jLocation.getJSONObject("address");
 				AddressUtil.validate(address);
-				location.setLocationAtsId(locationAtsId);
+				location.setLocationAtsId(partner.getPartnerPrefix() + locationAtsId);
 				if (jLocation.has("location_name"))
 					location.setLocationName(jLocation.getString("location_name"));
 				if (address.has("street"))
@@ -96,7 +114,7 @@ public class PartnerUtil {
 		return location;
 	}
 
-	public static Position getPositionFrom(JSONObject position, Account account) {
+	public Position getPositionFrom(JSONObject position, Account account) {
 
 		Position pos = null;
 		Long positionId = position.optLong("position_id");
@@ -105,17 +123,16 @@ public class PartnerUtil {
 		return pos;
 	}
 
-	public static Survey getSurveyFrom(JSONObject assessment, Account account) {
+	public AccountSurvey getSurveyFrom(JSONObject assessment, Account account) {
 
-		Survey survey = null;
+		AccountSurvey aSurvey = null;
 		Long asId = assessment.optLong("assessment_asid");
-		if (asId != null) survey = AccountSurvey.getSurveyByASID(asId);
-		if (survey == null) survey = account.getDefaultSurvey();
+		if (asId != null) aSurvey = AccountSurvey.getAccountSurveyByASID(asId);
 		
-		return survey;
+		return aSurvey;
 	}
 
-	public static Respondant getRespondantFrom(JSONObject applicant) {
+	public Respondant getRespondantFrom(JSONObject applicant) {
 		Respondant respondant = null;
 		String applicantAtsId = applicant.optString("applicant_ats_id");
 		if (applicantAtsId != null) {
@@ -123,7 +140,7 @@ public class PartnerUtil {
 			EntityManager em = DBUtil.getEntityManager();
 			TypedQuery<Respondant> q = em.createQuery(
 					"SELECT r FROM Respondant r WHERE r.respondantAtsId = :respondantAtsId", Respondant.class);
-			q.setParameter("respondantAtsId", applicantAtsId);
+			q.setParameter("respondantAtsId", partner.getPartnerPrefix() + applicantAtsId);
 			try {
 				respondant = q.getSingleResult();
 			} catch (NoResultException nre) {

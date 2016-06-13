@@ -19,82 +19,100 @@ import com.employmeo.objects.Question;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.RespondantScore;
 import com.employmeo.objects.Response;
+import com.employmeo.objects.Survey;
 
 public class ScoringUtil {
 
 	private static Logger logger = Logger.getLogger("ScoringUtil");
+	private static String MERCER_PREFIX = "Mercer";
+	private static String MERCER_SERVICE = "http://beta.forecastertests.com/ns/remote/v1.1/score";
+	private static String MERCER_USER = "employmeo";
+	private static String MERCER_PASS = "employmeo";
+
 	
 	public static void scoreAssessment(Respondant respondant) {
 
 		List<Response> responses = respondant.getResponses();
 		if ((responses == null) || (responses.size() == 0))	return; // return nothing
 
-		if (respondant.getSurvey().getSurveyName().startsWith("Mercer")) { 
-			JSONArray result = postMercerScores(responses);
-			for (int i = 0; i < result.length(); i++) {
-				RespondantScore rs = new RespondantScore();
-				Corefactor cf = Corefactor.getCorefactorById(result.getJSONObject(i).getInt("id"));
-				rs.setPK(cf.getCorefactorId(), respondant.getRespondantId());
-				rs.setRsQuestionCount(responses.size());
-				rs.setRsValue(result.getJSONObject(i).getDouble("value"));
-				rs.mergeMe();
-				respondant.addRespondantScore(rs);
-			
+		if (respondant.getSurvey().getSurveyType() == Survey.TYPE_MERCER) { 
+			postMercerScores(respondant);
+		} else {
+
+			int[] count = new int[50];
+			int[] score = new int[50];
+	
+			for (int i = 0; i < responses.size(); i++) {
+				Response response = responses.get(i);
+				Integer cfId = Question.getQuestionById(response.getResponseQuestionId()).getQuestionCorefactorId();
+				count[cfId]++;
+				score[cfId] += response.getResponseValue();
 			}
-			respondant.setRespondantStatus(Respondant.STATUS_SCORED);
-			respondant.mergeMe();
-			return;
-		}
-
-		int[] count = new int[50];
-		int[] score = new int[50];
-
-		for (int i = 0; i < responses.size(); i++) {
-			Response response = responses.get(i);
-			Integer cfId = Question.getQuestionById(response.getResponseQuestionId()).getQuestionCorefactorId();
-			count[cfId]++;
-			score[cfId] += response.getResponseValue();
-		}
-		for (int i = 0; i < 50; i++) {
-			if (count[i] > 0) {
-				RespondantScore rs = new RespondantScore();
-				rs.setPK(i, respondant.getRespondantId());
-				rs.setRsQuestionCount(count[i]);
-				rs.setRsValue((double) Math.round(100.0 * ((double) score[i] / (double) count[i])) / 100.0);
-				rs.mergeMe();
-				respondant.addRespondantScore(rs);
+			for (int i = 0; i < 50; i++) {
+				if (count[i] > 0) {
+					RespondantScore rs = new RespondantScore();
+					rs.setPK(i, respondant.getRespondantId());
+					rs.setRsQuestionCount(count[i]);
+					rs.setRsValue((double) Math.round(100.0 * ((double) score[i] / (double) count[i])) / 100.0);
+					rs.mergeMe();
+					respondant.addRespondantScore(rs);
+				}
 			}
 		}
+
 		respondant.setRespondantStatus(Respondant.STATUS_SCORED);
 		respondant.mergeMe();
 
 		return;
 	}
 
-	private static synchronized JSONArray postMercerScores(List<Response> responses) {
+	private static void postMercerScores(Respondant respondant) {
+		List<Response> responses = respondant.getResponses();
 		Client client = ClientBuilder.newClient();
-		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("test", "password");
+		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(MERCER_USER, MERCER_PASS);
 		client.register(feature);
-		String postmethod = "http://localhost:8080/integration/echo";
+logger.info("Mercer Scoring Repondant: " + respondant.getJSONString());
 
-
-		JSONArray message = new JSONArray();
+		JSONArray answers = new JSONArray();
 		for (int i=0;i<responses.size();i++) {
 			JSONObject jResp = new JSONObject();
 			Question question = Question.getQuestionById(responses.get(i).getResponseQuestionId());
 			jResp.put("response_value", responses.get(i).getResponseValue());
 			jResp.put("question_id", question.getQuestionForeignId());
 			jResp.put("test_name", question.getQuestionForeignSource());
-			message.put(jResp);
+			answers.put(jResp);
 		}
+		
+		JSONObject applicant = new JSONObject();
+		JSONObject message = new JSONObject();
+		applicant.put("applicant_id", respondant.getRespondantId());
+		applicant.put("applicant_account_name", respondant.getRespondantAccount().getAccountName());
+		message.put("applicant", applicant);
+		message.put("responses", answers);
 
-logger.info("sending scores to mercer (echo): " + message);
-
-		WebTarget target = client.target(postmethod);
-		String result = target.request(MediaType.APPLICATION_JSON)
+		WebTarget target = client.target(MERCER_SERVICE);
+		String mercerResponse = target.request(MediaType.APPLICATION_JSON)
 						.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON), String.class);
 
-		return new JSONArray(result);
+		JSONArray result = new JSONArray(mercerResponse);
+		
+		for (int i = 0; i < result.length(); i++) {
+			JSONObject data = result.getJSONObject(i);
+			int score = data.getInt("score");
+			RespondantScore rs = new RespondantScore();
+			try {
+					Corefactor cf = Corefactor.getCorefactorByForeignId(MERCER_PREFIX + data.getString("id"));
+					rs.setPK(cf.getCorefactorId(), respondant.getRespondantId());
+					rs.setRsQuestionCount(responses.size());
+					rs.setRsValue((double) score);
+					rs.mergeMe();
+					respondant.addRespondantScore(rs);
+			} catch (Exception e) {
+					logger.severe("Failed to record score: " + data + " for repondant " + respondant.getJSONString());
+			}
+		}
+		
+		return;
 	}
 
 	public static void predictRespondant(Respondant respondant) {

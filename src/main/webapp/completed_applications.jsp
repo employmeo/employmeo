@@ -80,8 +80,8 @@
 <%@ include file="/WEB-INF/includes/inc_header.jsp"%>
 <script type="text/javascript">
 	$(document).ready(function() {
-		updatePositionsSelect();
-		updateLocationsSelect();
+		updatePositionsSelect(false);
+		updateLocationsSelect(false);
 		initializeDatePicker(updateRespondantsTable);
 		initRespondantsTable();
 	});

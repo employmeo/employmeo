@@ -10,12 +10,15 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONObject;
 
 import com.employmeo.objects.Account;
+import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Location;
+import com.employmeo.objects.Partner;
 import com.employmeo.objects.Person;
 import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
@@ -29,6 +32,8 @@ public class ATSOrder {
 
 	@Context
 	private UriInfo uriInfo;
+	@Context
+	private SecurityContext sc;
 
 	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
 			.entity("{ message: 'Missing Required Parameters' }").build();
@@ -43,12 +48,14 @@ public class ATSOrder {
 		Account account = null;
 		Person person = new Person();
 		Respondant respondant = new Respondant();
-
+		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
+		String appAtsId = null;
 		try { // the required parameters
-			account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
+			account = pu.getAccountFrom(json.getJSONObject("account"));
 			applicant = json.getJSONObject("applicant");
-			person.setPersonAtsId(applicant.getString("applicant_ats_id"));
-			respondant.setRespondantAtsId(applicant.getString("applicant_ats_id"));
+			appAtsId = applicant.getString("applicant_ats_id");
+			person.setPersonAtsId(pu.getPrefix() + appAtsId);
+			respondant.setRespondantAtsId(pu.getPrefix() + appAtsId);
 			person.setPersonEmail(applicant.getString("email"));
 			person.setPersonFname(applicant.getString("fname"));
 			person.setPersonLname(applicant.getString("lname"));
@@ -66,9 +73,9 @@ public class ATSOrder {
 			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
 		}
 
-		Location location = PartnerUtil.getLocationFrom(json.optJSONObject("location"), account);
-		Position position = PartnerUtil.getPositionFrom(json.optJSONObject("position"), account);
-		Survey survey = PartnerUtil.getSurveyFrom(json.optJSONObject("assessment"), account);
+		Location location = pu.getLocationFrom(json.optJSONObject("location"), account);
+		Position position = pu.getPositionFrom(json.optJSONObject("position"), account);
+		AccountSurvey aSurvey = pu.getSurveyFrom(json.optJSONObject("assessment"), account);
 
 		JSONObject delivery = json.optJSONObject("delivery");
 		// get the redirect method, score posting and email handling for this
@@ -81,7 +88,7 @@ public class ATSOrder {
 			respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));
 
 		respondant.setRespondantAccountId(account.getAccountId());
-		respondant.setRespondantSurveyId(survey.getSurveyId());
+		respondant.setRespondantAsid(aSurvey.getAsId());
 		respondant.setRespondantLocationId(location.getLocationId());// ok for
 																		// null
 																		// location
@@ -93,19 +100,20 @@ public class ATSOrder {
 		person.persistMe();
 		respondant.setPerson(person);
 		respondant.persistMe();
+		respondant.refreshMe(); // gets the remaining auto-gen-fields
 
 		// Trigger an email to applicant if delivery message says so.
 		if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant"))
 			EmailUtility.sendEmailInvitation(respondant);
 
 		// Assemble the response object to notify that action is complete
-		JSONObject jAccount = new JSONObject();
+		JSONObject jAccount = json.getJSONObject("account");
 		jAccount.put("account_ats_id", account.getAccountAtsId());
 		jAccount.put("account_id", account.getAccountId());
 		jAccount.put("account_name", account.getAccountName());
 
 		JSONObject jApplicant = new JSONObject();
-		jApplicant.put("applicant_ats_id", respondant.getRespondantAtsId());
+		jApplicant.put("applicant_ats_id", appAtsId);
 		jApplicant.put("applicant_id", respondant.getRespondantId());
 
 		delivery = new JSONObject();

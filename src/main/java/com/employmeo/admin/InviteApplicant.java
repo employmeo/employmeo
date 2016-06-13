@@ -28,7 +28,7 @@ public class InviteApplicant {
 	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
 			@FormParam("email") String to, @FormParam("fname") String fname, @FormParam("lname") String lname,
 			@FormParam("address") String address, @FormParam("lat") Double personLat,
-			@FormParam("lng") Double personLng, @FormParam("survey_id") Long surveyId,
+			@FormParam("lng") Double personLng, @FormParam("asid") Long asid,
 			@FormParam("position_id") Long positionId, @FormParam("location_id") Long locationId,
 			@DefaultValue("false") @FormParam("rememberme") boolean persistLogin) {
 		// Collect expected input fields
@@ -52,11 +52,12 @@ public class InviteApplicant {
 		Respondant respondant = new Respondant();
 		respondant.setPerson(applicant);
 		respondant.setRespondantAccountId(account.getAccountId());
-		respondant.setRespondantSurveyId(surveyId);
+		respondant.setRespondantAsid(asid);
 		respondant.setRespondantLocationId(locationId);// ok for null location
 		respondant.setRespondantPositionId(positionId);// ok for null location
 		respondant.persistMe();
-
+		respondant.refreshMe(); // gets the remaining auto-gen-fields
+		
 		JSONObject json = new JSONObject();
 		json.put("person", applicant.getJSON());
 		json.put("respondant", respondant.getJSON());

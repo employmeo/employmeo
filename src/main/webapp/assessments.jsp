@@ -6,7 +6,7 @@
 	<div class="col-md-9 col-sm-9 col-xs-12 pull-right">
 		<form class="form-inline pull-right" id='refinequery'>
 			<div class="form-group">
-				<select class="form-control" id="survey_id" name="surveyid"
+				<select class="form-control" id="asid" name="asid"
 					onChange='changeSurveyTo(this.value);'>
 				</select>
 			</div>
@@ -77,7 +77,7 @@
 
 <%@ include file="/WEB-INF/includes/inc_header.jsp"%>
 <script type="text/javascript">
-	updateSurveysSelect();
+	updateSurveysSelect(true);
 
     $('#completionguage').easyPieChart({
         easing: 'easeOutBounce',

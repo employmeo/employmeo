@@ -51,12 +51,11 @@
 
 <script>
 $(document).ready(function() {
-	if (urlParams.respondant_id != null) {
-	    buildVisualSurveyWithRespondantId(urlParams.respondant_id);
+	if (urlParams.respondant_uuid != null) {
+	    buildVisualSurveyWithRespondantId(urlParams.respondant_uuid);
 	} else {
-		var surveyId = urlParams.survey_id;
-		var accountId = urlParams.account_id;
-		createVisualNewRespondant(surveyId, accountId);
+		var asid = urlParams.asid;
+		createVisualNewRespondant(asid);
 	}
 });
 </script>

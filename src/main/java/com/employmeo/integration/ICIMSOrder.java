@@ -63,7 +63,7 @@ public class ICIMSOrder {
 		person.setPersonLat(applicant.getDouble("lat"));
 		person.setPersonLong(applicant.getDouble("lng"));
 		respondant.setRespondantAccountId(applicant.getLong("account_id"));
-		respondant.setRespondantSurveyId(applicant.getLong("assessment_id"));
+		respondant.setRespondantAsid(applicant.getLong("assessment_id"));
 		respondant.setRespondantLocationId(applicant.getLong("location_id"));// ok
 																				// for
 																				// null

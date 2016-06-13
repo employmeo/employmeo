@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import org.json.JSONArray;
 
 import com.employmeo.objects.Account;
+import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Survey;
 import com.employmeo.objects.User;
 
@@ -36,10 +37,10 @@ public class GetAssessmentList {
 		Account account = user.getAccount();
 		JSONArray response = new JSONArray();
 
-		if (account.getSurveys().size() > 0) {
-			List<Survey> surveys = account.getSurveys();
-			for (int i = 0; i < surveys.size(); i++) {
-				response.put(surveys.get(i).getJSON());
+		if (account.getAccountSurveys().size() > 0) {
+			List<AccountSurvey> aSurveys = account.getAccountSurveys();
+			for (int i = 0; i < aSurveys.size(); i++) {
+				response.put(aSurveys.get(i).getJSON());
 			}
 		}
 		return response.toString();

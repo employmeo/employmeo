@@ -48,12 +48,11 @@
 	</div>
 <script>
 $(document).ready(function() {
-	if (urlParams.respondant_id != null) {
-	    buildPlainSurveyWithRespondantId(urlParams.respondant_id);
+	if (urlParams.respondant_uuid != null) {
+	    buildPlainSurveyWithRespondantId(urlParams.respondant_uuid);
 	} else {
-		var surveyId = urlParams.survey_id;
-		var accountId = urlParams.account_id;
-		createPlainNewRespondant(surveyId, accountId);
+		var asid = urlParams.asid;
+		createPlainNewRespondant(asid);
 	}
 	$('#survey').on('swipeleft', function(e) {nextPage();});
 	$('#survey').on('swiperight', function(e) {prevPage();});

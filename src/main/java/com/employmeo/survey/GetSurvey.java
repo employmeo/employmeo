@@ -3,6 +3,7 @@ package com.employmeo.survey;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.ws.rs.FormParam;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
 
+import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Response;
 import com.employmeo.objects.Survey;
@@ -26,10 +28,10 @@ public class GetSurvey {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String doPost(
 			// @FormParam("start_time") TimeStamp startTime,
-			@FormParam("respondant_id") Long respondantId) {
-		logger.info("processing with: " + respondantId);
+			@FormParam("respondant_uuid") UUID respondantUuid) {
+		logger.info("processing with: " + respondantUuid);
 		JSONObject json = new JSONObject();
-		Respondant respondant = Respondant.getRespondantById(respondantId);
+		Respondant respondant = Respondant.getRespondantByUuid(respondantUuid);
 
 		if (respondant != null) {
 			respondant.refreshMe(); // make sure to get latest and greatest from
@@ -43,8 +45,8 @@ public class GetSurvey {
 				json.put("message", "This assessment has already been completed and submitted");
 			}
 
-			Survey survey = respondant.getSurvey();
-			json.put("survey", survey.getJSON());
+			AccountSurvey aSurvey = respondant.getAccountSurvey();
+			json.put("survey", aSurvey.getJSON());
 			json.put("respondant", respondant.getJSON());
 			List<Response> responses = respondant.getResponses();
 			for (int i = 0; i < responses.size(); i++)

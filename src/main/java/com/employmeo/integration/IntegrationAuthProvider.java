@@ -13,6 +13,7 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import org.glassfish.jersey.internal.util.Base64;
@@ -83,6 +84,8 @@ public class IntegrationAuthProvider implements ContainerRequestFilter {
 						req.abortWith(ACCESS_DENIED);
 						return;
 					}
+				} else {
+					req.setSecurityContext(new PartnerAuthorizer(partner));
 				}
 			} catch (Exception e) {
 				req.abortWith(LOGIN_FAILED);

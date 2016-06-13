@@ -8,6 +8,7 @@ import javax.persistence.*;
 import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
+import com.employmeo.util.PartnerUtil;
 
 /**
  * The persistent class for the partners database table.
@@ -32,6 +33,9 @@ public class Partner extends PersistantObject implements Serializable, Principal
 	@Column(name = "partner_password")
 	private String partnerPassword;
 
+	@Column(name = "partner_prefix")
+	private String partnerPrefix;
+	
 	public Partner() {
 	}
 
@@ -59,6 +63,14 @@ public class Partner extends PersistantObject implements Serializable, Principal
 		this.partnerName = partnerName;
 	}
 
+	public String getPartnerPrefix() {
+		return this.partnerPrefix;
+	}
+
+	public void setPartnerPrefix(String partnerPrefix) {
+		this.partnerPrefix = partnerPrefix;
+	}
+
 	public String getPartnerPassword() {
 		return this.partnerPassword;
 	}
@@ -67,6 +79,10 @@ public class Partner extends PersistantObject implements Serializable, Principal
 		this.partnerPassword = partnerPassword;
 	}
 
+	public PartnerUtil getPartnerUtil() {
+		return PartnerUtil.getUtilFor(this);
+	}
+	
 	public static Partner loginPartner(String login, String password) {
 		// TODO Auto-generated method stub
 		EntityManager em = DBUtil.getEntityManager();
@@ -85,7 +101,7 @@ public class Partner extends PersistantObject implements Serializable, Principal
 
 		return partner;
 	}
-
+	
 	@Override
 	public JSONObject getJSON() {
 		return new JSONObject().put("partner_name", this.getPartnerName());

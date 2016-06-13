@@ -152,10 +152,10 @@ public class EmailUtility {
 		String link = null;
 		try {
 			link = new URL(
-					BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_id=" + respondant.getRespondantId())
+					BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_uuid=" + respondant.getRespondantUuid())
 							.toString();
 		} catch (Exception e) {
-			link = BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_id=" + respondant.getRespondantId();
+			link = BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_uuid=" + respondant.getRespondantUuid();
 		}
 		return link.toString();
 	}
@@ -164,10 +164,10 @@ public class EmailUtility {
 		String link = null;
 		try {
 			link = new URL(
-					BASE_SURVEY_URL + "/respondant_score.jsp" + "?&respondant_id=" + respondant.getRespondantId())
+					BASE_SURVEY_URL + "/respondant_score.jsp" + "?&respondant_uuid=" + respondant.getRespondantUuid())
 							.toString();
 		} catch (Exception e) {
-			link = BASE_SURVEY_URL + "/respondant_score.jsp" + "?&respondant_id=" + respondant.getRespondantId();
+			link = BASE_SURVEY_URL + "/respondant_score.jsp" + "?&respondant_uuid=" + respondant.getRespondantUuid();
 		}
 		return link.toString();
 	}

@@ -22,7 +22,7 @@ public class DBUtil {
 		// Get database connection details from ENV VARIABLES
 		String dbuser = System.getenv("DB_USERNAME");
 		String dbpass = System.getenv("DB_PASSWORD");
-		String dburl = System.getenv("DB_URL") + "?currentSchema=employmeo&sslmode=require";
+		String dburl = System.getenv("DB_URL");// + "?currentSchema=employmeo&sslmode=require";
 				
 		properties.put("javax.persistence.jdbc.user", dbuser);
 		properties.put("javax.persistence.jdbc.password", dbpass);

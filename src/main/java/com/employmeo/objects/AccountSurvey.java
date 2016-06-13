@@ -20,7 +20,7 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "as_id")
-	private Integer asId;
+	private Long asId;
 
 	@ManyToOne
 	@JoinColumn(name = "as_account_id", insertable = false, updatable = false)
@@ -57,11 +57,11 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 	public AccountSurvey() {
 	}
 
-	public Integer getAsId() {
+	public Long getAsId() {
 		return this.asId;
 	}
 
-	public void setAsId(Integer asId) {
+	public void setAsId(Long asId) {
 		this.asId = asId;
 	}
 
@@ -77,6 +77,10 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 		return this.asPreambleText;
 	}
 
+	public String getAsDisplayName() {
+		return this.asDisplayName;
+	}
+	
 	public void setAsPreambleText(String asPreambleText) {
 		this.asPreambleText = asPreambleText;
 	}
@@ -133,17 +137,12 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 	}
 
 	public static Survey getSurveyByASID(long accountDefaultAsId) {
+		return getAccountSurveyByASID(accountDefaultAsId).getSurvey();
+	}
+	
+	public static AccountSurvey getAccountSurveyByASID(long accountDefaultAsId) {
 		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<AccountSurvey> q = em.createQuery("SELECT a FROM AccountSurvey a WHERE a.asId = :asId",
-				AccountSurvey.class);
-		q.setParameter("asId", accountDefaultAsId);
-		Survey aSurvey = null;
-		try {
-			aSurvey = q.getSingleResult().getSurvey();
-		} catch (NoResultException nre) {
-		}
-
+		AccountSurvey aSurvey = em.find(AccountSurvey.class, accountDefaultAsId);
 		return aSurvey;
 	}
-
 }

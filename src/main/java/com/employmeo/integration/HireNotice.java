@@ -10,12 +10,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.json.JSONObject;
 
 import com.employmeo.objects.Account;
+import com.employmeo.objects.Partner;
 import com.employmeo.objects.Respondant;
 import com.employmeo.util.PartnerUtil;
 
@@ -29,20 +32,23 @@ public class HireNotice {
 	private final static Response ACCOUNT_MATCH = Response.status(Response.Status.CONFLICT)
 			.entity("{ message: 'Applicant ID not found for Account ID' }").build();
 	private static Logger logger = Logger.getLogger("RestService");
+	@Context
+	private SecurityContext sc;
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost(JSONObject json) {
 		logger.info("processing with:" + json.toString());
+		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
 		Account account = null;
 		Respondant respondant = null;
 		String status = null;
 		Date changeDate = null;
 
 		try { // the required parameters
-			account = PartnerUtil.getAccountFrom(json.getJSONObject("account"));
-			respondant = PartnerUtil.getRespondantFrom(json.getJSONObject("applicant"));
+			account = pu.getAccountFrom(json.getJSONObject("account"));
+			respondant = pu.getRespondantFrom(json.getJSONObject("applicant"));
 			status = json.getJSONObject("applicant").getString("applicant_status");
 			String hireDate = json.getJSONObject("applicant").getString("applicant_change_date");
 			changeDate = Date.valueOf(hireDate);

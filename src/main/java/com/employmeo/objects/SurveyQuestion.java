@@ -26,8 +26,8 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 	@Column(name = "SQ_REQUIRED")
 	private boolean sqRequired;
 
-	@Column(name = "SQ_SEQENCE")
-	private int sqSeqence;
+	@Column(name = "SQ_SEQUENCE")
+	private int sqSequence;
 
 	@Column(name = "SQ_PAGE")
 	private int sqPage;
@@ -69,12 +69,12 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 		this.sqRequired = sqRequired;
 	}
 
-	public int getSqSeqence() {
-		return this.sqSeqence;
+	public int getSqSequence() {
+		return this.sqSequence;
 	}
 
-	public void setSqSeqence(int sqSeqence) {
-		this.sqSeqence = sqSeqence;
+	public void setSqSeqence(int sqSequence) {
+		this.sqSequence = sqSequence;
 	}
 
 	public int getSqPage() {
