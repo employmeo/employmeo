@@ -24,6 +24,9 @@
 		<class>com.employmeo.objects.PredictiveModelPK</class>
 		<class>com.employmeo.objects.Partner</class>
 		<class>com.employmeo.objects.BillingItem</class>
+		<class>com.employmeo.objects.CorefactorDescription</class>
+		<class>com.employmeo.objects.SurveySection</class>
+		<class>com.employmeo.objects.SurveySectionPK</class>
       <properties>
          <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
       </properties>

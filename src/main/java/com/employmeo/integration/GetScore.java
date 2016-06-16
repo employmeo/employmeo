@@ -55,6 +55,6 @@ public class GetScore {
 			throw new WebApplicationException(ACCOUNT_MATCH);
 		}
 
-		return pu.getScoresMessage(respondant).toString();
+		return PartnerUtil.getScoresMessage(respondant).toString();
 	}
 }

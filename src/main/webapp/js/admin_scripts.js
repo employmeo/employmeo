@@ -9,6 +9,7 @@ var surveyList;
 var positionList;
 var locationList;
 var qTable;
+var detailedScores;
 var startPage = '/index.jsp';
 
 //basic user / account functions (login/logout/etc)
@@ -504,9 +505,98 @@ function presentRespondantScores(dataScores) {
 	$('#assessmentname').text(respondant.respondant_survey_name);
 	$('#assessmentdate').text(respondant.respondant_created_date);
 
-	renderAssessmentScore(dataScores.scores);
+	detailedScores = dataScores.detailed_scores;
+	renderDetailedAssessmentScore();
 	renderPredictionElements(dataScores.scores);
 	renderPredictionChart(dataScores.scores);
+}
+
+function showAllDetails() {
+	for (i in detailedScores) {
+		var score = detailedScores[i];
+		$('#cfmessage_' + score.corefactor_id).removeClass('hidden');
+	}
+}
+
+function hideAllDetails() {
+	for (i in detailedScores) {
+		var score = detailedScores[i];
+		$('#cfmessage_' + score.corefactor_id).addClass('hidden');
+	}	
+}
+
+function renderDetailedAssessmentScore() {
+	$('#assessmentresults').empty();
+	detailedScores.sort(function(a, b) {
+	    return a.corefactor_display_group.localeCompare(b.corefactor_display_group);
+	});
+	var displaygroup = "";
+	
+	for (var i in detailedScores) {
+		var score = detailedScores[i];
+		if (displaygroup != score.corefactor_display_group) {
+			displaygroup = score.corefactor_display_group;
+			var grouprow = $('<tr />');
+			grouprow.append($('<th />', {'style':'text-align:center;'}).append($('<h4 />',{text:displaygroup})));
+			$('#assessmentresults').append(grouprow);
+		}
+		var row = $('<tr />', {
+			'onclick' : "$('#cfmessage_" + score.corefactor_id + "').toggleClass('hidden')",
+			'title' : score.corefactor_description});
+		var namediv = $('<div />', {
+			'class' : 'col-xs-10 col-sm-8 col-md-6 col-lg-6 text-left',
+			title: score.corefactor_description,
+			html: '<h5><strong>' + score.corefactor_name + '</strong></h5>'});
+		var scorediv = $('<div />', {
+			'class' : 'col-xs-2 col-sm-4 col-md-6 col-lg-6 text-right', 
+			html : '<h5><strong>' + score.cf_score + "/" + score.corefactor_high + '</strong></h5>'});
+		var lowdesc = $('<div />', {
+			'class' : 'xs-hidden col-sm-3 col-md-2 col-lg-2 text-left', 
+			html : '<h6>' +score.corefactor_low_desc + '</h6>'});
+		var highdesc = $('<div />', {
+			'class' : 'xs-hidden col-sm-3 col-md-2 col-lg-2 text-right', 
+			html : '<h6>' +score.corefactor_high_desc + '</h6>'});
+		var message = $('<div />', {
+			'id' : 'cfmessage_' + score.corefactor_id,
+			'class' : 'hidden col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center', 
+			'text' : prepPersonalMessage(score.cf_description)});
+		var progress = $('<div />', {'class' : 'progress col-xs-12 col-sm-6 col-md-8 col-lg-8'
+				}).append($('<div />', {
+			'class': 'progress-bar progress-bar-success progress-bar-striped',
+			'role': 'progressbar',
+			'aria-valuenow' : score.cf_score,
+			'aria-valuemin' : "1",
+			'aria-valuemax' : "11",
+			'style' : 'width: ' + (100*score.cf_score/score.corefactor_high) + '%;'
+		}));
+
+		var tablecell = $('<td />');
+		tablecell.append(namediv);
+		tablecell.append(scorediv);
+		tablecell.append(lowdesc);
+		tablecell.append(progress);
+		tablecell.append(highdesc);
+		tablecell.append(message);
+		row.append(tablecell);
+		$('#assessmentresults').append(row);
+	}
+	
+}
+
+function prepPersonalMessage (message) {
+	var pm = message;
+	pm = pm.replace("[FNAME]",respondant.respondant_person_fname);
+	pm = pm.replace("[LNAME]",respondant.respondant_person_lname);
+
+	pm = pm.replace("[CHESHE]","He or she");
+	pm = pm.replace("[LHESHE]","he or she");
+	pm = pm.replace("[CHIMHER]","Him or her");
+	pm = pm.replace("[LHIMHER]","him or her");
+	pm = pm.replace("[CHISHER]","His or her");
+	pm = pm.replace("[LHISHER]","his or her");
+	pm = pm.replace("[HIMSELFHERSELF]","him or herself");
+
+	return pm;
 }
 
 function renderAssessmentScore(scores) {
@@ -541,7 +631,6 @@ function renderPredictionElements(scores) {
 	}));
 	$('#corefactorsused').append(title);
 	for (var key in scores) {
-		console.log(key, scores[key]);
 		var group = $('<div />', {
 			'class' : 'form-group'
 		});

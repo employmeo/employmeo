@@ -1,5 +1,7 @@
 package com.employmeo.util;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -9,6 +11,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -28,7 +33,7 @@ import com.employmeo.objects.User;
 public class RandomizerUtil {
 
 	// Basic Tool Settings
-	public static final String SERVER_NAME = "http://localhost:8080";
+	public static final String SERVER_NAME = "https://localhost:8443";
 	private static final int THREAD_COUNT = 1;
 	private static final int LOOPS = 1;
 	private static final int DELAY = 100;
@@ -58,12 +63,17 @@ public class RandomizerUtil {
 
 	public RandomizerUtil() {
 	}
-
 	
-	public static void main (String[] args) {
-
-		Client adminClient = ClientBuilder.newClient();
-		Client integrationClient = ClientBuilder.newClient();
+	public static void main (String[] args) throws Exception {
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+	        public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+	        public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+	        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+	    }}, new java.security.SecureRandom());
+		
+		Client adminClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
+		Client integrationClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("fastworkforce", "password");
 		integrationClient.register(feature);
 		
@@ -94,7 +104,7 @@ logger.info("Completed admin login attempt.");
 							link = result.getJSONObject("delivery").getString("assessment_url");
 logger.info("Thread (" + threadnum + ") Received Assessment (" + appId + ") Link: " + link);
 							Thread.sleep(waittime);
-							Client surveyClient = ClientBuilder.newClient();
+							Client surveyClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
 							takeSurvey(surveyClient, appId, link);
 logger.info("Thread (" + threadnum + ") Completed Assessment: " + appId);
 							Thread.sleep(100*DELAY);

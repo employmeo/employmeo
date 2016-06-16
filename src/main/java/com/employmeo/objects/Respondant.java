@@ -3,6 +3,7 @@ package com.employmeo.objects;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import com.employmeo.util.DBUtil;
 import com.employmeo.util.ScoringUtil;
@@ -11,10 +12,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-import static javax.persistence.FetchType.EAGER;
-import static javax.persistence.FetchType.LAZY;
-import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.TypeConverter;
 
 /**
  * The persistent class for the respondants database table.
@@ -420,7 +417,7 @@ public class Respondant extends PersistantObject implements Serializable {
 			json.put("respondant_account_id", this.account.getAccountId());
 		if (getAccountSurvey() != null) {
 			json.put("respondant_asid", this.respondantAsid);
-			json.put("respondant_survey_name", this.getAccountSurvey().getAsDisplayName());
+			json.put("respondant_survey_name", this.getAccountSurvey().getSurveyName());
 		}
 		if (this.getRespondantLocationId() != null)
 			json.put("respondant_location_id", this.getRespondantLocationId());
@@ -471,4 +468,29 @@ public class Respondant extends PersistantObject implements Serializable {
 		return scores;
 	}
 
+	
+	public JSONArray getAssessmentDetailedScore() {
+		if (getRespondantStatus() <= Respondant.STATUS_COMPLETED) this.refreshMe();
+
+		JSONArray scores = new JSONArray();
+		if (this.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
+			return scores; // return no scores when survey incomplete
+		} else if (this.getRespondantStatus() == Respondant.STATUS_COMPLETED) {
+			ScoringUtil.scoreAssessment(this);
+		}
+
+		if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
+			for (int i = 0; i < getRespondantScores().size(); i++) {
+				Corefactor corefactor = Corefactor.getCorefactorById(getRespondantScores().get(i).getRsCfId());
+				JSONObject score = corefactor.getJSON();
+				score.put("cf_description", corefactor.getDescriptionForScore(getRespondantScores().get(i).getRsValue()));
+				score.put("cf_score", getRespondantScores().get(i).getRsValue());
+				scores.put(score);
+			}
+		}
+
+		return scores;
+	}
+
+	
 }

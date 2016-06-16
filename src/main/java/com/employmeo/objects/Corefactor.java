@@ -58,9 +58,16 @@ public class Corefactor extends PersistantObject implements Serializable {
 	@Column(name = "corefactor_foreign_id")
 	private String corefactorForeignId;
 
+	@Column(name = "cf_display_group")
+	private String cfDisplayGroup;
+	
+	// bi-directional many-to-one association to Account
+	@OneToMany(mappedBy = "corefactor", fetch = FetchType.EAGER)
+	private List<CorefactorDescription> cfDescriptions;
+
 	public Corefactor() {
 	}
-
+	
 	public Integer getCorefactorId() {
 		return this.corefactorId;
 	}
@@ -77,6 +84,14 @@ public class Corefactor extends PersistantObject implements Serializable {
 		this.cfHigh = cfHigh;
 	}
 
+	public String getCfDisplayGroup() {
+		return this.cfDisplayGroup;
+	}
+
+	public void setCfDisplayGroup (String cfDisplayGroup) {
+		this.cfDisplayGroup = cfDisplayGroup;
+	}
+	
 	public String getCfHighDescription() {
 		return this.cfHighDescription;
 	}
@@ -101,6 +116,14 @@ public class Corefactor extends PersistantObject implements Serializable {
 		this.cfLowDescription = cfLowDescription;
 	}
 
+	public String getDescriptionForScore (double score) {
+		for (CorefactorDescription cfd : cfDescriptions) {
+			if ((score >= cfd.getCfLowEnd()) && (score <= cfd.getCfHighEnd()))
+				return cfd.getCfDescription();
+		}
+		return null;
+	}
+	
 	public double getCfMeanScore() {
 		return this.cfMeanScore;
 	}
@@ -153,10 +176,13 @@ public class Corefactor extends PersistantObject implements Serializable {
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
 		json.put("corefactor_name", this.corefactorName);
+		json.put("corefactor_display_group", this.cfDisplayGroup);
 		json.put("corefactor_id", this.corefactorId);
 		json.put("corefactor_description", this.corefactorDescription);
 		json.put("corefactor_high", this.cfHigh);
 		json.put("corefactor_low", this.cfLow);
+		json.put("corefactor_high_desc", this.cfHighDescription);
+		json.put("corefactor_low_desc", this.cfLowDescription);
 		json.put("corefactor_mean_score", this.cfMeanScore);
 		json.put("corefactor_score_deviation", this.cfScoreDeviation);
 		json.put("corefactor_measurements", this.cfMeasurements);

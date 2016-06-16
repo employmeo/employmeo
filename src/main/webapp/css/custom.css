@@ -5535,6 +5535,10 @@ ul.verticle_bars li {
 
 .progress {
     position: relative;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .progress .progress-bar {

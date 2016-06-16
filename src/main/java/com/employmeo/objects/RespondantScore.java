@@ -83,6 +83,10 @@ public class RespondantScore extends PersistantObject implements Serializable {
 		this.rsValue = rsValue;
 	}
 
+	public String getDescription() {
+		return Corefactor.getCorefactorById(this.rsCfId).getDescriptionForScore(this.rsValue);
+	}
+	
 	@Override
 	public JSONObject getJSON() {
 		// TODO Auto-generated method stub

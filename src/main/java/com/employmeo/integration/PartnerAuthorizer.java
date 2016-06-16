@@ -22,7 +22,6 @@ public class PartnerAuthorizer implements SecurityContext {
 
 	@Override
 	public Principal getUserPrincipal() {
-		// TODO Auto-generated method stub
 		return partner;
 	}
 

@@ -28,10 +28,9 @@ public class GetRespondantScore {
 		Respondant respondant = Respondant.getRespondantById(respondantId);
 
 		if (respondant != null) {
-			JSONObject scores = respondant.getAssessmentScore();
-			JSONObject jresp = respondant.getJSON();
-			json.put("respondant", jresp);
-			json.put("scores", scores);
+			json.put("respondant", respondant.getJSON());
+			json.put("scores", respondant.getAssessmentScore());
+			json.put("detailed_scores", respondant.getAssessmentDetailedScore());
 			Position position = Position.getPositionById(respondant.getRespondantPositionId());
 			if (position != null)
 				json.put("position", position.getJSON());

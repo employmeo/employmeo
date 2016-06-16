@@ -22,7 +22,6 @@ import com.employmeo.objects.Partner;
 import com.employmeo.objects.Person;
 import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
-import com.employmeo.objects.Survey;
 import com.employmeo.util.AddressUtil;
 import com.employmeo.util.EmailUtility;
 import com.employmeo.util.PartnerUtil;

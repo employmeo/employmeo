@@ -65,12 +65,6 @@
 					</div>
 					<div>
 						<table class='table table-hover'>
-							<thead>
-								<tr>
-									<td><h4>Core Factor</h4></td>
-									<td><h4>Score</h4></td>
-								</tr>
-							</thead>
 							<tbody id='assessmentresults'>
 							</tbody>
 						</table>

@@ -73,32 +73,46 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 		this.asAccountId = asAccountId;
 	}
 
+	public void setAsPreambleText(String asPreambleText) {
+		this.asPreambleText = asPreambleText;
+	}
+
 	public String getAsPreambleText() {
 		return this.asPreambleText;
+	}
+
+	public void setAsDisplayName(String asDisplayName) {
+		this.asDisplayName = asDisplayName;
 	}
 
 	public String getAsDisplayName() {
 		return this.asDisplayName;
 	}
 	
-	public void setAsPreambleText(String asPreambleText) {
-		this.asPreambleText = asPreambleText;
+	public String getSurveyName() {
+		if ((this.asDisplayName != null) && (!this.asDisplayName.isEmpty())) {
+			return this.asDisplayName;
+		}
+		return getSurvey().getSurveyName();
+	}
+	
+	public void setAsThankyouText(String asThankyouText) {
+		this.asThankyouText = asThankyouText;
 	}
 
 	public String getAsThankyouText() {
 		return this.asThankyouText;
 	}
 
-	public void setAsThankyouText(String asThankyouText) {
-		this.asThankyouText = asThankyouText;
+	public void setAsRedirectPage(String asRedirectPage) {
+		this.asRedirectPage = asRedirectPage;
 	}
 
 	public String getAsRedirectPage() {
-		return this.asRedirectPage;
-	}
-
-	public void setAsRedirectPage(String asRedirectPage) {
-		this.asRedirectPage = asRedirectPage;
+		if ((this.asRedirectPage != null) && (!this.asRedirectPage.isEmpty())) {
+			return this.asRedirectPage;
+		}
+		return this.account.getAccountDefaultRedirect();
 	}
 
 	public Integer getAsStatus() {
@@ -126,13 +140,12 @@ public class AccountSurvey extends PersistantObject implements Serializable {
 	@Override
 	public JSONObject getJSON() {
 		JSONObject aSurvey = this.survey.getJSON();
-		aSurvey.put("survey_preamble_text", this.asPreambleText);
-		aSurvey.put("survey_thankyou_text", this.asThankyouText);
-		aSurvey.put("survey_redirect_page", this.asRedirectPage);
 		aSurvey.put("survey_asid", this.asId);
-		aSurvey.put("survey_name", this.asDisplayName);
 		aSurvey.put("survey_price", this.asPrice);
-		
+		aSurvey.put("survey_preamble_text", getAsPreambleText());
+		aSurvey.put("survey_thankyou_text", getAsThankyouText());
+		aSurvey.put("survey_redirect_page", getAsRedirectPage());
+		aSurvey.put("survey_name", this.getSurveyName());
 		return aSurvey;
 	}
 

@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Response;
-import com.employmeo.objects.Survey;
 
 @Path("getsurvey")
 public class GetSurvey {

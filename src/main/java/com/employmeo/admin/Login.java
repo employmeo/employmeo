@@ -62,12 +62,10 @@ public class Login {
 				rb.cookie(new NewCookie(uCookie, "email", 0, false));
 				rb.cookie(new NewCookie(pCookie, "hashword", 0, false));
 			}
-			reqt.getRequestedSessionId();
-			Cookie nCookie = new Cookie("user_fname", user.getUserFname(), "/", reqt.getServerName());
-			Cookie sCookie = new Cookie("JSESSIONID", reqt.getSession().getId(), "/", reqt.getServerName());
-			rb.cookie(new NewCookie(nCookie, "user_fname", 60 * 60 * 24 * 90, false));
-			rb.cookie(new NewCookie(sCookie, "JSESSIONID", 60 * 60 * 2, false));
 
+			Cookie nCookie = new Cookie("user_fname", user.getUserFname(), "/", reqt.getServerName());
+			rb.cookie(new NewCookie(nCookie, "user_fname", 60 * 60 * 24 * 90, false));
+logger.info("Put Cookies under: " + reqt.getServerName());
 			return rb.build();
 		}
 

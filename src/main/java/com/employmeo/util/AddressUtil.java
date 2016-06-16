@@ -11,28 +11,27 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class AddressUtil {
+	private static final String MAPS_SERVICE = "https://maps.googleapis.com/maps/api/geocode/json";
 	private static Logger logger = Logger.getLogger("Utils");
 
-	private static String googleApiKey;
-
-	static {
-		googleApiKey = System.getenv("GOOGLE_MAPS_KEY");
-	}
+	private static String googleApiKey = System.getenv("GOOGLE_MAPS_KEY");
 
 	public static String getMapsKey() {
 		return googleApiKey;
 	}
 
 	public static void validate(JSONObject address) {
-		if (address.has("lat") && address.has("lng"))
-			return;
-
-		String formattedAddress = address.optString("street") + " " + address.optString("city") + ", "
-				+ address.optString("state") + " " + address.optString("zip");
+		String formattedAddress = address.optString("street") +
+				" " + address.optString("city") + 
+				", " + address.optString("state") + 
+				" " + address.optString("zip");
+		address.put("formatted_address", formattedAddress);
+		
+		if (address.has("lat") && address.has("lng")) return;
 
 		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target("https://maps.googleapis.com/maps/api/geocode/json").queryParam("key",
-				AddressUtil.getMapsKey());
+		WebTarget target = client.target(MAPS_SERVICE).queryParam("key", getMapsKey());
+		address.put("formatted_address", formattedAddress);
 		try {
 			;
 			String result = target.queryParam("address", formattedAddress).request(MediaType.APPLICATION_JSON)
@@ -43,15 +42,15 @@ public class AddressUtil {
 				// TODO - either multiple results, or no result. error handling
 				// needed?
 logger.warning("Address retrieved more than one result: " + formattedAddress);
-				address.put("formatted_address", formattedAddress);
 			} else {
 				address.put("formatted_address", results.getJSONObject(0).getString("formatted_address"));
 				JSONObject geo = results.getJSONObject(0).getJSONObject("geometry");
 				address.put("lat", geo.getJSONObject("location").getDouble("lat"));
 				address.put("lng", geo.getJSONObject("location").getDouble("lng"));
 			}
-		} catch (Exception bre) {
+		} catch (Exception e) {
 			// TODO failed to validate address with lat & lng
+logger.severe(e.getMessage() + " (lookup failed) for: " + formattedAddress);
 		}
 
 	}

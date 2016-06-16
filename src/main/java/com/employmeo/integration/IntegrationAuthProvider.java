@@ -13,7 +13,6 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 import org.glassfish.jersey.internal.util.Base64;
@@ -45,7 +44,7 @@ public class IntegrationAuthProvider implements ContainerRequestFilter {
 
 	@Override
 	public void filter(ContainerRequestContext req) throws IOException {
-
+		
 		Method method = resourceInfo.getResourceMethod();
 		// Access allowed for all
 		if (!method.isAnnotationPresent(PermitAll.class)) {

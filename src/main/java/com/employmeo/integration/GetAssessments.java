@@ -50,7 +50,7 @@ public class GetAssessments {
 			List<AccountSurvey> surveys = account.getAccountSurveys();
 			for (int i = 0; i < surveys.size(); i++) {
 				JSONObject survey = new JSONObject();
-				survey.put("assessment_name", surveys.get(i).getSurvey().getSurveyName());
+				survey.put("assessment_name", surveys.get(i).getSurveyName());
 				survey.put("assessment_asid", surveys.get(i).getAsId());
 				response.put(survey);
 			}
