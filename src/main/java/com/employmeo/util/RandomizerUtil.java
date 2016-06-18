@@ -36,8 +36,8 @@ public class RandomizerUtil {
 	public static final String SERVER_NAME = "https://localhost:8443";
 	private static final int THREAD_COUNT = 1;
 	private static final int LOOPS = 1;
-	private static final int DELAY = 100;
-	public static JSONObject account = new JSONObject().put("account_ats_id", "1234");
+	private static final int DELAY = 2500;
+	public static JSONObject account = new JSONObject().put("account_ats_id", "1111");
 
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
 	public static Logger logger = Logger.getLogger("TestingUtil");
@@ -60,6 +60,7 @@ public class RandomizerUtil {
 	public static JSONArray assessments = null;
 	public static JSONArray positions = null;
 	public static JSONArray locations = null;
+	public static int completedthreads = 0;
 
 	public RandomizerUtil() {
 	}
@@ -74,7 +75,7 @@ public class RandomizerUtil {
 		
 		Client adminClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
 		Client integrationClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
-		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("fastworkforce", "password");
+		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("icims", "password");
 		integrationClient.register(feature);
 		
 		// Test out logging into the admin server, updating the dash, etc.
@@ -113,14 +114,19 @@ logger.info("Thread (" + threadnum + ") Hire Decision for Applicant: " + appId);
 						} catch (Exception e) {
 logger.severe("Error Processing Applicant (" + appId + "): " + e.getMessage());
 						}
+logger.info("Thread (" + threadnum + ") completed " + (j+1) + " of " + LOOPS + " loops.");
 					}
-logger.info("Thread (" + threadnum + ") completed " + LOOPS + " loops.");
+					threadComplete(threadnum);
 				}});
 		}
 		
 	}
 	
-
+	public static void threadComplete(int threadnum) {
+		completedthreads++;
+logger.info("Thread (" + threadnum + ") closed, " + (THREAD_COUNT - completedthreads) + " threads remaining.");
+	}
+	
 	public static void takeSurvey(Client client, Long appId, String link) throws InterruptedException {
 		Form form = new Form();
 		int idx = link.indexOf("=");

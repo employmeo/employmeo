@@ -18,7 +18,7 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "SQ_ID")
-	private String sqId;
+	private Long sqId;
 
 	@Column(name = "SQ_DEPENDENCY")
 	private boolean sqDependency;
@@ -45,11 +45,11 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 	public SurveyQuestion() {
 	}
 
-	public String getSqId() {
+	public Long getSqId() {
 		return this.sqId;
 	}
 
-	public void setSqId(String sqId) {
+	public void setSqId(Long sqId) {
 		this.sqId = sqId;
 	}
 
@@ -103,7 +103,12 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 
 	@Override
 	public JSONObject getJSON() {
-		JSONObject json = new JSONObject();
+		JSONObject json = getQuestion().getJSON();
+		json.put("question_sequence", this.sqSequence);
+		json.put("question_page", this.sqPage);
+		json.put("question_required", this.sqRequired);
+		json.put("question_dependency", this.sqDependency);
+		json.put("question_sqid", this.sqId);
 		return json;
 	}
 

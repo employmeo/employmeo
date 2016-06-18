@@ -49,7 +49,11 @@ public class GetPositions {
 		if (account.getPositions().size() > 0) {
 			List<Position> positions = account.getPositions();
 			for (int i = 0; i < positions.size(); i++) {
-				response.put(positions.get(i).getJSON());
+				JSONObject position = new JSONObject();
+				position.put("position_name", positions.get(i).getPositionName());
+				position.put("position_description", positions.get(i).getPositionDescription());
+				position.put("position_id", positions.get(i).getPositionId());
+				response.put(position);
 			}
 		}
 		return response.toString();

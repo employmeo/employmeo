@@ -62,15 +62,15 @@ public class Account extends PersistantObject implements Serializable {
 	private long accountDefaultAsId;
 
 	// bi-directional many-to-one association to Survey
-	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	private List<AccountSurvey> accountSurveys;
 
 	// bi-directional many-to-one association to Position
-	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	private List<Position> positions;
 
 	// bi-directional many-to-one association to Position
-	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	private List<Location> locations;
 
 	// bi-directional many-to-one association to User
@@ -314,7 +314,7 @@ public class Account extends PersistantObject implements Serializable {
 		json.put("account_name", this.accountName);
 		json.put("account_status", this.accountStatus);
 		json.put("account_type", this.accountType);
-		json.put("account_", this.accountAtsId);
+		json.put("account_ats_id", this.accountAtsId);
 		json.put("account_default_email",this.accountDefaultEmail);
 		json.put("account_default_location_id",this.accountDefaultLocationId);
 		json.put("account_default_position_id",this.accountDefaultPositionId);

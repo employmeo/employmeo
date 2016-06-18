@@ -32,9 +32,9 @@ public class DefaultPartnerUtil implements PartnerUtil {
 
 	@Override
 	public String trimPrefix(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return id.substring(id.indexOf(getPrefix())+getPrefix().length());
 	}
+	
 	public Account getAccountFrom(JSONObject jAccount) {
 		Account account = null;
 		String accountAtsId = jAccount.optString("account_ats_id");
@@ -65,9 +65,11 @@ public class DefaultPartnerUtil implements PartnerUtil {
 			locationAtsId = jLocation.optString("location_ats_id");
 		if (locationAtsId != null) {
 			EntityManager em = DBUtil.getEntityManager();
-			TypedQuery<Location> q = em.createQuery("SELECT l FROM Location l WHERE l.locationAtsId = :locationAtsId",
+			TypedQuery<Location> q = em.createQuery(
+					"SELECT l FROM Location l WHERE l.locationAtsId = :locationAtsId AND l.locationAccountId = :accountId",
 					Location.class);
 			q.setParameter("locationAtsId", partner.getPartnerPrefix() + locationAtsId);
+			q.setParameter("accountId", account.getAccountId());
 			try {
 				location = q.getSingleResult();
 			} catch (NoResultException nre) {

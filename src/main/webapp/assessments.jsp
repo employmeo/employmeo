@@ -17,7 +17,7 @@
 	<div class="col-sm-12 col-md-12 col-lg-12">
 		<div class="x_panel">
 			<div class="x_title">
-				<h3 id="surveyname"></h3>
+				<h3 id="assessmentname"></h3>
 			</div>
 			<div class="x_content">
 	<div class="col-sm-12 col-md-6 col-lg-6">
@@ -25,7 +25,9 @@
 			<div class="x_title">
 				<h4>Assessment Details</h4>
 			</div>
-			<div class="x_content">Questions: <span id="questiontotal"></span>
+			<div class="x_content">
+			<span id="assessmentdesc"></span>
+			Total Questions: <span id="questiontotal"></span>
 			</div>
 	</div>
 	
@@ -36,14 +38,9 @@
 				<h4>Completion Rate</h4>
 			</div>
 			<div class="x_content text-center">
-
-<!--  Adding a chart here -->
-                          <span class="chart" id="completionguage" data-percent="86">
-                                            <span style="line-height:100px;font-size:30px;" class="percent"></span>
-                            </span>
- <!--  done with echarts here -->
-
-			
+            	<span class="chart" id="completionguage" data-percent="0">
+                	<span style="line-height:100px;font-size:30px;" class="percent"></span>
+				</span>
 			</div>
 	</div>
 	</div>
@@ -52,7 +49,7 @@
 			<div class="x_title">
 				<h4>Time to Complete</h4>
 			</div>
-			<div class="x_content">Questions: <span id="questiontotal"></span>
+			<div class="x_content text-center"><span id="assessmenttime" style="font-size:5vw;"></span>
 			</div>
 	</div>
 	</div>
@@ -77,16 +74,15 @@
 
 <%@ include file="/WEB-INF/includes/inc_header.jsp"%>
 <script type="text/javascript">
+	$('#completionguage').easyPieChart({
+    	easing: 'easeOutBounce',
+    	lineWidth: '10',
+    	barColor: '#75BCDD',
+    	scaleColor: false,
+    	size: $('#completionguage').width(),
+    	onStep: function(from, to, percent) { $(this.el).find('.percent').text(Math.round(percent));}
+  	});
 	updateSurveysSelect(true);
-
-    $('#completionguage').easyPieChart({
-        easing: 'easeOutBounce',
-        lineWidth: '10',
-        barColor: '#75BCDD',
-        scaleColor: false,
-        size: $('#completionguage').width(),
-        onStep: function(from, to, percent) { $(this.el).find('.percent').text(Math.round(percent));}
-      });
 </script>
 
 </html>

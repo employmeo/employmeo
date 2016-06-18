@@ -29,6 +29,9 @@ public class Position extends PersistantObject implements Serializable {
 	@Column(name = "position_name")
 	private String positionName;
 
+	@Column(name = "position_description")
+	private String positionDescription;
+
 	@Column(name = "position_target_hireratio")
 	private BigDecimal positionTargetHireratio;
 
@@ -61,6 +64,14 @@ public class Position extends PersistantObject implements Serializable {
 
 	public void setPositionName(String positionName) {
 		this.positionName = positionName;
+	}
+
+	public String getPositionDescription() {
+		return this.positionDescription;
+	}
+
+	public void setPositionDescription(String positionDescription) {
+		this.positionDescription = positionDescription;
 	}
 
 	public BigDecimal getPositionTargetHireratio() {
@@ -125,21 +136,23 @@ public class Position extends PersistantObject implements Serializable {
 		JSONObject json = new JSONObject();
 		json.put("position_id", this.positionId);
 		json.put("position_name", this.positionName);
+		json.put("position_description", this.positionDescription);
 		json.put("position_target_hireratio", this.positionTargetHireratio);
 		json.put("position_target_tenure", this.positionTargetTenure);
 
 		if (this.account != null)
 			json.put("position_account", this.account.getJSON());
-		List<Corefactor> corefactors = getCorefactors();
-		if (!corefactors.isEmpty()) {
-			for (int i = 0; i < corefactors.size(); i++) {
-				json.accumulate("position_corefactors", corefactors.get(i).getCorefactorName());
+
+		if (!pmFactors.isEmpty()) {
+			for (int i = 0; i < this.pmFactors.size(); i++) {
+				json.accumulate("position_corefactors", pmFactors.get(i).getJSON());
 			}
 			json.accumulate("position_profiles", PositionProfile.getProfileA(this));
 			json.accumulate("position_profiles", PositionProfile.getProfileB(this));
 			json.accumulate("position_profiles", PositionProfile.getProfileC(this));
 			json.accumulate("position_profiles", PositionProfile.getProfileD(this));
 		}
+
 		return json;
 	}
 

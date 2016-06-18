@@ -55,13 +55,13 @@
 				<div class="x_title">
 					<h3>Assessment Score</h3>
 					<div class="clearfix"></div>
-
 				</div>
 				<div class="x_content">
 					<div>
 						<span id='assessmentdate' class='pull-right'>Date</span>
 						<h4 id='assessmentname'>Assessment</h4>
-						<hr>
+						<span id='showall' class='pull-right'><a href="#" onclick="showAllDetails()">Click <i class="fa fa-plus-square-o"></i> to show detailed explanations</a></span>
+						<span id='hideall' class='hidden pull-right'><a href="#" onclick="hideAllDetails()">Click <i class="fa fa-minus-square-o"></i> to hide detailed explanations</a></span>
 					</div>
 					<div>
 						<table class='table table-hover'>

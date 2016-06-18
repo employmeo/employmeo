@@ -27,8 +27,11 @@
 		<class>com.employmeo.objects.CorefactorDescription</class>
 		<class>com.employmeo.objects.SurveySection</class>
 		<class>com.employmeo.objects.SurveySectionPK</class>
-      <properties>
-         <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-      </properties>
+     	<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+         	<property name="eclipselink.connection-pool.default.initial" value="1"/>
+			<property name="eclipselink.connection-pool.node2.min" value="16"/>
+			<property name="eclipselink.connection-pool.node2.max" value="16"/>
+      	</properties>
 	</persistence-unit>
 </persistence>

@@ -167,7 +167,7 @@ public class Survey extends PersistantObject implements Serializable {
 		json.put("survey_completion_time", this.surveyCompletionTime);
 
 		for (int i = 0; i < this.surveyQuestions.size(); i++) {
-			json.accumulate("questions", this.surveyQuestions.get(i).getQuestion().getJSON());
+			json.accumulate("questions", this.surveyQuestions.get(i).getJSON());
 		}
 
 		return json;

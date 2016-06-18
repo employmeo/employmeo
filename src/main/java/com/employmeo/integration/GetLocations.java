@@ -51,8 +51,7 @@ public class GetLocations {
 			for (int i = 0; i < locations.size(); i++) {
 				JSONObject location = new JSONObject();
 				location.put("location_name", locations.get(i).getLocationName());
-				String atsId = locations.get(i).getLocationAtsId();
-				location.put("location_ats_id", atsId.substring(atsId.indexOf(pu.getPrefix())+pu.getPrefix().length()));
+				location.put("location_ats_id", pu.trimPrefix(locations.get(i).getLocationAtsId()));
 				location.put("location_id", locations.get(i).getLocationId());
 				response.put(location);
 			}

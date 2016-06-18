@@ -56,7 +56,7 @@ public class User extends PersistantObject implements Serializable {
 	private int userType;
 
 	// bi-directional many-to-one association to Account
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	@JoinColumn(name = "USER_ACCOUNT_ID", updatable = false, insertable = false)
 	private Account account;
 

@@ -155,8 +155,13 @@ public class PredictiveModel extends PersistantObject implements Serializable {
 
 	@Override
 	public JSONObject getJSON() {
-		// TODO Auto-generated method stub
-		return null;
+		JSONObject factor = this.getCorefactor().getJSON();
+		factor.put("pm_significance", this.pmSignificance);
+		factor.put("pm_coefficient", this.pmCoefficient);
+		factor.put("pm_score_a", this.pmProfileAScore);
+		factor.put("pm_score_b", this.pmProfileBScore);
+		factor.put("pm_score_c", this.pmProfileCScore);
+		factor.put("pm_score_d", this.pmProfileDScore);
+		return factor;
 	}
-
 }

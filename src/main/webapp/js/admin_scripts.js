@@ -2,6 +2,7 @@
 var tenureChart;
 var profileChart;
 var respondantProfile;
+var positionProfile;
 var historyChart;
 
 var respondant;
@@ -268,35 +269,33 @@ function changeSurveyTo(asid) {
 }
 
 function updateSurveyFields(survey) {
-	$('#surveyname').text(survey.survey_name);
+	console.log(survey);
+	$('#assessmentname').text(survey.survey_name);
+	$('#assessmenttime').text(msToTime(survey.survey_completion_time));
+	$('#assessmentdesc').html(survey.survey_description);
+	$('#completionguage').data('easyPieChart').update(100*survey.survey_completion_pct);  
 	$('#questiontotal').text(survey.questions.length);
+	function msToTime(s) {
+		  var ms = s % 1000;
+		  s = (s - ms) / 1000;
+		  var secs = s % 60;
+		  s = (s - secs) / 60;
+		  var mins = s % 60;
+		  return + mins + ':' + (secs<10 ? '0':'') + secs;
+	}	
 }
 
-function initSurveyQuestionsTable(survey) {
+function initSurveyQuestionsTable() {
 	qTable = $('#questions').DataTable( {
 		responsive: true,
-		order: [[ 0, 'desc' ]],
-		columns: [
-		          { title: 'ID', data: 'question_id'},
-		          { title: 'Question', data: 'question_text'},
-		          { title: 'Type', data: 'question_type'},
-		          { title: 'Corefactor', data: 'question_corefactor_id'},
-		          { title: 'Image', data: 'question_display_id'}
-		          ],
-		          columnDefs: [
-		                       { responsivePriority: 2, targets: 1},
-		                       { responsivePriority: 4, targets: 2},
-		                       { responsivePriority: 6, targets: 3},
-		                       { responsivePriority: 8, targets: 0},
-		                       { responsivePriority: 10, targets: 4},	    		
-		                       ],
-		                       bProcessing: true,
-		                       language: {
-		                    	   loadingRecords : "\<i class=\"fa fa-spinner fa-3x fa-spin\"\>\<\/i\>",
-		                    	   processing : "\<i class=\"fa fa-spinner fa-3x fa-spin\"\>\<\/i\>"
-		                       }
+		order: [[0, 'asc'],[ 1, 'asc' ]],
+		columns: [{ title: 'Sec', data: 'question_page'},
+		          { title: '#', data: 'question_sequence'},
+		          { title: 'Question', data: 'question_text'}],
+		          columnDefs: [{ responsivePriority: 2, targets: 2},
+		                       { responsivePriority: 4, targets: 1},
+		                       { responsivePriority: 6, targets: 0}]
 	});
-
 }	
 
 function updateSurveyQuestions(survey) {
@@ -411,12 +410,33 @@ function showApplicantScoring(applicantData) {
 }
 
 function changePositionTo(pos_id) {
-
-	updatePositionTenure(pos_id);
-	updatePositionProfile(pos_id);
+	$(positionList).each(function() {
+		if (pos_id == this.position_id) {
+			updatePositionDetails(this);
+			updatePositionTenure(this);
+			updatePositionProfile(this);
+		}		
+	});
 }
 
-function updatePositionTenure(pos_id) {
+function updatePositionDetails(position) {
+	$('#positionname').text(position.position_name);
+	$('#positiondesc').text(position.position_description);
+	position.position_corefactors.sort(function(a,b) {
+		return a.corefactor_display_group.localeCompare(b.corefactor_display_group);
+	});
+	
+	$('#corefactorlist').empty();
+	$(position.position_corefactors).each(function () {
+		var row = $('<tr/>');
+		row.append($('<td />',{ text : this.corefactor_name }));
+		row.append($('<td />',{ text : this.corefactor_description }));
+		row.append($('<td />',{ text : this.corefactor_display_group }));		
+		$('#corefactorlist').append(row);
+	});
+}
+
+function updatePositionTenure(position) {
 	refreshPositionTenure(getPositionTenureData()); // use stub code
 }
 
@@ -431,12 +451,44 @@ function refreshPositionTenure(dataPositionTenure) {
 	}});	
 }
 
-function updatePositionProfile(pos_id) {
-	refreshPositionProfile(getApplicantProfileData()); // use stub code
+function updatePositionProfile(position) {
+	var dataPositionProfile = getApplicantProfileData(); // use stub code
+	positionProfile = $("#positionProfile").get(0).getContext("2d");
+	if (profileChart != null) profileChart.destroy();
+	var dataPosProfile = {
+			datasets : [{
+				backgroundColor : position.position_profiles[0].profile_overlay,
+				borderColor : position.position_profiles[0].profile_color,
+				label : position.position_profiles[0].profile_name,
+				pointBackgroundColor : position.position_profiles[0].profile_color,
+				pointBorderColor : position.position_profiles[0].profile_color,
+				pointHoverBackgroundColor : position.position_profiles[0].profile_highlight,
+				pointHoverBorderColor : position.position_profiles[0].profile_highlight,
+				data : []
+			}],
+			labels : []};
+		
+	$(position.position_corefactors).each(function (i) {
+		dataPosProfile.labels[i] = this.corefactor_name;
+		dataPosProfile.datasets[0].data[i] = this.pm_score_a;
+	});
+	
+
+	profileChart = new Chart(positionProfile, {type: 'radar', data: dataPosProfile, options: { 
+		scale: {
+                ticks: {
+                    beginAtZero: true
+                },
+                pointLabels : {
+                	fontSize : 16
+                }
+        },
+		legend: { display: false }
+	}});	
 }
 
 function refreshPositionProfile(dataPositionProfile) {
-	var positionProfile = $("#positionProfile").get(0).getContext("2d");
+	positionProfile = $("#positionProfile").get(0).getContext("2d");
 	if (profileChart != null) profileChart.destroy();
 	profileChart = new Chart(positionProfile, {type: 'radar', data: dataPositionProfile, options: { 
 		showScale: true,
@@ -514,15 +566,34 @@ function presentRespondantScores(dataScores) {
 function showAllDetails() {
 	for (i in detailedScores) {
 		var score = detailedScores[i];
-		$('#cfmessage_' + score.corefactor_id).removeClass('hidden');
+		showDetail(score.corefactor_id);
 	}
+	$('#hideall').removeClass('hidden');
+	$('#showall').addClass('hidden');
 }
 
 function hideAllDetails() {
 	for (i in detailedScores) {
 		var score = detailedScores[i];
-		$('#cfmessage_' + score.corefactor_id).addClass('hidden');
+		hideDetail(score.corefactor_id);
 	}	
+	$('#showall').removeClass('hidden');
+	$('#hideall').addClass('hidden');
+}
+
+function showDetail(cfid) {
+	$('#cfmessage_' + cfid).removeClass('hidden');	
+	$('#expander_' + cfid).attr('onclick', 'hideDetail('+cfid+')');
+	$('#expander_' + cfid).removeClass('fa-plus-square-o');
+	$('#expander_' + cfid).addClass('fa-minus-square-o');
+}
+
+
+function hideDetail(cfid) {
+	$('#cfmessage_' + cfid).addClass('hidden');
+	$('#expander_' + cfid).attr('onclick', 'showDetail('+cfid+')');
+	$('#expander_' + cfid).removeClass('fa-minus-square-o');
+	$('#expander_' + cfid).addClass('fa-plus-square-o');
 }
 
 function renderDetailedAssessmentScore() {
@@ -541,25 +612,27 @@ function renderDetailedAssessmentScore() {
 			$('#assessmentresults').append(grouprow);
 		}
 		var row = $('<tr />', {
-			'onclick' : "$('#cfmessage_" + score.corefactor_id + "').toggleClass('hidden')",
 			'title' : score.corefactor_description});
 		var namediv = $('<div />', {
 			'class' : 'col-xs-10 col-sm-8 col-md-6 col-lg-6 text-left',
-			title: score.corefactor_description,
-			html: '<h5><strong>' + score.corefactor_name + '</strong></h5>'});
+			title: score.corefactor_description});
+		var expander = $('<h5 />');
+		expander.append($('<strong />', { text : score.corefactor_name + ' '}));
+		expander.append($('<i />', {
+			'onclick' : "showDetail(" + score.corefactor_id + ")",
+			'class' : 'fa fa-plus-square-o',
+			'id' : 'expander_' + score.corefactor_id
+		}));
+		namediv.append(expander);
 		var scorediv = $('<div />', {
 			'class' : 'col-xs-2 col-sm-4 col-md-6 col-lg-6 text-right', 
 			html : '<h5><strong>' + score.cf_score + "/" + score.corefactor_high + '</strong></h5>'});
 		var lowdesc = $('<div />', {
-			'class' : 'xs-hidden col-sm-3 col-md-2 col-lg-2 text-left', 
-			html : '<h6>' +score.corefactor_low_desc + '</h6>'});
+			'class' : 'hidden-xs col-sm-3 col-md-2 col-lg-2 text-left', 
+			html : '<h6><em>' +score.corefactor_low_desc + '</em></h6>'});
 		var highdesc = $('<div />', {
-			'class' : 'xs-hidden col-sm-3 col-md-2 col-lg-2 text-right', 
-			html : '<h6>' +score.corefactor_high_desc + '</h6>'});
-		var message = $('<div />', {
-			'id' : 'cfmessage_' + score.corefactor_id,
-			'class' : 'hidden col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center', 
-			'text' : prepPersonalMessage(score.cf_description)});
+			'class' : 'hidden-xs col-sm-3 col-md-2 col-lg-2 text-right', 
+			html : '<h6><em>' +score.corefactor_high_desc + '</em></h6>'});
 		var progress = $('<div />', {'class' : 'progress col-xs-12 col-sm-6 col-md-8 col-lg-8'
 				}).append($('<div />', {
 			'class': 'progress-bar progress-bar-success progress-bar-striped',
@@ -576,25 +649,36 @@ function renderDetailedAssessmentScore() {
 		tablecell.append(lowdesc);
 		tablecell.append(progress);
 		tablecell.append(highdesc);
-		tablecell.append(message);
 		row.append(tablecell);
 		$('#assessmentresults').append(row);
+		var messageRow = $('<tr />',{
+			'id' : 'cfmessage_' + score.corefactor_id,
+			'class' : 'hidden'
+		}).append($('<td />',{
+			'bgcolor' : '#F7F7F7',
+			'border-top' : 'none',
+			'text' : prepPersonalMessage(score.cf_description)
+			}));
+		$('#assessmentresults').append(messageRow);
+		
+
 	}
 	
 }
 
 function prepPersonalMessage (message) {
 	var pm = message;
-	pm = pm.replace("[FNAME]",respondant.respondant_person_fname);
-	pm = pm.replace("[LNAME]",respondant.respondant_person_lname);
+	pm = pm.replace(new RegExp("\\[FNAME\\]","g"),respondant.respondant_person_fname);
+	pm = pm.replace(new RegExp("\\[LNAME\\]","g"),respondant.respondant_person_lname);
 
-	pm = pm.replace("[CHESHE]","He or she");
-	pm = pm.replace("[LHESHE]","he or she");
-	pm = pm.replace("[CHIMHER]","Him or her");
-	pm = pm.replace("[LHIMHER]","him or her");
-	pm = pm.replace("[CHISHER]","His or her");
-	pm = pm.replace("[LHISHER]","his or her");
-	pm = pm.replace("[HIMSELFHERSELF]","him or herself");
+	pm = pm.replace(new RegExp("\\[CHESHE\\]","g"),"This candidate");
+	pm = pm.replace(new RegExp("\\[LHESHE\\]","g"),"this candidate");
+	pm = pm.replace(new RegExp("\\[CHIMHER\\]","g"),"Him or her");
+	pm = pm.replace(new RegExp("\\[LHIMHER\\]","g"),"him or her");
+	pm = pm.replace(new RegExp("\\[HIMHER\\]","g"),"him or her");
+	pm = pm.replace(new RegExp("\\[CHISHER\\]","g"),"His or her");
+	pm = pm.replace(new RegExp("\\[LHISHER\\]","g"),"his or her");
+	pm = pm.replace(new RegExp("\\[HIMSELFHERSELF\\]","g"),"him or herself");
 
 	return pm;
 }

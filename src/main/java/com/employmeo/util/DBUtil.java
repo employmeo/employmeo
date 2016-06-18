@@ -27,10 +27,6 @@ public class DBUtil {
 		properties.put("javax.persistence.jdbc.user", dbuser);
 		properties.put("javax.persistence.jdbc.password", dbpass);
 		properties.put("javax.persistence.jdbc.url", dburl);
-
-		properties.put("eclipselink.connection-pool.default.initial", "1");
-		properties.put("eclipselink.connection-pool.node2.min", "16");
-		properties.put("eclipselink.connection-pool.node2.max", "16");
 		properties.put("eclipselink.connection-pool.node2.url", dburl);
 
 		emf = Persistence.createEntityManagerFactory("employmeo", properties);
@@ -43,7 +39,6 @@ public class DBUtil {
 
         if (em == null) {
             em = emf.createEntityManager();
-            // set your flush mode here
             threadLocal.set(em);
         }
         return em;
