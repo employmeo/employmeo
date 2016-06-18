@@ -68,7 +68,6 @@ public class SecurityUtil {
 		try {
 			user = q.getSingleResult();
 			user.refreshMe();
-			System.out.println("user got refreshed!!!");
 		} catch (NoResultException nre) {
 			user = new User();
 			user.setUserEmail(email);
