@@ -36,7 +36,7 @@ public class RandomizerUtil {
 	public static final String SERVER_NAME = "https://localhost:8443";
 	private static final int THREAD_COUNT = 1;
 	private static final int LOOPS = 1;
-	private static final int DELAY = 2500;
+	private static final int DELAY = 50;
 	public static JSONObject account = new JSONObject().put("account_ats_id", "1111");
 
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();

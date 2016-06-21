@@ -31,6 +31,11 @@ public class SurveySection extends PersistantObject implements Serializable {
 	@Column(name="ss_timed")
 	private Boolean ssTimed;
 
+	// bi-directional many-to-one association to Survey
+	@ManyToOne
+	@JoinColumn(name = "ss_survey_id", insertable=false, updatable=false)
+	private Survey survey;
+
 	public SurveySection() {
 	}
 
@@ -76,8 +81,15 @@ public class SurveySection extends PersistantObject implements Serializable {
 
 	@Override
 	public JSONObject getJSON() {
-		// TODO Auto-generated method stub
-		return null;
+		JSONObject json = new JSONObject();
+		json.put("section_survey_id", this.getId().getSsSurveyId());
+		json.put("section_number", this.getId().getSsSurveySection());
+		json.put("section_instructions",this.getSsInstructions());
+		json.put("section_questions_per_page",this.getSsQuestionsPerPage());
+		json.put("section_all_required",this.getSsAllRequired());
+		json.put("section_timed",this.getSsTimed());
+		
+		return json;
 	}
 
 }

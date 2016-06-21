@@ -3,6 +3,7 @@ package com.employmeo.objects;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
@@ -53,6 +54,10 @@ public class Survey extends PersistantObject implements Serializable {
 	// bi-directional many-to-one association to SurveyQuestion
 	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER)
 	private List<SurveyQuestion> surveyQuestions;
+
+	// bi-directional many-to-one association to SurveyQuestion
+	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER)
+	private List<SurveySection> surveySections;
 
 	public Survey() {
 	}
@@ -166,9 +171,17 @@ public class Survey extends PersistantObject implements Serializable {
 		json.put("survey_completion_pct", this.surveyCompletionPct);
 		json.put("survey_completion_time", this.surveyCompletionTime);
 
+		JSONArray questions = new JSONArray();
 		for (int i = 0; i < this.surveyQuestions.size(); i++) {
-			json.accumulate("questions", this.surveyQuestions.get(i).getJSON());
+			questions.put(this.surveyQuestions.get(i).getJSON());
 		}
+		json.put("questions", questions);
+
+		JSONArray sections = new JSONArray();
+		for (int i = 0; i < this.surveySections.size(); i++) {
+			sections.put(this.surveySections.get(i).getJSON());
+		}
+		json.put("sections", sections);
 
 		return json;
 	}

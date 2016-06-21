@@ -9,7 +9,8 @@ var pagination;
 var totalpages;
 var responses;
 var progress;
-var urlParams; 
+var urlParams;
+var sections;
 
 (window.onpopstate = function () {
     var match,
@@ -26,7 +27,8 @@ var urlParams;
 
 // Stub function to be replaced
 function getSurveyDisclaimer(survey) {
-	return "<h3>Welcome</h3><p>In an effort to ensure that applicants meet position requirements, this employer uses a pre-employment assessment administered by employmeo.com for the job you have recently applied to. Please complete the following test to the best of your ability.</p><p>All candidates are tested according to Equal Employment Opportunity Commission (EEOC) testing guidelines. For further information, contact the hiring mangaer responsible for this role.</p>";
+	return survey.survey_preamble_text;
+	//return "<h3>Welcome</h3><p>In an effort to ensure that applicants meet position requirements, this employer uses a pre-employment assessment administered by employmeo.com for the job you have recently applied to. Please complete the following test to the best of your ability.</p><p>All candidates are tested according to Equal Employment Opportunity Commission (EEOC) testing guidelines. For further information, contact the hiring mangaer responsible for this role.</p>";
 }
 
 
@@ -48,20 +50,19 @@ function submitPlainAnswer(form, pagenum) {
          });
 }
 
-function buildPlainSurveyWithRespondantId(respondantId) {
+function buildPlainSurveyWithRespondantId(uuId) {
     $.ajax({
         type: "POST",
         async: true,
         url: "/survey/getsurvey",
         data: {
-        	"respondant_id" : respondantId       	
+        	"respondant_uuid" : uuId       	
         },
         beforeSend: function() {
         	$('#wait').removeClass('hidden');
         },
         success: function(data)
         {
-        	console.log(data);
         	if (data.message != null) {
         		showAssessmentNotAvailable(data);
         	} else {
@@ -79,7 +80,7 @@ function nextPage() {
 	if(isPageComplete($('.carousel-inner div.active').index())) {
 		$('#survey').carousel("next");
 	} else {
-		// TODO - some resistance?
+		// TODO - some sort of user feedback to show page is incomplete
 	}
 }
 function prevPage() {
@@ -288,14 +289,22 @@ function assemblePlainSurvey(collection) {
 	var deck = document.getElementById('wrapper');
 	respondant = collection.respondant;
 	survey = collection.survey;
-	questions = survey.questions;
+	questions = survey.questions.sort(function(a,b) {
+		if (a.question_page == b.question_page) {
+			return a.question_sequence < b.question_sequence ? -1:1;
+		} else {
+			return a.question_page < b.question_page ? -1:1;
+		}});;
+	sections = survey.survey_sections;
 	pagination = new Array();
 	$(deck).empty();
 
-	var pagecount = 1;
+	// prepare survey into sections:
+	if ((sections == null) || (sections.length == 0)) {}
 	var qlimit = 5; // questions per page
-	totalpages = Math.ceil(questions.length / qlimit) + 1;
-	
+	totalpages = Math.ceil(questions.length / qlimit) + 1 + 1; // (preamble + questions total)
+
+	var pagecount = 1;
 	var card = $('<div />', {
 		'class' : 'item active'
 	});
@@ -303,7 +312,7 @@ function assemblePlainSurvey(collection) {
 	card.append(getHrDiv());
 	card.append($('<div />', {
 		'class' : 'col-xs-12 col-sm-12 col-md-12',
-		}).html(getSurveyDisclaimer(survey)));
+		}).html(survey.survey_preamble_text));
 	card.append(getHrDiv());
 	card.append(getSurveyNav(pagecount, totalpages));	
 	card.appendTo(deck);
@@ -316,9 +325,6 @@ function assemblePlainSurvey(collection) {
 	});
 	card.append(getHrDiv());
 	pagination[pagecount] = new Array();
-	questions.sort(function(a,b) {
-		return parseFloat(a.question_display_id) - parseFloat(b.question_display_id);
-	});
 	$.each(questions, function(index, question) {
 		qcount++;
 		if (qpp == qlimit) {
@@ -392,7 +398,7 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 		value : question.question_id
 	}));
 	var qtextdiv = $('<div />', {
-		'class' : 'col-xs-12 col-sm-8 col-md-8'
+		'class' : 'col-xs-12 col-sm-6 col-md-6'
 	});
 	var questionlist = $('<ol />', {
 		'start' : qcount,
@@ -405,7 +411,37 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 	form.append(qtextdiv);
 
 	switch (question.question_type) {
-	case 6:
+	case 6: // yes-notsure-no
+		var ansdiv = $('<div />', {
+			'class' : 'col-xs-12 col-sm-6 col-md-6'
+		});
+		for (var ans=0;ans<question.answers.length;ans++) {
+			var answer = question.answers[ans];
+			var qrespdiv = $('<div />', {
+				'class' : 'col-xs-4 col-sm-4 col-md-4',
+				'style' : 'padding-right: 1px; padding-left: 1px;'
+			});
+			var radiobox = $('<input />', {
+				'id'   : 'radiobox-' + question.question_id +"-"+ answer.answer_value,
+				'type' : 'radio',
+				'class' : 'radio-short',
+				'name' : 'response_value',
+				'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
+				'value' :  answer.answer_value
+			});
+			var radiolabel = $('<label />', {
+				'for'   : 'radiobox-' + question.question_id +"-"+ answer.answer_value,
+				'class' : 'radio-short',
+				'text'  :  answer.answer_text.toUpperCase()
+			});
+		
+			qrespdiv.append(radiobox);
+			qrespdiv.append(radiolabel);
+
+			ansdiv.append(qrespdiv);
+		}
+		form.append(ansdiv);
+		break;
 	case 7:
 	case 9:
 	case 10:
@@ -626,13 +662,13 @@ function saveResponse(response) {
 
 // ON HOLD - VISUAL SURVEY BUILDING FUNCTIONS FOR LATER
 
-function buildVisualSurveyWithRespondantId(respondantId) {
+function buildVisualSurveyWithRespondantId(uuId) {
     $.ajax({
         type: "POST",
         async: true,
         url: "/survey/getsurvey",
         data: {
-        	"respondant_id" : respondantId,
+        	"respondant_uuid" : uuId,
         	"noRedirect" : true        	
         },
         beforeSend: function() {

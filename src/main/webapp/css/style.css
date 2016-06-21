@@ -36,12 +36,12 @@
 	z-index: 2;
 	opacity: 0.75; -moz-opacity: 0.75; -webkit-opacity: 0.75; filter: alpha(opacity=85); -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
 }	
-.qpanel .qpanel-header h4, .qpanel .qpanel-body h4, .qpanel .qpanel-footer h4 { display: inline; font-family: Comfortaa,Arial,Verdana,sans-serif; font-size: 30px; color: #34495e margin: 0 !important; padding: 0 !important; }
-.qpanel .qpanel-header div, .qpanel .qpanel-body div, .qpanel .qpanel-footer div { display: inline; font-family: Comfortaa,Arial,Verdana,sans-serif; font-size: 36px; color: #34495e; text-align: center; background-color: transparent !important; border: none !important; }	
+.qpanel .qpanel-header h4, .qpanel .qpanel-body h4, .qpanel .qpanel-footer h4 { display: inline; font-family: Verdana,Arial,sans-serif; font-size: 30px; color: #34495e margin: 0 !important; padding: 0 !important; }
+.qpanel .qpanel-header div, .qpanel .qpanel-body div, .qpanel .qpanel-footer div { display: inline; font-family: Verdana,Arial,sans-serif; font-size: 36px; color: #34495e; text-align: center; background-color: transparent !important; border: none !important; }	
 .qpanel .qpanel-header { top: 0; }
 .qpanel .qpanel-body { top: auto; bottom: auto; }
 .qpanel .qpanel-footer { 
-	bottom: 20px;
+	bottom: 18px;
     border-radius: 10px;
     width: auto;
     left: 20px;
@@ -53,8 +53,8 @@
 }
 
 .questiontext {
-	font-family: Comfortaa,Arial,Verdana,sans-serif;
-	font-size: 22px;
+	font-family: Verdana,Arial,sans-serif;
+	font-size: 16px;
 	color: #34495e;
 }
 
@@ -105,7 +105,7 @@ label.star:before {
 }
 input.thumbs-up, input.thumbs-down, input.check-square, input.radio-select { display: none; }
 label.thumbs-up, label.thumbs-down, label.check-square, label.radio-select {
-  font-family: Comfortaa,FontAwesome;
+  font-family: Verdana,FontAwesome;
   padding: 8px;
   font-size: 18px;
   color: #444;
@@ -138,7 +138,7 @@ input.thumbs-up:checked+label.thumbs-up, input.thumbs-down:checked+label.thumbs-
 input.yesbox, input.nobox, input.sometimesbox, input.unknownbox { display: none; }
 label.yesbox, label.nobox, label.sometimesbox, label.unknownbox {
   padding-top: 3px;
-  font-family: Comfortaa,FontAwesome;
+  font-family: Verdana,FontAwesome;
   text-align: center;
   display: block;
   width: 100%;
@@ -206,6 +206,40 @@ input.check-square:checked+label.check-square:before { content: '\f046'; padding
 
 label.radio-select:before { content: '\f10c'; padding-right: 10px; }
 input.radio-select:checked+label.radio-select:before { content: '\f192'; padding-right: 10px; }
+
+
+/**
+ * 4.1 Multichoice (radios)
+ * ----------------------------------------------------------------------------
+ */
+label.radio-short {
+	font-family: Verdana,FontAwesome;
+	font-size: 11px;
+	padding: 6px;
+	transition: all .2s;
+	display: block;
+	border: solid;
+	border-width: 1px;
+	border-color: #2e6da4;
+	border-radius: 2px;
+	color: #2e6da4;
+	font-weight: normal;
+	text-align: center;
+ 	cursor: pointer;
+ 	cursor: hand;
+}
+
+input.radio-short:checked+label.radio-short {
+	background-color: #2e6da4;
+    color: white;
+}
+
+input.radio-short {
+	display: none;
+	position: absolute;	
+	clip: rect(0 0 0 0);	
+}
+
 
 
 /**

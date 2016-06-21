@@ -19,8 +19,8 @@ import com.employmeo.objects.Person;
 import com.employmeo.objects.Respondant;
 import com.employmeo.util.SecurityUtil;
 
-@Path("icimsorder")
-public class ICIMSOrder {
+@Path("icimsstatusupdate")
+public class ICIMSStatusUpdate {
 	@Context
 	private UriInfo uriInfo;
 	private static Logger logger = Logger.getLogger("RestService");

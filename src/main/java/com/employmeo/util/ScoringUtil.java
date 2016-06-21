@@ -25,7 +25,7 @@ public class ScoringUtil {
 
 	private static Logger logger = Logger.getLogger("ScoringUtil");
 	private static String MERCER_PREFIX = "Mercer";
-	private static String MERCER_SERVICE = "http://beta.forecastertests.com/ns/remote/v1.1/score";
+	private static String MERCER_SERVICE = System.getenv("MERCER_SERVICE");
 	private static String MERCER_USER = "employmeo";
 	private static String MERCER_PASS = "employmeo";
 
