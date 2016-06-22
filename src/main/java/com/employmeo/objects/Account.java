@@ -136,6 +136,10 @@ public class Account extends PersistantObject implements Serializable {
 		return AccountSurvey.getSurveyByASID(this.accountDefaultAsId);
 	}
 
+	public AccountSurvey getDefaultAccountSurvey() {
+		return AccountSurvey.getAccountSurveyByASID(this.accountDefaultAsId);
+	}
+
 	/*
 	 * At some point we'll need to create logic for setting one of the existing
 	 * account surveys as default, and logic to put a new survey into the

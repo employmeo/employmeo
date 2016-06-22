@@ -33,8 +33,10 @@ import com.employmeo.objects.User;
 public class RandomizerUtil {
 
 	// Basic Tool Settings
-	public static final String SERVER_NAME = "https://localhost:8443";
+	public static final String SERVER_NAME = "https://localhost";
 	private static final int THREAD_COUNT = 1;
+	private static final String ATS_USER = "fastworkforce";
+	private static final String ATS_PASS = "password";	//icims: "FGx4bgfZ!C"
 	private static final int LOOPS = 1;
 	private static final int DELAY = 50;
 	public static JSONObject account = new JSONObject().put("account_ats_id", "1111");
@@ -75,7 +77,7 @@ public class RandomizerUtil {
 		
 		Client adminClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
 		Client integrationClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
-		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("icims", "password");
+		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(ATS_USER, ATS_PASS);
 		integrationClient.register(feature);
 		
 		// Test out logging into the admin server, updating the dash, etc.

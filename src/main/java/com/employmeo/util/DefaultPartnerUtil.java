@@ -15,11 +15,14 @@ import com.employmeo.objects.Account;
 import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Location;
 import com.employmeo.objects.Partner;
+import com.employmeo.objects.Person;
 import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
 
 public class DefaultPartnerUtil implements PartnerUtil {
 	private static Logger logger = Logger.getLogger("PartnerUtility");
+	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
+			.entity("{ message: 'Missing Required Parameters' }").build();
 	private Partner partner = null;
 	
 	public DefaultPartnerUtil(Partner partner) {
@@ -142,4 +145,83 @@ public class DefaultPartnerUtil implements PartnerUtil {
 		return respondant;
 	}
 
+	public Respondant createRespondantFrom(JSONObject json, Account account) {
+		Person person = new Person();
+		Respondant respondant = new Respondant();
+		respondant.setRespondantAccountId(account.getAccountId());
+		
+		try { // the required parameters
+			JSONObject applicant = json.getJSONObject("applicant");
+			String appAtsId = applicant.getString("applicant_ats_id");
+			respondant.setRespondantAtsId(this.getPrefix() + appAtsId);
+			person.setPersonAtsId(this.getPrefix() + appAtsId);
+			person.setPersonEmail(applicant.getString("email"));
+			person.setPersonFname(applicant.getString("fname"));
+			person.setPersonLname(applicant.getString("lname"));
+			JSONObject personAddress = applicant.getJSONObject("address");
+			AddressUtil.validate(personAddress);
+			person.setPersonAddress(personAddress.optString("formatted_address"));
+			person.setPersonLat(personAddress.optDouble("lat"));
+			person.setPersonLong(personAddress.optDouble("lng"));
+		} catch (WebApplicationException we) {
+			throw we;
+		} catch (Exception e) {
+			logger.severe(e.toString());
+			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
+		}
+		
+		Location location = this.getLocationFrom(json.optJSONObject("location"), account);
+		Position position = this.getPositionFrom(json.optJSONObject("position"), account);
+		AccountSurvey aSurvey = this.getSurveyFrom(json.optJSONObject("assessment"), account);
+
+		JSONObject delivery = json.optJSONObject("delivery");
+		// get the redirect method, score posting and email handling for results
+		if (delivery.has("scores_email_address"))
+			respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
+		if (delivery.has("scores_redirect_url"))
+			respondant.setRespondantRedirectUrl(delivery.optString("scores_redirect_url"));
+		if (delivery.has("scores_post_url"))
+			respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));
+
+		respondant.setRespondantAccountId(account.getAccountId());
+		respondant.setRespondantAsid(aSurvey.getAsId());
+		respondant.setRespondantLocationId(location.getLocationId());
+		respondant.setRespondantPositionId(position.getPositionId());
+
+		// Create Person & Respondant in database.
+		person.persistMe();
+		respondant.setPerson(person);
+		respondant.persistMe();
+		respondant.refreshMe(); // gets the remaining auto-gen-fields
+				
+		return respondant;
+	}
+	
+	public JSONObject prepOrderResponse(JSONObject json, Respondant respondant) {
+
+		JSONObject delivery = json.optJSONObject("delivery");
+		if (delivery.has("email_applicant") && delivery.getBoolean("email_applicant"))
+			EmailUtility.sendEmailInvitation(respondant);
+		
+		// Assemble the response object to notify that action is complete
+		JSONObject jAccount = json.getJSONObject("account");
+		jAccount.put("account_ats_id", this.trimPrefix(respondant.getRespondantAccount().getAccountAtsId()));
+		jAccount.put("account_id", respondant.getRespondantAccount().getAccountId());
+		jAccount.put("account_name", respondant.getRespondantAccount().getAccountName());
+
+		JSONObject jApplicant = new JSONObject();
+		jApplicant.put("applicant_ats_id", this.trimPrefix(respondant.getRespondantAtsId()));
+		jApplicant.put("applicant_id", respondant.getRespondantId());
+
+		delivery = new JSONObject();
+		delivery.put("assessment_url", EmailUtility.getAssessmentLink(respondant));
+
+		JSONObject output = new JSONObject();
+		output.put("account", jAccount);
+		output.put("applicant", jApplicant);
+		output.put("delivery", delivery);
+
+		// get the redirect method, score posting and email handling for results
+		return output;
+	}
 }

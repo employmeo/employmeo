@@ -27,9 +27,13 @@ public interface PartnerUtil {
 	public static HashMap<Partner,PartnerUtil> utils = new HashMap<Partner,PartnerUtil>();
 	
 	public static PartnerUtil getUtilFor(Partner lookupPartner) {
-		// TODO Auto-generated method stub
+		// TODO make this work for multiple partners
 		if (!utils.containsKey(lookupPartner)) {
-			utils.put(lookupPartner, new DefaultPartnerUtil(lookupPartner));
+			if (lookupPartner.getName() == "ICIMS") {
+				utils.put(lookupPartner, new ICIMSPartnerUtil(lookupPartner));
+			} else {
+				utils.put(lookupPartner, new DefaultPartnerUtil(lookupPartner));
+			}
 		}
 		return utils.get(lookupPartner);
 	}
@@ -41,6 +45,8 @@ public interface PartnerUtil {
 	public Position getPositionFrom(JSONObject position, Account account);
 	public AccountSurvey getSurveyFrom(JSONObject assessment, Account account);
 	public Respondant getRespondantFrom(JSONObject applicant);
+	public Respondant createRespondantFrom(JSONObject json, Account account);
+	public JSONObject prepOrderResponse(JSONObject json, Respondant respondant);
 
 	public static JSONObject getScoresMessage(Respondant respondant) {
 
@@ -110,4 +116,5 @@ public interface PartnerUtil {
 		}
 
 	}
+
 }
