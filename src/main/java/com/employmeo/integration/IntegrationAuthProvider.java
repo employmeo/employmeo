@@ -77,7 +77,6 @@ public class IntegrationAuthProvider implements ContainerRequestFilter {
 				} 
 
 				req.setSecurityContext(new PartnerAuthorizer(partner));
-				System.out.println(partner.getJSONString());
 				
 				if (method.isAnnotationPresent(RolesAllowed.class)) {
 					RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);

@@ -167,7 +167,7 @@ logger.severe("Failed to handle address:" + e.getMessage());
 
 		Respondant respondant = new Respondant();
 		respondant.setRespondantAtsId(person.getPersonAtsId());
-		respondant.setRespondantRedirectUrl(json.getString("returnURL"));
+		respondant.setRespondantRedirectUrl(json.getString("returnUrl"));
 		//respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
 		//respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));
 		respondant.setAccount(account);
@@ -191,7 +191,6 @@ logger.severe("Failed to handle address:" + e.getMessage());
 	private JSONObject getPerson(String appId, String accountId) {
 		String getString = ICIMS_API + accountId + "/people/" + appId;
 		JSONObject response = new JSONObject(icimsGet(getString));
-logger.info("Person gotten: " + response);
 		return response;
 	}
 
@@ -273,7 +272,7 @@ logger.info("Person gotten: " + response);
 		JSONObject json = new JSONObject();
 		json.put("userId","1240");
 		json.put("customerId","6269");
-		json.put("returnURL","https://www.google.com");
+		json.put("returnUrl","https://www.google.com");
 		
 		SSLContext sslContext = SSLContext.getInstance("TLS");
 		sslContext.init(null, new TrustManager[]{new X509TrustManager() {
