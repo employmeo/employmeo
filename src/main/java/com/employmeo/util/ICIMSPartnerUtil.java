@@ -8,6 +8,7 @@ import javax.persistence.TypedQuery;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -147,7 +148,7 @@ logger.info("Retrieved: " + applicant.toString());
 			JSONObject address = applicant.getJSONArray("addresses").getJSONObject(0);
 			address.put("street", address.getString("addressstreet1") + " " + address.optString("addressstreet2"));
 			address.put("city", address.getString("addresscity"));
-			address.put("state", address.getString("addressstate"));
+			address.put("state", address.getJSONObject("addressstate").getString("abbrev"));
 			address.put("zip", address.getString("addresszip"));
 			AddressUtil.validate(address);
 			person.setPersonAddress(address.optString("formatted_address"));
@@ -202,7 +203,7 @@ logger.severe("Failed to handle address:" + e.getMessage());
 	}
 
 	
-	private static String icimsGet(String getString) {
+	public static String icimsGet(String getTarget) {
 		
 		ClientConfig cc = new ClientConfig();
 		cc.property(ApacheClientProperties.PREEMPTIVE_BASIC_AUTHENTICATION, true);
@@ -213,7 +214,7 @@ logger.severe("Failed to handle address:" + e.getMessage());
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(ICIMS_USER, ICIMS_PASS);
 		client.register(feature);
 
-		WebTarget target = client.target(getString);
+		WebTarget target = client.target(getTarget);
 		String response = null;		
 		
 		response = target.request(MediaType.APPLICATION_JSON).get(String.class);
@@ -221,10 +222,51 @@ logger.severe("Failed to handle address:" + e.getMessage());
 		return response;
 		
 	}
+
+	public static String icimsPost(String postTarget, JSONObject json) {
+		
+		ClientConfig cc = new ClientConfig();
+		cc.property(ApacheClientProperties.PREEMPTIVE_BASIC_AUTHENTICATION, true);
+		cc.property(ClientProperties.PROXY_URI, PROXY_URL);
+		cc.connectorProvider(new ApacheConnectorProvider());
+		Client client = ClientBuilder.newClient(cc);
+
+		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(ICIMS_USER, ICIMS_PASS);
+		client.register(feature);
+
+		WebTarget target = client.target(postTarget);
+		String response = null;		
+		
+		response = target.request(MediaType.APPLICATION_JSON)
+				.post(Entity.entity(json.toString(), MediaType.APPLICATION_JSON), String.class);
+		
+		return response;
+		
+	}
+	
 	
 	public static void main (String[] args) {
-		String getString = ICIMS_API + "6269/lists/lists.customfields_lists/node/C18162";
-		String response = icimsGet(getString);
+		
+	/*	
+		Each entry in the “assessmentresults” field contain following fields:
+			Date: The date that this assessment’s status was last updated.
+			Name: The name of the assessment. Vendor’s name should be included as part of the assessment name as multiple vendors can potentially be used for assessments.
+			Notes: Short string used to communicate information to the recruiter.
+			Result: Text string used to display results to the recruiter. The values for this field are client and vendor dependent. They can range from names of colors to grading from A through F.
+			Score: A decimal used to numerically score the assessment.
+			Status: Indicates what stage the assessment is in.
+			Complete: The assessment has been completed and reviewed.
+			Incomplete: The assessment was not been completed by the candidate. (ie. Due to timeout)
+			In-Progress: The assessment is being worked on by the candidate.
+			Sent: The assessment has been sent to the candidate.
+			URL: Takes the recruiter into the vendor’s platform and displays the results of the assessment. Can also display additional metadata and can be used to modify/cancel the request after the assessment is scheduled. Based on the client’s security requirements, this URL can require the user to login to the vendor’s platform.
+
+			https://api.icims.com/customers/{customerId}/applicantworkflows/{applicantworkflowId}
+
+	*
+	*/	
+		
+		String response = icimsGet(ICIMS_API + "6269/applicantworkflows/1240");
 		System.out.println(response);
 	}
 	
