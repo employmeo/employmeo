@@ -41,12 +41,13 @@ public class AddressUtil {
 			if (results.length() != 1) {
 				// TODO - either multiple results, or no result. error handling
 				// needed?
-logger.warning("Address retrieved more than one result: " + formattedAddress);
+logger.warning("Address retrieved " + results.length() + "results: " + formattedAddress);
 			} else {
 				address.put("formatted_address", results.getJSONObject(0).getString("formatted_address"));
 				JSONObject geo = results.getJSONObject(0).getJSONObject("geometry");
 				address.put("lat", geo.getJSONObject("location").getDouble("lat"));
 				address.put("lng", geo.getJSONObject("location").getDouble("lng"));
+				address.put("results", results.getJSONObject(0));
 			}
 		} catch (Exception e) {
 			// TODO failed to validate address with lat & lng

@@ -2,6 +2,8 @@ package com.employmeo.util;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.sql.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
@@ -23,7 +25,9 @@ import org.glassfish.jersey.apache.connector.ApacheClientProperties;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.employmeo.objects.Account;
@@ -39,7 +43,8 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	private static Logger logger = Logger.getLogger("ICIMSPartnerUtility");
 	private static final String ICIMS_USER = "employmeoapiuser";
 	private static final String ICIMS_PASS = "YN9rEQnU";
-	private static final String ICIMS_API = "https://api.icims.com/customers/";
+	//private static final String ICIMS_API = "https://api.icims.com/customers/";
+	private static final String JOB_EXTRA_FIELDS = "?fields=jobtitle,assessmenttype,jobtype,joblocation,hiringmanager";
 	
 	private static String PROXY_URL = "http://63.150.152.151:8080"; //System.getenv("FIXIE_URL");
 	private Partner partner = null;
@@ -74,49 +79,57 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		return account;
 	}
 
-	public Location getLocationFrom(JSONObject applicant, Account account) {
-		Object locationAtsId  = applicant.opt("location");
-logger.info("location attr is: " + locationAtsId);
-/*
+	public Location getLocationFrom(JSONObject job, Account account) {
+		String locationAtsId  = job.getJSONObject("joblocation").getString("address");
+		String locationName = job.getJSONObject("joblocation").getString("value");
+
 		Location location = null;
 		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Location> q = em.createQuery(
 				"SELECT l FROM Location l WHERE l.locationAtsId = :locationAtsId AND l.locationAccountId = :accountId",
 				Location.class);
-		q.setParameter("locationAtsId", partner.getPartnerPrefix() + locationAtsId);
+		q.setParameter("locationAtsId", locationAtsId);
 		q.setParameter("accountId", account.getAccountId());
 		try {
 			location = q.getSingleResult();
 		} catch (NoResultException nre) {
-				location = new Location();
-				// Create a new location from address
-				JSONObject address = new JSONObject();// call ICIMS method for getting a location
+			try {
+				JSONObject address = new JSONObject();
+				address.put("street", locationName);
 				// TODO create code to find a location in ICIMS, and create in employmeo
-				
 				AddressUtil.validate(address);
-				location.setLocationAtsId(partner.getPartnerPrefix() + locationAtsId);
+logger.info("location post googlemaps: " + address);	
+				location = new Location();			
+				location.setLocationAtsId(locationAtsId);
+				location.setLocationName(locationName);
 				location.persistMe();
+			} catch (Exception e) {
+				logger.severe("Failed to lookup or create new location");
+			}
 		}
-*/
+
 		return account.getDefaultLocation();
 	}
 
-	public Position getPositionFrom(JSONObject applicant, Account account) {
-		Object jobAtsId  = applicant.opt("job");
-logger.info("job attr is: " + jobAtsId);
-
-		//String positionAtsId = json.getString("position_ats_id");
+	public Position getPositionFrom(JSONObject job, Account account) {
+logger.info("Using Account default position and Ignoring job object: " + job);
 		Position pos = account.getDefaultPosition();
 		return pos;
 	}
 
 	public AccountSurvey getSurveyFrom(JSONObject job, Account account) {
 
-		Object assessmenttype = job.opt("assessmenttypw");
-logger.info("assessment type is: " + assessmenttype);
+		JSONArray assessmenttypes = job.getJSONArray("assessmenttype");
+		if (assessmenttypes.length() > 1) logger.warning("More than 1 Assessment in: " + assessmenttypes);
+
+		String assessmentName = assessmenttypes.getJSONObject(0).getString("value");
 
 		AccountSurvey aSurvey = null;
-		aSurvey = account.getDefaultAccountSurvey();
+		List<AccountSurvey> assessments = account.getAccountSurveys();
+		for (AccountSurvey as : assessments) {
+			if (assessmentName.equals(as.getAsDisplayName())) aSurvey = as;
+		}
+		if (aSurvey == null) aSurvey = account.getDefaultAccountSurvey();
 		
 		return aSurvey;
 	}
@@ -138,12 +151,78 @@ logger.info("assessment type is: " + assessmenttype);
 
 	@Override
 	public Respondant createRespondantFrom(JSONObject json, Account account) {
+
+		JSONObject candidate  = null; // This is ICIMS "Person"
+		JSONObject application = new JSONObject(); // This is ICIMS "workflow" - could have more than one per person
+		JSONObject job = null; // ICIMS job applied to (includes location, etc)
+		// Get links and objects associated
+		JSONArray links = json.getJSONArray("links");
+		for (int i=0;i<links.length();i++) {
+			JSONObject link = links.getJSONObject(i);
+			switch (link.getString("rel")) {
+			case "job":
+				job = new JSONObject(icimsGet(link.getString("url")+JOB_EXTRA_FIELDS));
+				job.put("link", link.getString("url"));
+				break;
+			case "person":
+				candidate = new JSONObject(icimsGet(link.getString("url")));
+				candidate.put("link", link.getString("url"));
+				break;
+			case "applicantWorkflow":
+				application.put("link", link.getString("url"));
+				break;
+			case "user":
+				// Dont use this one.
+				break;
+			default:
+				logger.warning("Unexpected Link: " + link);
+				break;
+			}
+		}
+		
+		Person person = getPerson(candidate, account);
+
+		Position position = this.getPositionFrom(job, account);
+		Location location = this.getLocationFrom(job, account);
+		AccountSurvey aSurvey = this.getSurveyFrom(application, account);
+
+		Respondant respondant = new Respondant();
+		respondant.setRespondantAtsId(application.getString("link"));
+		respondant.setRespondantRedirectUrl(json.getString("returnUrl"));
+		//respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
+		//respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));
+		respondant.setAccount(account);
+		respondant.setPosition(position);
+		respondant.setRespondantLocationId(location.getLocationId());
+		respondant.setAccountSurvey(aSurvey);
+
+		respondant.setPerson(person);
+		respondant.persistMe();
+
+		return respondant;
+	}
+
+	@Override
+	public JSONObject prepOrderResponse(JSONObject json, Respondant respondant) {
 		// TODO Auto-generated method stub
-		String applicantAtsId = json.getString("userId");
-		JSONObject applicant = getPerson(applicantAtsId, this.trimPrefix(account.getAccountAtsId()));
-logger.info("Retrieved: " + applicant.toString());
-		Person person = new Person();
-		person.setPersonAtsId(this.getPrefix() + applicantAtsId);
+		return null;
+	}
+
+	public Person getPerson(JSONObject applicant, Account account) {
+		Person person = null;
+		
+		EntityManager em = DBUtil.getEntityManager();
+		TypedQuery<Person> q = em.createQuery(
+				"SELECT p FROM Person p WHERE p.personAtsId = :link", Person.class);
+		q.setParameter("link", applicant.getString("link"));
+		try {
+				person = q.getSingleResult();
+				return person;
+		} catch (NoResultException nre) {
+		}
+		// If no result, or other error...
+		person = new Person();
+		person.setPersonAtsId(applicant.getString("link"));
 		person.setPersonEmail(applicant.getString("email"));
 		person.setPersonFname(applicant.getString("firstname"));
 		person.setPersonLname(applicant.getString("lastname"));
@@ -161,119 +240,122 @@ logger.info("Retrieved: " + applicant.toString());
 		} catch (Exception e) {
 logger.severe("Failed to handle address:" + e.getMessage());
 		}
-		Position position = this.getPositionFrom(applicant, account);
-		Location location = this.getLocationFrom(applicant, account);
-		AccountSurvey aSurvey = this.getSurveyFrom(applicant, account);
-
-		Respondant respondant = new Respondant();
-		respondant.setRespondantAtsId(person.getPersonAtsId());
-		respondant.setRespondantRedirectUrl(json.getString("returnUrl"));
-		//respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
-		//respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));
-		respondant.setAccount(account);
-		respondant.setPosition(position);
-		respondant.setRespondantLocationId(location.getLocationId());
-		respondant.setAccountSurvey(aSurvey);
-
 		person.persistMe();
-		respondant.setPerson(person);
-		respondant.persistMe();
-
-		return respondant;
+		return person;
 	}
 
-	@Override
-	public JSONObject prepOrderResponse(JSONObject json, Respondant respondant) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private JSONObject getPerson(String appId, String accountId) {
-		String getString = ICIMS_API + accountId + "/people/" + appId;
-		JSONObject response = new JSONObject(icimsGet(getString));
-		return response;
-	}
-
-	private JSONObject getLocation(String locationId, String accountId) {
-		String getString = ICIMS_API + accountId + "/locations/" + locationId;
-		JSONObject response = new JSONObject(icimsGet(getString));
-		return response;
-	}
-	
-	private JSONObject getJob(String jobId, String accountId) {
-		String getString = ICIMS_API + accountId + "/jobs/" + jobId;
-		JSONObject response = new JSONObject(icimsGet(getString));
-		return response;
-	}
-
-	
-	public static String icimsGet(String getTarget) {
-		
+	public static WebTarget prepTarget(String target) {
 		ClientConfig cc = new ClientConfig();
 		cc.property(ApacheClientProperties.PREEMPTIVE_BASIC_AUTHENTICATION, true);
+		cc.property(ClientProperties.REQUEST_ENTITY_PROCESSING, "BUFFERED");
 		cc.property(ClientProperties.PROXY_URI, PROXY_URL);
+		cc.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
 		cc.connectorProvider(new ApacheConnectorProvider());
 		Client client = ClientBuilder.newClient(cc);
 
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(ICIMS_USER, ICIMS_PASS);
 		client.register(feature);
-
-		WebTarget target = client.target(getTarget);
 		
-		String response = target.request(MediaType.APPLICATION_JSON).get(String.class);
+		return client.target(target);
+	}
+	
+	public static String icimsGet(String getTarget) {
 		
+		String response = prepTarget(getTarget).request(MediaType.APPLICATION_JSON).get(String.class);
 		return response;
 		
 	}
 
 	public static String icimsPost(String postTarget, JSONObject json) {
 		
-		ClientConfig cc = new ClientConfig();
-		cc.property(ApacheClientProperties.PREEMPTIVE_BASIC_AUTHENTICATION, true);
-		cc.property(ClientProperties.PROXY_URI, PROXY_URL);
-		cc.connectorProvider(new ApacheConnectorProvider());
-		Client client = ClientBuilder.newClient(cc);
-
-		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(ICIMS_USER, ICIMS_PASS);
-		client.register(feature);
-
-		WebTarget target = client.target(postTarget);
-		String response = null;		
-		
-		response = target.request(MediaType.APPLICATION_JSON)
+		String response = prepTarget(postTarget).request(MediaType.APPLICATION_JSON)
 				.post(Entity.entity(json.toString(), MediaType.APPLICATION_JSON), String.class);
+		return response;
+		
+	}
+
+	public static Response icimsPatch(String postTarget, JSONObject json) {
+		
+		Response response = prepTarget(postTarget).request(MediaType.APPLICATION_JSON)
+				.method("PATCH",Entity.entity(json.toString(), MediaType.APPLICATION_JSON));
 		
 		return response;
 		
 	}
 	
+	public static Response postScoresToPartner(Respondant respondant, JSONObject message) {
+
+		String method = respondant.getRespondantAtsId();
+		JSONObject json = new JSONObject();
+		JSONArray resultset = new JSONArray();
+		JSONObject results = new JSONObject();
+		results.put("assessmentdate", respondant.getRespondantCreatedDate());
+		results.put("assessmentname", "Worker Reliability");
+		results.put("assessmentscore", 95.5);
+		results.put("assessmentresult", "profile_a");
+		results.put("assessmentnotes", "innovation: 1, judgment: 3, work ethic: 1");
+		results.put("assessmentstatus", "Complete");
+		//—  (D37002019001,"Complete", D37002019002,"Incomplete", D37002019003,"In-Progress", D37002019004,"Sent")
+		results.put("assessmenturl", "https://portal.employmeo.com/");
+		resultset.put(results);
+		json.put("assessmentresults", resultset);
+		return icimsPatch(method, json);
+
+	}
+	
 	
 	public static void main (String[] args) throws Exception{
+		Respondant respondant = new Respondant();
+		Date today = new Date(0);
+		respondant.setRespondantCreatedDate(today);
+		respondant.setRespondantAtsId("https://api.icims.com/customers/6269/applicantworkflows/1481");
+		Response response = postScoresToPartner(respondant, null);
+		//testAppComplete();
 		
-	/*	
-		Each entry in the “assessmentresults” field contain following fields:
-			Date: The date that this assessment’s status was last updated.
-			Name: The name of the assessment. Vendor’s name should be included as part of the assessment name as multiple vendors can potentially be used for assessments.
-			Notes: Short string used to communicate information to the recruiter.
-			Result: Text string used to display results to the recruiter. The values for this field are client and vendor dependent. They can range from names of colors to grading from A through F.
-			Score: A decimal used to numerically score the assessment.
-			Status: Indicates what stage the assessment is in.
-			Complete: The assessment has been completed and reviewed.
-			Incomplete: The assessment was not been completed by the candidate. (ie. Due to timeout)
-			In-Progress: The assessment is being worked on by the candidate.
-			Sent: The assessment has been sent to the candidate.
-			URL: Takes the recruiter into the vendor’s platform and displays the results of the assessment. Can also display additional metadata and can be used to modify/cancel the request after the assessment is scheduled. Based on the client’s security requirements, this URL can require the user to login to the vendor’s platform.
+		System.out.println("Response Status: " + response.getStatus());
+		System.out.println("Response Status Phrase: " + response.getStatusInfo().getReasonPhrase());
+		System.out.println("Response URI: " + response.getLocation());
+		System.out.println("Response Media Type: " + response.getMediaType());
+		if (response.hasEntity()) System.out.println("Response Entity: " + response.readEntity(String.class));		
 
-			https://api.icims.com/customers/{customerId}/applicantworkflows/{applicantworkflowId}
+	}
 
-	*
-	*/	
+	
+	private static void testAppComplete() throws Exception {
 		
 		JSONObject json = new JSONObject();
-		json.put("userId","1240");
+		json.put("systemId","1481");
+		json.put("userId","1243");
 		json.put("customerId","6269");
-		json.put("returnUrl","https://www.google.com");
+		json.put("returnUrl","https://jobs-assessmentsandbox.icims.com/jobs/1385/front-line-job-3/assessment?i=1");
+		json.put("eventType","ApplicationCompletedEvent");
+		JSONObject wflink = new JSONObject();
+		wflink.put("rel", "applicantWorkflow");
+		wflink.put("title", "Applicant Workflow");
+		wflink.put("url", "https://api.icims.com/customers/6269/applicantworkflows/1481");
+		JSONObject jlink = new JSONObject();
+		jlink.put("rel", "job");
+		jlink.put("title", "Job Profile");
+		jlink.put("url", "https://api.icims.com/customers/6269/jobs/1385");
+		JSONObject plink = new JSONObject();
+		plink.put("rel", "person");
+		plink.put("title", "Person Profile");
+		plink.put("url", "https://api.icims.com/customers/6269/people/1243");
+		JSONObject ulink = new JSONObject();
+		ulink.put("rel", "user");
+		ulink.put("title", "Posting User");
+		ulink.put("url", "https://api.icims.com/customers/6269/people/1243");
+		json.accumulate("links", wflink);
+		json.accumulate("links", jlink);
+		json.accumulate("links", plink);
+		json.accumulate("links", ulink);
+
+		postToEmploymeo("https://localhost/integration/icimsapplicationcomplete", json);	
 		
+
+	}
+	
+	private static void postToEmploymeo(String service, JSONObject json) throws Exception {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
 		sslContext.init(null, new TrustManager[]{new X509TrustManager() {
 	        public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
@@ -286,7 +368,7 @@ logger.severe("Failed to handle address:" + e.getMessage());
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("icims", "FGx4bgfZ!C");
 		client.register(feature);
 
-		WebTarget target = client.target("https://localhost/integration/icimsapplicationcomplete");
+		WebTarget target = client.target(service);
 		
 		Response response = target.request(MediaType.APPLICATION_JSON)
 				.post(Entity.entity(json.toString(), MediaType.APPLICATION_JSON));
@@ -295,7 +377,7 @@ logger.severe("Failed to handle address:" + e.getMessage());
 		System.out.println("Response Status Phrase: " + response.getStatusInfo().getReasonPhrase());
 		System.out.println("Response URI: " + response.getLocation());
 		System.out.println("Response Media Type: " + response.getMediaType());
-		if (response.hasEntity()) System.out.println("Response Entity: " + response.readEntity(String.class));
+		if (response.hasEntity()) System.out.println("Response Entity: " + response.readEntity(String.class));		
 	}
 	
 }
