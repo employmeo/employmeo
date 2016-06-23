@@ -29,20 +29,17 @@ public class ICIMSApplicationComplete {
 	private static Logger logger = Logger.getLogger("ICIMSService");
 
 	@POST
-	@RolesAllowed("atspartner")
-//	@Produces(MediaType.APPLICATION_JSON)
 //	@Consumes(MediaType.APPLICATION_JSON)
 	public Response doPost(JSONObject json) {
-
-logger.info("Received JSON: " +json);
+logger.info("ICIMS Posted this: " +json);
 	
-		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
+		PartnerUtil pu = PartnerUtil.getUtilFor((Partner) sc.getUserPrincipal());
 		Account account = pu.getAccountFrom(json);
 		Respondant applicant = pu.createRespondantFrom(json, account);
 
 		//JSONObject output = pu.prepOrderResponse(json, applicant);
-
-logger.info("Created link: " + EmailUtility.getAssessmentLink(applicant));
+		applicant.refreshMe();
+logger.info("Employmeo created this link: " + EmailUtility.getAssessmentLink(applicant));
 
 		URI link = null;
 		try {

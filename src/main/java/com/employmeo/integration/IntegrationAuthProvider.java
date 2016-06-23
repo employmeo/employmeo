@@ -74,17 +74,19 @@ public class IntegrationAuthProvider implements ContainerRequestFilter {
 				if (partner == null) {
 					req.abortWith(LOGIN_FAILED);
 					return;
-				} else if (method.isAnnotationPresent(RolesAllowed.class)) {
+				} 
+
+				req.setSecurityContext(new PartnerAuthorizer(partner));
+				System.out.println(partner.getJSONString());
+				
+				if (method.isAnnotationPresent(RolesAllowed.class)) {
 					RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
 					Set<String> rolesSet = new HashSet<String>(Arrays.asList(rolesAnnotation.value()));
-
 					// Is user valid?
 					if (!isPartnerAllowed(partner, rolesSet)) {
 						req.abortWith(ACCESS_DENIED);
 						return;
 					}
-				} else {
-					req.setSecurityContext(new PartnerAuthorizer(partner));
 				}
 			} catch (Exception e) {
 				req.abortWith(LOGIN_FAILED);

@@ -1,7 +1,12 @@
 package com.employmeo.util;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -36,7 +41,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	private static final String ICIMS_PASS = "YN9rEQnU";
 	private static final String ICIMS_API = "https://api.icims.com/customers/";
 	
-	private static String PROXY_URL =  "http://63.150.152.151:8080"; //System.getenv("FIXIE_URL");
+	private static String PROXY_URL = "http://63.150.152.151:8080"; //System.getenv("FIXIE_URL");
 	private Partner partner = null;
 	
 	public ICIMSPartnerUtil(Partner partner) {
@@ -54,16 +59,15 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	
 	public Account getAccountFrom(JSONObject json) {
 		Account account = null;
-		String accountAtsId = this.getPrefix() + json.getString("customerId");
 		// lookup account by ATS ID
 		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Account> q = em.createQuery("SELECT a FROM Account a WHERE a.accountAtsId = :accountAtsId",
 				Account.class);
-		q.setParameter("accountAtsId", partner.getPartnerPrefix() + accountAtsId);
+		q.setParameter("accountAtsId", partner.getPartnerPrefix() + json.getString("customerId"));
 		try {
 			account = q.getSingleResult();
 		} catch (NoResultException nre) {
-			logger.warning("Can't find account with atsId: " + accountAtsId);
+			logger.warning("Can't find account with atsId: " + json.getString("customerId"));
 			throw new WebApplicationException(
 					Response.status(Status.PRECONDITION_FAILED).entity(json.toString()).build());
 		}
@@ -187,6 +191,7 @@ logger.severe("Failed to handle address:" + e.getMessage());
 	private JSONObject getPerson(String appId, String accountId) {
 		String getString = ICIMS_API + accountId + "/people/" + appId;
 		JSONObject response = new JSONObject(icimsGet(getString));
+logger.info("Person gotten: " + response);
 		return response;
 	}
 
@@ -215,9 +220,8 @@ logger.severe("Failed to handle address:" + e.getMessage());
 		client.register(feature);
 
 		WebTarget target = client.target(getTarget);
-		String response = null;		
 		
-		response = target.request(MediaType.APPLICATION_JSON).get(String.class);
+		String response = target.request(MediaType.APPLICATION_JSON).get(String.class);
 		
 		return response;
 		
@@ -245,7 +249,7 @@ logger.severe("Failed to handle address:" + e.getMessage());
 	}
 	
 	
-	public static void main (String[] args) {
+	public static void main (String[] args) throws Exception{
 		
 	/*	
 		Each entry in the “assessmentresults” field contain following fields:
@@ -266,8 +270,33 @@ logger.severe("Failed to handle address:" + e.getMessage());
 	*
 	*/	
 		
-		String response = icimsGet(ICIMS_API + "6269/applicantworkflows/1240");
-		System.out.println(response);
+		JSONObject json = new JSONObject();
+		json.put("userId","1240");
+		json.put("customerId","6269");
+		json.put("returnURL","https://www.google.com");
+		
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+	        public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+	        public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+	        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+	    }}, new java.security.SecureRandom());
+		
+		Client client = ClientBuilder.newBuilder().sslContext(sslContext).build();
+
+		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("icims", "FGx4bgfZ!C");
+		client.register(feature);
+
+		WebTarget target = client.target("https://localhost/integration/icimsapplicationcomplete");
+		
+		Response response = target.request(MediaType.APPLICATION_JSON)
+				.post(Entity.entity(json.toString(), MediaType.APPLICATION_JSON));
+		
+		System.out.println("Response Status: " + response.getStatus());
+		System.out.println("Response Status Phrase: " + response.getStatusInfo().getReasonPhrase());
+		System.out.println("Response URI: " + response.getLocation());
+		System.out.println("Response Media Type: " + response.getMediaType());
+		if (response.hasEntity()) System.out.println("Response Entity: " + response.readEntity(String.class));
 	}
 	
 }

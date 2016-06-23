@@ -29,10 +29,13 @@ public interface PartnerUtil {
 	public static PartnerUtil getUtilFor(Partner lookupPartner) {
 		// TODO make this work for multiple partners
 		if (!utils.containsKey(lookupPartner)) {
-			if (lookupPartner.getName() == "ICIMS") {
+logger.info("Assigning Util for Partner: " + lookupPartner.getJSONString());
+			if ("ICIMS".equalsIgnoreCase(lookupPartner.getPartnerName())) {
 				utils.put(lookupPartner, new ICIMSPartnerUtil(lookupPartner));
+logger.info("ICIMS!");
 			} else {
 				utils.put(lookupPartner, new DefaultPartnerUtil(lookupPartner));
+logger.info(lookupPartner.getPartnerName() + ", so not ICIMS, right? " + lookupPartner.getName());
 			}
 		}
 		return utils.get(lookupPartner);

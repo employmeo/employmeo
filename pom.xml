@@ -49,11 +49,11 @@
 		    <artifactId>jersey-apache-connector</artifactId>
 		    <version>${jersey-version}</version>
 		</dependency>
-        <!--dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey-version}</version>
-        </dependency-->
+        </dependency>
 		<dependency>
 		    <groupId>com.sendgrid</groupId>
 		    <artifactId>sendgrid-java</artifactId>
