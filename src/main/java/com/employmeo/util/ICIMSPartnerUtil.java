@@ -1,14 +1,13 @@
 package com.employmeo.util;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.sql.Date;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -36,6 +35,7 @@ import com.employmeo.objects.Location;
 import com.employmeo.objects.Partner;
 import com.employmeo.objects.Person;
 import com.employmeo.objects.Position;
+import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
 
 
@@ -43,9 +43,14 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	private static Logger logger = Logger.getLogger("ICIMSPartnerUtility");
 	private static final String ICIMS_USER = "employmeoapiuser";
 	private static final String ICIMS_PASS = "YN9rEQnU";
-	//private static final String ICIMS_API = "https://api.icims.com/customers/";
+	private static final String ICIMS_API = "https://api.icims.com/customers/";
 	private static final String JOB_EXTRA_FIELDS = "?fields=jobtitle,assessmenttype,jobtype,joblocation,hiringmanager";
-	
+	private static final JSONObject ASSESSMENT_COMPLETE = new JSONObject("{'id':'D37002019001'}");
+	private static final JSONObject ASSESSMENT_INCOMPLETE = new JSONObject("{'id':'D37002019002'}");
+	private static final JSONObject ASSESSMENT_INPROGRESS = new JSONObject("{'id':'D37002019003'}");
+	private static final JSONObject ASSESSMENT_SENT = new JSONObject("{'id':'D37002019004'}");
+	private static final SimpleDateFormat ICIMS_SDF = new SimpleDateFormat("yyyy-MM-dd hh:mm a");
+
 	private static String PROXY_URL = "http://63.150.152.151:8080"; //System.getenv("FIXIE_URL");
 	private Partner partner = null;
 	
@@ -62,7 +67,11 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		return id.substring(id.indexOf(getPrefix())+getPrefix().length());
 	}
 	
+	@Override
 	public Account getAccountFrom(JSONObject json) {
+		if (json.has("account_ats_id")) {
+			json.put("customerId", json.getString("account_ats_id"));
+		}
 		Account account = null;
 		// lookup account by ATS ID
 		EntityManager em = DBUtil.getEntityManager();
@@ -78,9 +87,10 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		}
 		return account;
 	}
-
+	
+	@Override
 	public Location getLocationFrom(JSONObject job, Account account) {
-		String locationAtsId  = job.getJSONObject("joblocation").getString("address");
+		String locationLink  = job.getJSONObject("joblocation").getString("address");
 		String locationName = job.getJSONObject("joblocation").getString("value");
 
 		Location location = null;
@@ -88,7 +98,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		TypedQuery<Location> q = em.createQuery(
 				"SELECT l FROM Location l WHERE l.locationAtsId = :locationAtsId AND l.locationAccountId = :accountId",
 				Location.class);
-		q.setParameter("locationAtsId", locationAtsId);
+		q.setParameter("locationAtsId", locationLink);
 		q.setParameter("accountId", account.getAccountId());
 		try {
 			location = q.getSingleResult();
@@ -98,9 +108,9 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 				address.put("street", locationName);
 				// TODO create code to find a location in ICIMS, and create in employmeo
 				AddressUtil.validate(address);
-logger.info("location post googlemaps: " + address);	
-				location = new Location();			
-				location.setLocationAtsId(locationAtsId);
+				location = new Location();
+				location.setAccount(account);
+				location.setLocationAtsId(locationLink);
 				location.setLocationName(locationName);
 				location.persistMe();
 			} catch (Exception e) {
@@ -110,20 +120,23 @@ logger.info("location post googlemaps: " + address);
 
 		return account.getDefaultLocation();
 	}
-
+	
+	@Override
 	public Position getPositionFrom(JSONObject job, Account account) {
-logger.info("Using Account default position and Ignoring job object: " + job);
+		// TODO - Get job title / type data, and figure out how to map it to Positions
+		logger.info("Using Account default position and Ignoring job object: " + job);
 		Position pos = account.getDefaultPosition();
 		return pos;
 	}
-
+	
+	@Override
 	public AccountSurvey getSurveyFrom(JSONObject job, Account account) {
 
 		JSONArray assessmenttypes = job.getJSONArray("assessmenttype");
 		if (assessmenttypes.length() > 1) logger.warning("More than 1 Assessment in: " + assessmenttypes);
 
 		String assessmentName = assessmenttypes.getJSONObject(0).getString("value");
-
+		job.put("assessment", assessmenttypes.getJSONObject(0));
 		AccountSurvey aSurvey = null;
 		List<AccountSurvey> assessments = account.getAccountSurveys();
 		for (AccountSurvey as : assessments) {
@@ -133,29 +146,35 @@ logger.info("Using Account default position and Ignoring job object: " + job);
 		
 		return aSurvey;
 	}
-
+	
+	@Override
 	public Respondant getRespondantFrom(JSONObject json) {
 		Respondant respondant = null;
-		String applicantAtsId = json.getString("userId");
-		// lookup account by ATS ID
+		String workflowLink = ICIMS_API+json.getString("customerId") + 
+				"/applicantworkflows/" +json.getString("systemId");
+		
 		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Respondant> q = em.createQuery(
-				"SELECT r FROM Respondant r WHERE r.respondantAtsId = :respondantAtsId", Respondant.class);
-		q.setParameter("respondantAtsId", partner.getPartnerPrefix() + applicantAtsId);
+				"SELECT r FROM Respondant r WHERE r.respondantAtsId = :link", Respondant.class);
+		q.setParameter("link", workflowLink);
+
 		try {
-				respondant = q.getSingleResult();
+			respondant = q.getSingleResult();
 		} catch (NoResultException nre) {
-		}
+			logger.info("No Respondant Found for: " + workflowLink);
+		}		
 		return respondant;
 	}
 
 	@Override
 	public Respondant createRespondantFrom(JSONObject json, Account account) {
-
-		JSONObject candidate  = null; // This is ICIMS "Person"
-		JSONObject application = new JSONObject(); // This is ICIMS "workflow" - could have more than one per person
+		Respondant respondant = getRespondantFrom(json);
+		if (respondant != null) return respondant; // Check that its not a duplicate request
+		
+		String workflowLink = null; // link to application
 		JSONObject job = null; // ICIMS job applied to (includes location, etc)
-		// Get links and objects associated
+		JSONObject candidate  = null; // This is ICIMS "Person"
+
 		JSONArray links = json.getJSONArray("links");
 		for (int i=0;i<links.length();i++) {
 			JSONObject link = links.getJSONObject(i);
@@ -169,7 +188,7 @@ logger.info("Using Account default position and Ignoring job object: " + job);
 				candidate.put("link", link.getString("url"));
 				break;
 			case "applicantWorkflow":
-				application.put("link", link.getString("url"));
+				workflowLink = link.getString("url");
 				break;
 			case "user":
 				// Dont use this one.
@@ -180,19 +199,20 @@ logger.info("Using Account default position and Ignoring job object: " + job);
 			}
 		}
 		
+		
 		Person person = getPerson(candidate, account);
-
 		Position position = this.getPositionFrom(job, account);
 		Location location = this.getLocationFrom(job, account);
-		AccountSurvey aSurvey = this.getSurveyFrom(application, account);
+		AccountSurvey aSurvey = this.getSurveyFrom(job, account);
 
-		Respondant respondant = new Respondant();
-		respondant.setRespondantAtsId(application.getString("link"));
+		respondant = new Respondant();
+		respondant.setRespondantAtsId(workflowLink);
 		respondant.setRespondantRedirectUrl(json.getString("returnUrl"));
 		//respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
-		//respondant.setRespondantScorePostMethod(delivery.optString("scores_post_url"));
+		respondant.setRespondantScorePostMethod(workflowLink);
 		respondant.setAccount(account);
 		respondant.setPosition(position);
+		respondant.setPartner(this.partner);
 		respondant.setRespondantLocationId(location.getLocationId());
 		respondant.setAccountSurvey(aSurvey);
 
@@ -202,15 +222,87 @@ logger.info("Using Account default position and Ignoring job object: " + job);
 		return respondant;
 	}
 
+	
 	@Override
 	public JSONObject prepOrderResponse(JSONObject json, Respondant respondant) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Person getPerson(JSONObject applicant, Account account) {
-		Person person = null;
+	@Override
+	public JSONObject getScoresMessage(Respondant respondant) {
 		
+		JSONObject scores = respondant.getAssessmentScore();
+		ScoringUtil.predictRespondant(respondant);
+		Account account = respondant.getRespondantAccount();
+
+		String result = PositionProfile.getProfileDefaults(respondant.getRespondantProfile())
+				.getString("profile_name");
+
+
+		Iterator<String> it = scores.keys();
+		StringBuffer notes = new StringBuffer();
+		notes.append("Factor Scores: ");
+		while (it.hasNext()) {
+			String label = it.next();
+			notes.append("[");
+			notes.append(label);
+			notes.append("= ");
+			notes.append(scores.getDouble(label));
+			notes.append("]");
+			if (it.hasNext()) notes.append(", ");
+		}
+
+		String profile = PositionProfile.getProfileDefaults(respondant.getRespondantProfile())
+				.getString("profile_name");
+
+		String portalLink = EmailUtility.getPortalLink(respondant);
+		String assessmentName = respondant.getAccountSurvey().getAsDisplayName();
+
+		JSONObject json = new JSONObject();
+		JSONArray resultset = new JSONArray();
+		JSONObject results = new JSONObject();
+		JSONObject assessment = new JSONObject();
+
+		assessment.put("value", assessmentName);
+		results.put("assessmentdate", ICIMS_SDF.format(new Date(respondant.getRespondantFinishTime().getTime())));
+		results.put("assessmentname", assessment);
+		results.put("assessmentscore", respondant.getCompositeScore());
+		results.put("assessmentresult", profile);
+		results.put("assessmentnotes", notes.toString());
+		results.put("assessmentstatus", ASSESSMENT_COMPLETE);
+		results.put("assessmenturl", portalLink);
+		resultset.put(results);
+		json.put("assessmentresults", resultset);
+		return json;
+	}
+
+	
+	public static void main (String[] args) throws Exception {
+		ICIMSPartnerUtil pu = new ICIMSPartnerUtil(null);
+		Respondant respondant = new Respondant();
+		Long today = Calendar.getInstance().getTimeInMillis();
+		respondant.setRespondantFinishTime(new Timestamp(today));
+		respondant.setRespondantAtsId("https://api.icims.com/customers/6269/applicantworkflows/1486");
+		
+		JSONObject json = pu.getScoresMessage(respondant);
+		pu.postScoresToPartner(respondant, json);
+	
+	}
+	
+	@Override
+	public void postScoresToPartner(Respondant respondant, JSONObject message) {
+		String method = respondant.getRespondantAtsId();
+		
+		Response response = icimsPatch(method, message);
+		System.out.println("Response Status: " + response.getStatus());
+		System.out.println("Response Status Phrase: " + response.getStatusInfo().getReasonPhrase());
+		System.out.println("Response Message: " + response.readEntity(String.class));
+	}	
+	
+	public Person getPerson(JSONObject applicant, Account account) {
+
+		Person person = null;
 		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Person> q = em.createQuery(
 				"SELECT p FROM Person p WHERE p.personAtsId = :link", Person.class);
@@ -238,146 +330,44 @@ logger.info("Using Account default position and Ignoring job object: " + job);
 			person.setPersonLat(address.optDouble("lat"));
 			person.setPersonLong(address.optDouble("lng"));
 		} catch (Exception e) {
-logger.severe("Failed to handle address:" + e.getMessage());
+			logger.severe("Failed to handle address:" + e.getMessage());
 		}
 		person.persistMe();
 		return person;
 	}
 
-	public static WebTarget prepTarget(String target) {
+	
+	// Specific methods for talking to ICIMS
+
+	private WebTarget prepTarget(String target) {
 		ClientConfig cc = new ClientConfig();
 		cc.property(ApacheClientProperties.PREEMPTIVE_BASIC_AUTHENTICATION, true);
-		cc.property(ClientProperties.REQUEST_ENTITY_PROCESSING, "BUFFERED");
 		cc.property(ClientProperties.PROXY_URI, PROXY_URL);
+		cc.property(ClientProperties.REQUEST_ENTITY_PROCESSING, "BUFFERED");
 		cc.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
 		cc.connectorProvider(new ApacheConnectorProvider());
 		Client client = ClientBuilder.newClient(cc);
-
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(ICIMS_USER, ICIMS_PASS);
 		client.register(feature);
 		
 		return client.target(target);
 	}
 	
-	public static String icimsGet(String getTarget) {
-		
+	private String icimsGet(String getTarget) {
 		String response = prepTarget(getTarget).request(MediaType.APPLICATION_JSON).get(String.class);
 		return response;
-		
 	}
 
-	public static String icimsPost(String postTarget, JSONObject json) {
-		
-		String response = prepTarget(postTarget).request(MediaType.APPLICATION_JSON)
-				.post(Entity.entity(json.toString(), MediaType.APPLICATION_JSON), String.class);
-		return response;
-		
-	}
-
-	public static Response icimsPatch(String postTarget, JSONObject json) {
-		
+	private Response icimsPost(String postTarget, JSONObject json) {
 		Response response = prepTarget(postTarget).request(MediaType.APPLICATION_JSON)
-				.method("PATCH",Entity.entity(json.toString(), MediaType.APPLICATION_JSON));
-		
-		return response;
-		
-	}
-	
-	public static Response postScoresToPartner(Respondant respondant, JSONObject message) {
-
-		String method = respondant.getRespondantAtsId();
-		JSONObject json = new JSONObject();
-		JSONArray resultset = new JSONArray();
-		JSONObject results = new JSONObject();
-		results.put("assessmentdate", respondant.getRespondantCreatedDate());
-		results.put("assessmentname", "Worker Reliability");
-		results.put("assessmentscore", 95.5);
-		results.put("assessmentresult", "profile_a");
-		results.put("assessmentnotes", "innovation: 1, judgment: 3, work ethic: 1");
-		results.put("assessmentstatus", "Complete");
-		//—  (D37002019001,"Complete", D37002019002,"Incomplete", D37002019003,"In-Progress", D37002019004,"Sent")
-		results.put("assessmenturl", "https://portal.employmeo.com/");
-		resultset.put(results);
-		json.put("assessmentresults", resultset);
-		return icimsPatch(method, json);
-
-	}
-	
-	
-	public static void main (String[] args) throws Exception{
-		Respondant respondant = new Respondant();
-		Date today = new Date(0);
-		respondant.setRespondantCreatedDate(today);
-		respondant.setRespondantAtsId("https://api.icims.com/customers/6269/applicantworkflows/1481");
-		Response response = postScoresToPartner(respondant, null);
-		//testAppComplete();
-		
-		System.out.println("Response Status: " + response.getStatus());
-		System.out.println("Response Status Phrase: " + response.getStatusInfo().getReasonPhrase());
-		System.out.println("Response URI: " + response.getLocation());
-		System.out.println("Response Media Type: " + response.getMediaType());
-		if (response.hasEntity()) System.out.println("Response Entity: " + response.readEntity(String.class));		
-
-	}
-
-	
-	private static void testAppComplete() throws Exception {
-		
-		JSONObject json = new JSONObject();
-		json.put("systemId","1481");
-		json.put("userId","1243");
-		json.put("customerId","6269");
-		json.put("returnUrl","https://jobs-assessmentsandbox.icims.com/jobs/1385/front-line-job-3/assessment?i=1");
-		json.put("eventType","ApplicationCompletedEvent");
-		JSONObject wflink = new JSONObject();
-		wflink.put("rel", "applicantWorkflow");
-		wflink.put("title", "Applicant Workflow");
-		wflink.put("url", "https://api.icims.com/customers/6269/applicantworkflows/1481");
-		JSONObject jlink = new JSONObject();
-		jlink.put("rel", "job");
-		jlink.put("title", "Job Profile");
-		jlink.put("url", "https://api.icims.com/customers/6269/jobs/1385");
-		JSONObject plink = new JSONObject();
-		plink.put("rel", "person");
-		plink.put("title", "Person Profile");
-		plink.put("url", "https://api.icims.com/customers/6269/people/1243");
-		JSONObject ulink = new JSONObject();
-		ulink.put("rel", "user");
-		ulink.put("title", "Posting User");
-		ulink.put("url", "https://api.icims.com/customers/6269/people/1243");
-		json.accumulate("links", wflink);
-		json.accumulate("links", jlink);
-		json.accumulate("links", plink);
-		json.accumulate("links", ulink);
-
-		postToEmploymeo("https://localhost/integration/icimsapplicationcomplete", json);	
-		
-
-	}
-	
-	private static void postToEmploymeo(String service, JSONObject json) throws Exception {
-		SSLContext sslContext = SSLContext.getInstance("TLS");
-		sslContext.init(null, new TrustManager[]{new X509TrustManager() {
-	        public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-	        public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-	        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
-	    }}, new java.security.SecureRandom());
-		
-		Client client = ClientBuilder.newBuilder().sslContext(sslContext).build();
-
-		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("icims", "FGx4bgfZ!C");
-		client.register(feature);
-
-		WebTarget target = client.target(service);
-		
-		Response response = target.request(MediaType.APPLICATION_JSON)
 				.post(Entity.entity(json.toString(), MediaType.APPLICATION_JSON));
-		
-		System.out.println("Response Status: " + response.getStatus());
-		System.out.println("Response Status Phrase: " + response.getStatusInfo().getReasonPhrase());
-		System.out.println("Response URI: " + response.getLocation());
-		System.out.println("Response Media Type: " + response.getMediaType());
-		if (response.hasEntity()) System.out.println("Response Entity: " + response.readEntity(String.class));		
+		return response;
+	}
+
+	private Response icimsPatch(String postTarget, JSONObject json) {	
+		Response response = prepTarget(postTarget).request(MediaType.APPLICATION_JSON)
+				.method("PATCH",Entity.entity(json.toString(), MediaType.APPLICATION_JSON));	
+		return response;
 	}
 	
 }
