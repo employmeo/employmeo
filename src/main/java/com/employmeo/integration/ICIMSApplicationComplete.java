@@ -3,11 +3,9 @@ package com.employmeo.integration;
 import java.net.URI;
 import java.util.logging.Logger;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,17 +27,14 @@ public class ICIMSApplicationComplete {
 	private static Logger logger = Logger.getLogger("ICIMSService");
 
 	@POST
-//	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response doPost(JSONObject json) {
 logger.info("ICIMS Posted this: " +json);
 	
 		PartnerUtil pu = PartnerUtil.getUtilFor((Partner) sc.getUserPrincipal());
 		Account account = pu.getAccountFrom(json);
 		Respondant applicant = pu.createRespondantFrom(json, account);
-
-		//JSONObject output = pu.prepOrderResponse(json, applicant);
 		applicant.refreshMe();
-logger.info("Employmeo created this link: " + EmailUtility.getAssessmentLink(applicant));
 
 		URI link = null;
 		try {

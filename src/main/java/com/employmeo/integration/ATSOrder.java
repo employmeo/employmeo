@@ -35,11 +35,8 @@ public class ATSOrder {
 		logger.info("ATS Requesting Assessment with: " + json.toString());
 
 		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
-
 		Account account = pu.getAccountFrom(json.getJSONObject("account"));
-
 		Respondant respondant = pu.createRespondantFrom(json, account);
-
 		JSONObject output = pu.prepOrderResponse(json, respondant);
 
 		logger.info("ATS Request for Assessment Complete: " + respondant.getRespondantAtsId());

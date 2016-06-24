@@ -66,6 +66,13 @@ public class Respondant extends PersistantObject implements Serializable {
 	private Long respondantAsid;
 
 	@ManyToOne
+	@JoinColumn(name = "respondant_partner_id", insertable = false, updatable = false)
+	private Partner partner;
+
+	@Column(name = "respondant_partner_id", insertable = true, updatable = true)
+	private Integer respondantPartnerId;
+	
+	@ManyToOne
 	@JoinColumn(name = "respondant_position_id", insertable = false, updatable = false)
 	private Position position;
 
@@ -96,6 +103,9 @@ public class Respondant extends PersistantObject implements Serializable {
 	@Column(name = "respondant_profile")
 	private String respondantProfile;
 
+	@Column(name = "respondant_composite_score")
+	private Double compositeScore;
+	
 	@Column(name = "respondant_profile_a")
 	private Double profileA;
 
@@ -204,6 +214,28 @@ public class Respondant extends PersistantObject implements Serializable {
 		this.position = position;
 	}
 
+	public Integer getRespondantPartnerId() {
+		if ((this.respondantPartnerId == null) && (this.partner != null))
+			this.respondantPartnerId = this.partner.getPartnerId();
+		return this.respondantPartnerId;
+	}
+
+	public Partner getPartner() {
+		if ((this.partner == null) && (this.respondantPartnerId != null)) 
+			this.partner = Partner.getPartnerById(this.respondantPartnerId);
+		return this.partner;
+	}
+
+	public void setRespondantPartnerId(Integer partnerId) {
+		this.respondantPartnerId = partnerId;
+		this.partner = Partner.getPartnerById(partnerId);
+	}
+
+	public void setPartner(Partner partner) {
+		this.respondantPartnerId = partner.getPartnerId();
+		this.partner = partner;
+	}
+
 	public Date getRespondantCreatedDate() {
 		return this.respondantCreatedDate;
 	}
@@ -234,6 +266,14 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	public void setRespondantProfile(String profile) {
 		this.respondantProfile = profile;
+	}
+
+	public Double getCompositeScore() {
+		return this.compositeScore;
+	}
+
+	public void setCompositeScore(Double score) {
+		this.compositeScore = score;
 	}
 
 	public Double getProfileA() {

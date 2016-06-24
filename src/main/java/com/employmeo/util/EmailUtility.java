@@ -64,9 +64,9 @@ public class EmailUtility {
 
 
 	
-	public static void sendResults(Respondant respondant, JSONObject applicant) {
+	public static void sendResults(Respondant respondant) {
 
-		String plink = applicant.getString("portal_link");
+		String plink = getPortalLink(respondant);
 		String applicantName = respondant.getPerson().getPersonFname() + " " + respondant.getPerson().getPersonLname();
 		String body = "Dear User,\n" + "\n" + "The assessment for applicant " + applicantName
 				+ " has been submitted and scored. The results are now available on the portal at:\n" + plink + "\n";

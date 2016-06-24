@@ -81,6 +81,7 @@ public class Location extends PersistantObject implements Serializable {
 
 	public void setLocationAccountId(Long locationAccountId) {
 		this.locationAccountId = locationAccountId;
+		this.account = Account.getAccountById(locationAccountId);
 	}
 
 	public String getLocationName() {
@@ -176,6 +177,7 @@ public class Location extends PersistantObject implements Serializable {
 	}
 
 	public void setAccount(Account account) {
+		this.locationAccountId = account.getAccountId();
 		this.account = account;
 	}
 

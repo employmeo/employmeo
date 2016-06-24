@@ -120,10 +120,8 @@ logger.info("Mercer Scoring Repondant: " + respondant.getJSONString());
 		if (respondant.getRespondantStatus() == Respondant.STATUS_SCORED) {
 
 			// TODO - replace random logic with real scoring algorithm
-			// Position position =
-			// Position.getPositionById(respondant.getRespondantPositionId());
-			// Location location =
-			// Location.getLocationById(respondant.getRespondantLocationId());
+			// Position position = respondant.getPosition();
+			// Location location = respondant.getLocation();
 
 			double d = Math.random();
 			double c = Math.random() * 2;

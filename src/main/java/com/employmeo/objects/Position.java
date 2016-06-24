@@ -105,18 +105,8 @@ public class Position extends PersistantObject implements Serializable {
 	}
 
 	public static Position getPositionById(Long lookupId) {
-
 		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<Position> q = em.createQuery("SELECT p FROM Position p WHERE p.positionId = :positionId",
-				Position.class);
-		q.setParameter("positionId", lookupId);
-		Position position = null;
-		try {
-			position = q.getSingleResult();
-		} catch (NoResultException nre) {
-		}
-
-		return position;
+		return em.find(Position.class, lookupId);
 	}
 
 	public List<PredictiveModel> getPmFactors() {

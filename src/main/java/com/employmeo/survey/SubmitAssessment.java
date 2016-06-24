@@ -15,9 +15,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
 
+import com.employmeo.objects.Partner;
 import com.employmeo.objects.Respondant;
 import com.employmeo.util.EmailUtility;
 import com.employmeo.util.PartnerUtil;
+import com.employmeo.util.ScoringUtil;
 
 @Path("submitassessment")
 public class SubmitAssessment {
@@ -48,16 +50,21 @@ public class SubmitAssessment {
 		TASK_EXECUTOR.submit(new Runnable() {
 			@Override
 			public void run() {
-				// Kick off scoring. Future version could involve time consuming
-				// external calls
-				JSONObject message = PartnerUtil.getScoresMessage(respondant);
-
-				// Push to Partner Service if requested
-				PartnerUtil.postScoresToPartner(respondant, message);
+				
+				// Check if integrated:
+				Partner partner = respondant.getPartner();
+				if (partner != null) {
+					PartnerUtil pu = partner.getPartnerUtil();
+					JSONObject message = pu.getScoresMessage(respondant);
+					pu.postScoresToPartner(respondant, message);
+				} else {
+					respondant.getAssessmentScore();
+					ScoringUtil.predictRespondant(respondant);
+				}
 
 				if (respondant.getRespondantEmailRecipient() != null
 						&& !respondant.getRespondantEmailRecipient().isEmpty()) {
-					EmailUtility.sendResults(respondant, message.getJSONObject("applicant"));
+					EmailUtility.sendResults(respondant);
 				}
 			}
 		});

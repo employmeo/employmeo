@@ -82,9 +82,13 @@ public class Partner extends PersistantObject implements Serializable, Principal
 	public PartnerUtil getPartnerUtil() {
 		return PartnerUtil.getUtilFor(this);
 	}
+
+	public static Partner getPartnerById(Integer lookupId) {
+		EntityManager em = DBUtil.getEntityManager();
+		return em.find(Partner.class, lookupId);
+	}
 	
 	public static Partner loginPartner(String login, String password) {
-		// TODO Auto-generated method stub
 		EntityManager em = DBUtil.getEntityManager();
 		TypedQuery<Partner> q = em.createQuery(
 				"SELECT p from Partner p WHERE p.partnerLogin = :login AND p.partnerPassword = :password",
@@ -111,4 +115,5 @@ public class Partner extends PersistantObject implements Serializable, Principal
 	public String getName() {
 		return this.getPartnerName();
 	}
+
 }
