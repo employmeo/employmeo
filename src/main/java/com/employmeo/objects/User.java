@@ -210,4 +210,16 @@ public class User extends PersistantObject implements Serializable {
 		return json;
 	}
 
+	public boolean canView(Respondant respondant) {
+		// TODO Beef this up much more
+		if (respondant == null) return true;
+		return (this.userAccountId == respondant.getRespondantAccountId());
+	}
+
+	public boolean canView(Location location) {
+		// TODO Beef this up much more
+		if (location == null) return true;
+		return (this.userAccountId == location.getLocationAccountId());
+	}
+
 }

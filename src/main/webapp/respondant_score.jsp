@@ -121,8 +121,12 @@
 			urlParams[decode(match[1])] = decode(match[2]);
 	})();
 	var respondantId = urlParams.respondant_id;
+	var respondantUuid = urlParams.respondant_uuid;
 	if (respondantId != null) {
 		getScore(respondantId);
+	}
+	if (respondantUuid != null) {
+		getScoreUuid(respondantUuid);
 	}
 </script>
 

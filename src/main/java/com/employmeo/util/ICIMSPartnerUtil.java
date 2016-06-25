@@ -2,6 +2,7 @@ package com.employmeo.util;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Logger;
@@ -48,8 +49,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	private static final JSONObject ASSESSMENT_INPROGRESS = new JSONObject("{'id':'D37002019003'}");
 	private static final JSONObject ASSESSMENT_SENT = new JSONObject("{'id':'D37002019004'}");
 	private static final SimpleDateFormat ICIMS_SDF = new SimpleDateFormat("yyyy-MM-dd hh:mm a");
-
-	private static String PROXY_URL = "http://63.150.152.151:8080"; //System.getenv("FIXIE_URL");
+	private static String PROXY_URL = System.getenv("QUOTAGUARDSTATIC_URL"); 
 	private Partner partner = null;
 	
 	public ICIMSPartnerUtil(Partner partner) {
@@ -315,7 +315,6 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		person.persistMe();
 		return person;
 	}
-
 	
 	// Specific methods for talking to ICIMS
 
@@ -323,6 +322,16 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		ClientConfig cc = new ClientConfig();
 		cc.property(ApacheClientProperties.PREEMPTIVE_BASIC_AUTHENTICATION, true);
 		cc.property(ClientProperties.PROXY_URI, PROXY_URL);
+		try {
+			URL proxyUrl = new URL(PROXY_URL);
+			String userInfo = proxyUrl.getUserInfo();
+			String pUser = userInfo.substring(0, userInfo.indexOf(':'));
+			String pPass = userInfo.substring(userInfo.indexOf(':') + 1);			
+			cc.property(ClientProperties.PROXY_USERNAME, pUser);
+			cc.property(ClientProperties.PROXY_PASSWORD, pPass);
+		} catch (Exception e) {
+			logger.severe("Failed to set proxy uname pass: " + PROXY_URL);
+		}
 		cc.property(ClientProperties.REQUEST_ENTITY_PROCESSING, "BUFFERED");
 		cc.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
 		cc.connectorProvider(new ApacheConnectorProvider());

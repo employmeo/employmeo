@@ -545,7 +545,23 @@ function getScore(respondantId) {
 			presentRespondantScores(data);
 		}
 	});    
+}
 
+//Respondant scoring section
+function getScoreUuid(respondantUuid) {
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/admin/getscore",
+		data: {
+			"respondant_uuid" : respondantUuid   	
+		},
+		success: function(data)
+		{
+			respondant = data.respondant;
+			presentRespondantScores(data);
+		}
+	});    
 }
 
 function presentRespondantScores(dataScores) {
