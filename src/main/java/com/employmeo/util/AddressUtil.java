@@ -41,7 +41,7 @@ public class AddressUtil {
 			if (results.length() != 1) {
 				// TODO - either multiple results, or no result. error handling
 				// needed?
-logger.warning("Address retrieved " + results.length() + "results: " + formattedAddress);
+				logger.warning("Address retrieved " + results.length() + "results: " + formattedAddress);
 			} else {
 				address.put("formatted_address", results.getJSONObject(0).getString("formatted_address"));
 				JSONObject geo = results.getJSONObject(0).getJSONObject("geometry");
@@ -51,7 +51,7 @@ logger.warning("Address retrieved " + results.length() + "results: " + formatted
 			}
 		} catch (Exception e) {
 			// TODO failed to validate address with lat & lng
-logger.severe(e.getMessage() + " (lookup failed) for: " + formattedAddress);
+			logger.severe(e.getMessage() + " (lookup failed) for: " + formattedAddress);
 		}
 
 	}

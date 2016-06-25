@@ -50,5 +50,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 .settings/
+src/main/java/com/employmeo/testing/
 target/
 /bin/

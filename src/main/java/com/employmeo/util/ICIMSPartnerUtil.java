@@ -1,9 +1,7 @@
 package com.employmeo.util;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Logger;
@@ -142,7 +140,12 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		for (AccountSurvey as : assessments) {
 			if (assessmentName.equals(as.getSurveyName())) aSurvey = as;
 		}
-		if (aSurvey == null) aSurvey = account.getDefaultAccountSurvey();
+		if (aSurvey == null) {
+			StringBuffer sb = new StringBuffer();
+			for (AccountSurvey as : assessments) sb.append(as.getSurveyName() + " ");
+			logger.warning("Could Not Match: " + assessmentName + " to any of" + sb.toString());
+			aSurvey = account.getDefaultAccountSurvey();
+		}
 		
 		return aSurvey;
 	}
@@ -199,7 +202,6 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 			}
 		}
 		
-		
 		Person person = getPerson(candidate, account);
 		Position position = this.getPositionFrom(job, account);
 		Location location = this.getLocationFrom(job, account);
@@ -208,6 +210,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		respondant = new Respondant();
 		respondant.setRespondantAtsId(workflowLink);
 		respondant.setRespondantRedirectUrl(json.getString("returnUrl"));
+		// TODO - add logic to grab hiring manager info to set up email notify, based on client config
 		//respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
 		respondant.setRespondantScorePostMethod(workflowLink);
 		respondant.setAccount(account);
@@ -248,26 +251,22 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 			if (it.hasNext()) notes.append(", ");
 		}
 
-		String profile = PositionProfile.getProfileDefaults(respondant.getRespondantProfile())
-				.getString("profile_name");
-
-		String portalLink = EmailUtility.getPortalLink(respondant);
-		String assessmentName = respondant.getAccountSurvey().getSurveyName();
-
-		JSONObject json = new JSONObject();
-		JSONArray resultset = new JSONArray();
-		JSONObject results = new JSONObject();
 		JSONObject assessment = new JSONObject();
+		assessment.put("value", respondant.getAccountSurvey().getSurveyName());
 
-		assessment.put("value", assessmentName);
-		results.put("assessmentdate", ICIMS_SDF.format(new Date(respondant.getRespondantFinishTime().getTime())));
+		JSONObject results = new JSONObject();
 		results.put("assessmentname", assessment);
+		results.put("assessmentdate", ICIMS_SDF.format(new Date(respondant.getRespondantFinishTime().getTime())));
 		results.put("assessmentscore", respondant.getCompositeScore());
-		results.put("assessmentresult", profile);
+		results.put("assessmentresult", PositionProfile.getProfileDefaults(
+				respondant.getRespondantProfile()).getString("profile_name"));
 		results.put("assessmentnotes", notes.toString());
 		results.put("assessmentstatus", ASSESSMENT_COMPLETE);
-		results.put("assessmenturl", portalLink);
+		results.put("assessmenturl", ExternalLinksUtil.getPortalLink(respondant));
+
+		JSONArray resultset = new JSONArray();
 		resultset.put(results);
+		JSONObject json = new JSONObject();
 		json.put("assessmentresults", resultset);
 		return json;
 	}
@@ -276,7 +275,6 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	@Override
 	public void postScoresToPartner(Respondant respondant, JSONObject message) {
 		String method = respondant.getRespondantAtsId();
-		
 		Response response = icimsPatch(method, message);
 		logger.info("Posted Scores to ICIMS: " + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
 		if (response.hasEntity()) logger.info("Response Message: " + response.readEntity(String.class));

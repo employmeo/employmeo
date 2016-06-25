@@ -151,6 +151,7 @@ public class ScoringUtil {
 				respondant.setRespondantProfile(PositionProfile.PROFILE_A);
 			}
 
+			respondant.setCompositeScore(9.677*(a + b + c + d) + 50.0);
 			respondant.setRespondantStatus(Respondant.STATUS_PREDICTED);
 			respondant.mergeMe();
 		}

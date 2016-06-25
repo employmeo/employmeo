@@ -1,52 +1,50 @@
 package com.employmeo.util;
 
-import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import org.json.JSONObject;
 
 import com.employmeo.objects.Respondant;
 import com.sendgrid.*;
 
 public class EmailUtility {
 
-	public static final Email FROM_ADDRESS = new Email("info@employmeo.com");
+	public static final String FROM_ADDRESS = "info@employmeo.com";
 	private static final String INVITE_TEMPLATE_ID = "ea059aa6-bac6-41e0-821d-98dc4dbfc31d";
 	private static final String RESULTS_TEMPLATE_ID = "8e5983ac-913d-4370-8ea9-312ff8665f39";
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
-	
 	private static Logger logger = Logger.getLogger("EmailUtility");
 	private static String SG_API = System.getenv("SENDGRID_API");
-	private static String BASE_SURVEY_URL = System.getenv("BASE_SURVEY_URL");
+
 
 	public static SendGrid getSendGrid() {
 		return new SendGrid(SG_API);
 	}
 
-	public static void sendMessage(Email from, String to, String subject, String content, StringBuffer htmlpart) {
+	public static void sendMessage(String from, String to, String subject, String content, StringBuffer htmlpart) {
 		
-		Mail email = new Mail(from, subject, new Email(to), new Content("text/plain", content));
-		
+		Mail email = new Mail(new Email(from), subject, new Email(to), new Content("text/plain", content));
 		if (htmlpart != null) {
 			Content htmlContent = new Content("text/html", htmlpart.toString());
 			email.addContent(htmlContent);
-		}
-		
+		}	
 		asynchSend(email);
 		return;
 	}
 
 	public static void sendEmailInvitation(Respondant respondant) {
 
-		String link = EmailUtility.getAssessmentLink(respondant);
+		String link = ExternalLinksUtil.getAssessmentLink(respondant);
 		String body = "Dear " + respondant.getPerson().getPersonFname() + ",\n" + "\n"
 				+ "Congratulations, we are excited to invite you to complete a preliminary "
 				+ "assessment for this position.\nThis assessment can be completed on a "
 				+ "mobile device or in a browser at this link: \n" + link;
 		
-		Mail email = new Mail(FROM_ADDRESS,
+		Email from = new Email("",respondant.getRespondantAccount().getAccountSentbyText());
+		from = new Email(FROM_ADDRESS);
+		
+		Mail email = new Mail(from,
 				"Invitation to Apply",
 				new Email(respondant.getPerson().getPersonEmail()),
 				new Content("text/plain", body));
@@ -66,12 +64,12 @@ public class EmailUtility {
 	
 	public static void sendResults(Respondant respondant) {
 
-		String plink = getPortalLink(respondant);
+		String plink = ExternalLinksUtil.getPortalLink(respondant);
 		String applicantName = respondant.getPerson().getPersonFname() + " " + respondant.getPerson().getPersonLname();
 		String body = "Dear User,\n" + "\n" + "The assessment for applicant " + applicantName
 				+ " has been submitted and scored. The results are now available on the portal at:\n" + plink + "\n";
 
-		Mail email = new Mail(FROM_ADDRESS,
+		Mail email = new Mail(new Email(FROM_ADDRESS),
 				"Assessment Complete",
 				new Email(respondant.getRespondantEmailRecipient()),
 				new Content("text/plain", body));
@@ -107,44 +105,6 @@ public class EmailUtility {
 				}
 			}
 		});
-	}
-	/****
-	 * Section to generate external links (uses environment variables)
-	 */
-
-	public static String getAssessmentLink(Respondant respondant) {
-		String link = null;
-		try {
-			link = new URL(
-					BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_uuid=" + respondant.getRespondantUuid())
-							.toString();
-		} catch (Exception e) {
-			link = BASE_SURVEY_URL + "/take_assessment.html" + "?&respondant_uuid=" + respondant.getRespondantUuid();
-		}
-		return link.toString();
-	}
-
-	public static String getPortalLink(Respondant respondant) {
-		String link = null;
-		try {
-			link = new URL(
-					BASE_SURVEY_URL + "/respondant_score.jsp" + "?&respondant_uuid=" + respondant.getRespondantUuid())
-							.toString();
-		} catch (Exception e) {
-			link = BASE_SURVEY_URL + "/respondant_score.jsp" + "?&respondant_uuid=" + respondant.getRespondantUuid();
-		}
-		return link.toString();
-	}
-
-	public static String getRenderLink(JSONObject applicant) {
-		String link = null;
-		try {
-			link = new URL(BASE_SURVEY_URL + "/render.html" + "?&scores=" + applicant.getJSONArray("scores").toString())
-					.toString();
-		} catch (Exception e) {
-			link = BASE_SURVEY_URL + "/render.html" + "?&scores=" + applicant.getJSONArray("scores").toString();
-		}
-		return link.toString();
 	}
 
 }

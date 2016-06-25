@@ -230,7 +230,7 @@ public class DefaultPartnerUtil implements PartnerUtil {
 		jApplicant.put("applicant_id", respondant.getRespondantId());
 
 		delivery = new JSONObject();
-		delivery.put("assessment_url", EmailUtility.getAssessmentLink(respondant));
+		delivery.put("assessment_url", ExternalLinksUtil.getAssessmentLink(respondant));
 
 		JSONObject output = new JSONObject();
 		output.put("account", jAccount);
@@ -282,8 +282,8 @@ public class DefaultPartnerUtil implements PartnerUtil {
 		}
 
 		applicant.put("scores", scoreset);
-		applicant.put("portal_link", EmailUtility.getPortalLink(respondant));
-		applicant.put("render_link", EmailUtility.getRenderLink(applicant));
+		applicant.put("portal_link", ExternalLinksUtil.getPortalLink(respondant));
+		applicant.put("render_link", ExternalLinksUtil.getRenderLink(applicant));
 
 		JSONObject message = new JSONObject();
 		message.put("account", jAccount);

@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import com.employmeo.objects.Account;
 import com.employmeo.objects.Partner;
 import com.employmeo.objects.Respondant;
-import com.employmeo.util.EmailUtility;
+import com.employmeo.util.ExternalLinksUtil;
 import com.employmeo.util.PartnerUtil;;
 
 @Path("icimsapplicationcomplete")
@@ -38,9 +38,9 @@ logger.info("ICIMS Posted this: " +json);
 
 		URI link = null;
 		try {
-			link = new URI(EmailUtility.getAssessmentLink(applicant));
+			link = new URI(ExternalLinksUtil.getAssessmentLink(applicant));
 		} catch (Exception e) {
-			logger.severe("Failed to URI-ify link: " + EmailUtility.getAssessmentLink(applicant));			
+			logger.severe("Failed to URI-ify link: " + ExternalLinksUtil.getAssessmentLink(applicant));			
 		}
 		
 		return Response.seeOther(link).build();
