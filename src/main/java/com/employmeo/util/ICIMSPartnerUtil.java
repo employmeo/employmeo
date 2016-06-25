@@ -234,11 +234,6 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		
 		JSONObject scores = respondant.getAssessmentScore();
 		ScoringUtil.predictRespondant(respondant);
-		Account account = respondant.getRespondantAccount();
-
-		String result = PositionProfile.getProfileDefaults(respondant.getRespondantProfile())
-				.getString("profile_name");
-
 
 		Iterator<String> it = scores.keys();
 		StringBuffer notes = new StringBuffer();
@@ -277,27 +272,14 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		return json;
 	}
 
-	
-	public static void main (String[] args) throws Exception {
-		ICIMSPartnerUtil pu = new ICIMSPartnerUtil(null);
-		Respondant respondant = new Respondant();
-		Long today = Calendar.getInstance().getTimeInMillis();
-		respondant.setRespondantFinishTime(new Timestamp(today));
-		respondant.setRespondantAtsId("https://api.icims.com/customers/6269/applicantworkflows/1486");
 		
-		JSONObject json = pu.getScoresMessage(respondant);
-		pu.postScoresToPartner(respondant, json);
-	
-	}
-	
 	@Override
 	public void postScoresToPartner(Respondant respondant, JSONObject message) {
 		String method = respondant.getRespondantAtsId();
 		
 		Response response = icimsPatch(method, message);
-		System.out.println("Response Status: " + response.getStatus());
-		System.out.println("Response Status Phrase: " + response.getStatusInfo().getReasonPhrase());
-		System.out.println("Response Message: " + response.readEntity(String.class));
+		logger.info("Posted Scores to ICIMS: " + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
+		if (response.hasEntity()) logger.info("Response Message: " + response.readEntity(String.class));
 	}	
 	
 	public Person getPerson(JSONObject applicant, Account account) {
