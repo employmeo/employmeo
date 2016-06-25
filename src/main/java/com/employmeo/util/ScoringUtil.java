@@ -67,11 +67,11 @@ public class ScoringUtil {
 	}
 
 	private static void postMercerScores(Respondant respondant) {
+		logger.info("Mercer Scoring Repondant: " + respondant.getJSONString());
 		List<Response> responses = respondant.getResponses();
 		Client client = ClientBuilder.newClient();
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(MERCER_USER, MERCER_PASS);
 		client.register(feature);
-logger.info("Mercer Scoring Repondant: " + respondant.getJSONString());
 
 		JSONArray answers = new JSONArray();
 		for (int i=0;i<responses.size();i++) {

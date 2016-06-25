@@ -140,7 +140,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		AccountSurvey aSurvey = null;
 		List<AccountSurvey> assessments = account.getAccountSurveys();
 		for (AccountSurvey as : assessments) {
-			if (assessmentName.equals(as.getAsDisplayName())) aSurvey = as;
+			if (assessmentName.equals(as.getSurveyName())) aSurvey = as;
 		}
 		if (aSurvey == null) aSurvey = account.getDefaultAccountSurvey();
 		
@@ -257,7 +257,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 				.getString("profile_name");
 
 		String portalLink = EmailUtility.getPortalLink(respondant);
-		String assessmentName = respondant.getAccountSurvey().getAsDisplayName();
+		String assessmentName = respondant.getAccountSurvey().getSurveyName();
 
 		JSONObject json = new JSONObject();
 		JSONArray resultset = new JSONArray();

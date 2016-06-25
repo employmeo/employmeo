@@ -30,7 +30,7 @@ import com.employmeo.objects.PositionProfile;
 public class BasicTesting {
 
 	// Basic Tool Settings
-	public static final String SERVER_NAME = "https://localhost";
+	public static final String SERVER_NAME = "http://staging.employmeo.com";
 	private static final int THREAD_COUNT = 1;
 	private static final String ATS_USER = "fastworkforce";
 	private static final String ATS_PASS = "password";	//icims: "FGx4bgfZ!C"
@@ -50,18 +50,20 @@ public class BasicTesting {
 
 	public BasicTesting() {
 	}
-	
+//	https://employmeo.herokuapp.com/take_assessment.html?&respondant_uuid=650868fa-deb7-4243-8bf5-7893adb3cf0a
+		
 	public static void main (String[] args) throws Exception {
 
-		SSLContext sslContext = SSLContext.getInstance("TLS");
-		sslContext.init(null, new TrustManager[]{new X509TrustManager() {
-	        public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-	        public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-	        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
-	    }}, new java.security.SecureRandom());
-		
-		Client adminClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
-		Client integrationClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
+		Long appId = new Long(3457);
+		String link = "https://employmeo.herokuapp.com/take_assessment.html?&respondant_uuid=650868fa-deb7-4243-8bf5-7893adb3cf0a";
+		takeSurvey(getClient(), appId, link);
+		//runLoops();
+	}
+	
+	public static void runLoops() throws Exception {
+	
+		Client adminClient = getClient();
+		Client integrationClient = getClient();
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(ATS_USER, ATS_PASS);
 		integrationClient.register(feature);
 		
@@ -92,7 +94,7 @@ public class BasicTesting {
 							link = result.getJSONObject("delivery").getString("assessment_url");
 							logger.info("Thread (" + threadnum + ") Received Assessment (" + appId + ") Link: " + link);
 							Thread.sleep(waittime);
-							Client surveyClient = ClientBuilder.newBuilder().sslContext(sslContext).build();
+							Client surveyClient = getClient();
 							takeSurvey(surveyClient, appId, link);
 							logger.info("Thread (" + threadnum + ") Completed Assessment: " + appId);
 							Thread.sleep(100*DELAY);
@@ -119,7 +121,9 @@ public class BasicTesting {
 		int idx = link.indexOf("=");
 		String uuid = link.substring(idx + 1);
 		form.param("respondant_uuid", uuid);
-		JSONObject survey = postFormToService(client,form, "/survey/getsurvey").getJSONObject("survey");
+		
+		JSONObject collection = postFormToService(client,form, "/survey/getsurvey");
+		JSONObject survey = collection.getJSONObject("survey");
 		JSONArray questions = survey.getJSONArray("questions");
 
 		for (int j=0;j<questions.length();j++) {
@@ -233,7 +237,6 @@ public class BasicTesting {
 		WebTarget target = client.target(postmethod);
 		target.request(MediaType.APPLICATION_JSON)
 					.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED));
-
 		return;
 
 	}
@@ -271,4 +274,14 @@ public class BasicTesting {
 		return atsorder;
 	}
 
+	private static Client getClient() throws Exception {
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+	        public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+	        public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+	        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+	    }}, new java.security.SecureRandom());
+
+		return ClientBuilder.newBuilder().sslContext(sslContext).build();
+	}
 }
