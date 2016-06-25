@@ -31,10 +31,10 @@ public class BasicTesting {
 
 	// Basic Tool Settings
 	public static final String SERVER_NAME = "http://staging.employmeo.com";
-	private static final int THREAD_COUNT = 1;
+	private static final int THREAD_COUNT = 15;
 	private static final String ATS_USER = "fastworkforce";
 	private static final String ATS_PASS = "password";	//icims: "FGx4bgfZ!C"
-	private static final int LOOPS = 1;
+	private static final int LOOPS = 2;
 	private static final int DELAY = 50;
 	public static JSONObject account = new JSONObject().put("account_ats_id", "1111");
 
@@ -53,11 +53,12 @@ public class BasicTesting {
 //	https://employmeo.herokuapp.com/take_assessment.html?&respondant_uuid=650868fa-deb7-4243-8bf5-7893adb3cf0a
 		
 	public static void main (String[] args) throws Exception {
-
+/*
 		Long appId = new Long(3457);
 		String link = "https://employmeo.herokuapp.com/take_assessment.html?&respondant_uuid=650868fa-deb7-4243-8bf5-7893adb3cf0a";
 		takeSurvey(getClient(), appId, link);
-		//runLoops();
+*/
+		runLoops();
 	}
 	
 	public static void runLoops() throws Exception {

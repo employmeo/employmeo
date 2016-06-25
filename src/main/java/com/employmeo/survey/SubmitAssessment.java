@@ -41,16 +41,17 @@ public class SubmitAssessment {
 			respondant.mergeMe();
 		}
 
-		postScores(respondant);
+		postScores(respondant.getRespondantId());
 
 		return respondant.getJSONString();
 	}
 
-	private static void postScores(Respondant respondant) {
+	private static void postScores(Long respondantId) {
 		TASK_EXECUTOR.submit(new Runnable() {
 			@Override
 			public void run() {
 				
+				Respondant respondant = Respondant.getRespondantById(respondantId);
 				// Check if integrated:
 				Partner partner = respondant.getPartner();
 				if (partner != null) {
