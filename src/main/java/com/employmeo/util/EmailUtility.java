@@ -50,11 +50,10 @@ public class EmailUtility {
 				new Content("text/plain", body));
 		email.addContent(new Content("text/html", body));
 		email.setTemplateId(INVITE_TEMPLATE_ID);
-		Personalization p = new Personalization();
-		p.addSubstitution("[LINK_TO_ASSESSMENT]", link );
-		p.addSubstitution("[APPLICANT_NAME]", respondant.getPerson().getPersonFname());
-		p.addSubstitution("[ACCOUNT_NAME]", respondant.getRespondantAccount().getAccountName());
-		email.addPersonalization(p);
+
+		email.addCustomArg("[LINK_TO_ASSESSMENT]", link );
+		email.addCustomArg("[APPLICANT_NAME]", respondant.getPerson().getPersonFname());
+		email.addCustomArg("[ACCOUNT_NAME]", respondant.getRespondantAccount().getAccountName());
 
 		asynchSend(email);
 		return;
@@ -76,12 +75,9 @@ public class EmailUtility {
 		email.addContent(new Content("text/html", body));
 		email.setTemplateId(RESULTS_TEMPLATE_ID);
 
-		Personalization p = new Personalization();
-
-		p.addSubstitution("[LINK_TO_RESULTS]", plink);
-		p.addSubstitution("[APPLICANT_NAME]", applicantName);
-		p.addSubstitution("[ACCOUNT_NAME]", respondant.getRespondantAccount().getAccountName());
-		email.addPersonalization(p);
+		email.addCustomArg("[LINK_TO_RESULTS]", plink);
+		email.addCustomArg("[APPLICANT_NAME]", applicantName);
+		email.addCustomArg("[ACCOUNT_NAME]", respondant.getRespondantAccount().getAccountName());
 
 		asynchSend(email);
 	}
@@ -92,9 +88,9 @@ public class EmailUtility {
 			public void run() {
 				SendGrid sendGrid = EmailUtility.getSendGrid();
 				Request req = new Request();
+				req.method= Method.POST;
+				req.endpoint = "mail/send/beta";
 				try {
-					req.method= Method.POST;
-					req.endpoint = "mail/send/beta";
 					req.body = email.build();
 					Response response = sendGrid.api(req);
 					logger.info("Sent: " + email.getSubject() + "(RC: " + response.statusCode + ") "
