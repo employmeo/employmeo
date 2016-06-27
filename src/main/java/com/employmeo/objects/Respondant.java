@@ -312,10 +312,6 @@ public class Respondant extends PersistantObject implements Serializable {
 		return getSurvey().getSurveyId();
 	}
 
-//	public void setRespondantSurveyId(Long surveyId) {
-//		this.respondantSurveyId = surveyId;
-//	}
-
 	public Survey getSurvey() {
 		return getAccountSurvey().getSurvey();
 	}
@@ -377,7 +373,8 @@ public class Respondant extends PersistantObject implements Serializable {
 	}
 
 	public String getRespondantRedirectUrl() {
-		return this.respondantRedirectUrl;
+		if (this.respondantRedirectUrl != null)	return this.respondantRedirectUrl;
+		return this.accountSurvey.getAsRedirectPage();
 	}
 
 	public void setRespondantRedirectUrl(String respondantRedirectUrl) {

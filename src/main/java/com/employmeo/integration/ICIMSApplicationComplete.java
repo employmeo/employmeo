@@ -29,7 +29,7 @@ public class ICIMSApplicationComplete {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response doPost(JSONObject json) {
-logger.info("ICIMS Posted this: " +json);
+		logger.info("ICIMS Application Complete with: " +json);
 	
 		PartnerUtil pu = PartnerUtil.getUtilFor((Partner) sc.getUserPrincipal());
 		Account account = pu.getAccountFrom(json);

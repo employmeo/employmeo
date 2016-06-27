@@ -208,16 +208,17 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		AccountSurvey aSurvey = this.getSurveyFrom(job, account);
 
 		respondant = new Respondant();
+		
 		respondant.setRespondantAtsId(workflowLink);
-		respondant.setRespondantRedirectUrl(json.getString("returnUrl"));
-		// TODO - add logic to grab hiring manager info to set up email notify, based on client config
-		//respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
+		if (json.has("returnUrl")) respondant.setRespondantRedirectUrl(json.getString("returnUrl"));
 		respondant.setRespondantScorePostMethod(workflowLink);
 		respondant.setAccount(account);
 		respondant.setPosition(position);
 		respondant.setPartner(this.partner);
 		respondant.setRespondantLocationId(location.getLocationId());
 		respondant.setAccountSurvey(aSurvey);
+		// TODO - add logic to grab hiring manager info to set up email notify, based on client config
+		//respondant.setRespondantEmailRecipient(delivery.optString("scores_email_address"));
 
 		respondant.setPerson(person);
 		respondant.persistMe();

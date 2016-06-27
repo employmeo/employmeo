@@ -93,6 +93,9 @@ public class Person extends PersistantObject implements Serializable {
 		this.personLname = personLname;
 	}
 
+	public String getPersonFullName() {
+		return this.personFname + " " + this.personLname;
+	}
 	public String getPersonSsn() {
 		return this.personSsn;
 	}
