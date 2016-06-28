@@ -26,7 +26,7 @@ public class ICIMSStatusUpdate {
 
 	@Context
 	private SecurityContext sc;
-	private static Logger logger = Logger.getLogger("ICIMSService");
+	private static Logger logger = Logger.getLogger("com.employmeo.integration");
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

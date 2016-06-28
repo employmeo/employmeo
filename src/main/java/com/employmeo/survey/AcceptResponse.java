@@ -17,7 +17,7 @@ import com.employmeo.objects.Response;
 @Path("response")
 public class AcceptResponse {
 	
-	private static Logger logger = Logger.getLogger("SurveyService");
+	private static Logger logger = Logger.getLogger("com.employmeo.survey");
 	
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)

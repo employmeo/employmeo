@@ -26,7 +26,7 @@ public class GetLocations {
 
 	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
 			.entity("{ message: 'Missing Required Parameters' }").build();
-	private static Logger logger = Logger.getLogger("RestService");
+	private static Logger logger = Logger.getLogger("com.employmeo.integration");
 	@Context
 	private SecurityContext sc;
 	

@@ -23,7 +23,7 @@ import com.employmeo.objects.Survey;
 
 public class ScoringUtil {
 
-	private static Logger logger = Logger.getLogger("ScoringUtil");
+	private static Logger logger = Logger.getLogger("com.employmeo.util.ScoringUtil");
 	private static String MERCER_PREFIX = "Mercer";
 	private static String MERCER_SERVICE = System.getenv("MERCER_SERVICE");
 	private static String MERCER_USER = "employmeo";

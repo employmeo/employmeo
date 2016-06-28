@@ -13,7 +13,7 @@ import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
 
 public interface PartnerUtil {
-	public static Logger logger = Logger.getLogger("PartnerUtility");
+	public static Logger logger = Logger.getLogger("com.employmeo.integration");
 	public Partner partner = null;
 	public static HashMap<Partner,PartnerUtil> utils = new HashMap<Partner,PartnerUtil>();
 	

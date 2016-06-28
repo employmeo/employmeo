@@ -25,7 +25,7 @@ public class Login {
 
 	private final Response LOGIN_FAILED = Response.status(Response.Status.UNAUTHORIZED)
 			.entity("{ message: 'Login failed' }").build();
-	private Logger logger = Logger.getLogger("AdminService");
+	private Logger logger = Logger.getLogger("com.employmeo.admin");
 
 	@POST
 	@PermitAll

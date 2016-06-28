@@ -26,7 +26,7 @@ public class ATSOrder {
 	@Context
 	private SecurityContext sc;
 
-	private static Logger logger = Logger.getLogger("RestService");
+	private static Logger logger = Logger.getLogger("com.employmeo.integration");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

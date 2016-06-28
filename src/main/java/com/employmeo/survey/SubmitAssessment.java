@@ -24,7 +24,7 @@ import com.employmeo.util.ScoringUtil;
 @Path("submitassessment")
 public class SubmitAssessment {
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
-	private static Logger logger = Logger.getLogger("SurveyService");
+	private static Logger logger = Logger.getLogger("com.employmeo.survey");
 
 	@PermitAll
 	@POST

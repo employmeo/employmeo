@@ -22,7 +22,7 @@ public class Echo {
 	@Context
 	private Response resp;
 
-	private static Logger logger = Logger.getLogger("RestService");
+	private static Logger logger = Logger.getLogger("com.employmeo.integration");
 
 	@POST
 	@PermitAll

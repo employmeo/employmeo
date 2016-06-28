@@ -15,7 +15,6 @@ import org.json.JSONArray;
 
 import com.employmeo.objects.Account;
 import com.employmeo.objects.AccountSurvey;
-import com.employmeo.objects.Survey;
 import com.employmeo.objects.User;
 
 import java.util.List;

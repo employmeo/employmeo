@@ -25,13 +25,6 @@ var sections;
 })();
 
 
-// Stub function to be replaced
-function getSurveyDisclaimer(survey) {
-	return survey.survey_preamble_text;
-	//return "<h3>Welcome</h3><p>In an effort to ensure that applicants meet position requirements, this employer uses a pre-employment assessment administered by employmeo.com for the job you have recently applied to. Please complete the following test to the best of your ability.</p><p>All candidates are tested according to Equal Employment Opportunity Commission (EEOC) testing guidelines. For further information, contact the hiring mangaer responsible for this role.</p>";
-}
-
-
 //
 // Rest Service Calls
 //
@@ -75,18 +68,6 @@ function buildPlainSurveyWithRespondantId(uuId) {
       });
 }
 
-function nextPage() {
-	
-	if(isPageComplete($('.carousel-inner div.active').index())) {
-		$('#survey').carousel("next");
-	} else {
-		// TODO - some sort of user feedback to show page is incomplete
-	}
-}
-function prevPage() {
-	$('#survey').carousel("prev");
-}
-
 function getPlainSurveyForNewRespondant(form) {
     $.ajax({
         type: "POST",
@@ -121,6 +102,40 @@ function submitSurvey() {
       });	
 }
 
+// Pagination Code
+function nextPage() {	
+	if(isPageComplete($('.carousel-inner div.active').index())) {
+		$('#survey').carousel("next");
+	} else {
+		// TODO - some sort of user feedback to show page is incomplete
+	}
+}
+
+function prevPage() {
+	$('#survey').carousel("prev");
+}
+function isPageComplete(pagenum) {
+	var qlist = pagination[pagenum];
+	var complete = true;
+	for (var key in qlist ) {
+		if (responses[qlist[key].question_id] == null) complete = false;
+	}
+	if (complete) {
+		var button = '#nextbtn-' + pagenum;
+		$(button).attr('disabled', false);
+	}
+	return complete;
+}
+
+function isSurveyComplete() {
+	var complete = true;
+	for (var key in questions ) {
+		if (responses[questions[key].question_id] == null) complete = false;
+	}
+	return complete;
+}
+
+// Error Handling Functions
 function showAssessmentNotAvailable(data) {
 	  // code to create a form to fill out for a new survey respondant	
 		var deck = document.getElementById('wrapper');
@@ -137,7 +152,6 @@ function showAssessmentNotAvailable(data) {
 		card.appendTo(deck);
 }
 
-//
 function createPlainNewRespondant(surveyId, accountId) {
   // code to create a form to fill out for a new survey respondant	
 	var deck = document.getElementById('wrapper');
@@ -289,72 +303,73 @@ function assemblePlainSurvey(collection) {
 	var deck = document.getElementById('wrapper');
 	respondant = collection.respondant;
 	survey = collection.survey;
+	sections = survey.sections;
 	questions = survey.questions.sort(function(a,b) {
 		if (a.question_page == b.question_page) {
 			return a.question_sequence < b.question_sequence ? -1:1;
 		} else {
 			return a.question_page < b.question_page ? -1:1;
 		}});;
-	sections = survey.survey_sections;
+	
 	pagination = new Array();
 	$(deck).empty();
-
+	
 	// prepare survey into sections:
-	if ((sections == null) || (sections.length == 0)) {}
 	var qlimit = 5; // questions per page
 	totalpages = Math.ceil(questions.length / qlimit) + 1 + 1; // (preamble + questions total)
 
 	var pagecount = 1;
-	var card = $('<div />', {
-		'class' : 'item active'
-	});
-	
-	card.append(getHrDiv());
-	card.append($('<div />', {
-		'class' : 'col-xs-12 col-sm-12 col-md-12',
-		}).html(survey.survey_preamble_text));
-	card.append(getHrDiv());
-	card.append(getSurveyNav(pagecount, totalpages));	
+	var card = getPreamble(pagecount, totalpages);
 	card.appendTo(deck);
 	pagecount++;
+
 	
-	var qcount = 0;
-	var qpp = 0;
-	card = $('<div />', {
-		'class' : 'questionpage item'
-	});
-	card.append(getHrDiv());
-	pagination[pagecount] = new Array();
-	$.each(questions, function(index, question) {
-		qcount++;
-		if (qpp == qlimit) {
-			card.append(getSurveyNav(pagecount, totalpages));	
-			card.append($('<div />', {
-				'class' : 'col-xs-12 col-sm-12 col-md-12',
-				'height' : '75px'}));
-			card.appendTo(deck);
-			pagecount++;
-			pagination[pagecount] = new Array();
-			qpp = 0;
-			card = $('<div />', {
-				'class' : 'questionpage item'
-			});
-			card.append(getHrDiv());				
+	$.each(sections, function(index, section) {
+		section.questions = new Array();
+		card = getInstructions(section, pagecount, totalpages);
+		card.appendTo(deck);
+		pagecount++;
+		
+		var qcount = 0;
+		var qpp = 0;
+		card = $('<div />', {'class' : 'questionpage item'});
+		card.append(getHrDiv());
+		pagination[pagecount] = new Array();
+		
+		for (var q=0;q<questions.length;q++) {
+			var question = questions[q];
+			if (question.question_page == section.section_number) {
+					qcount++;
+					if (qpp == qlimit) {
+						card.append(getSurveyNav(pagecount, totalpages, 4));	
+						card.append($('<div />', {
+							'class' : 'col-xs-12 col-sm-12 col-md-12',
+							'height' : '75px'}));
+						card.appendTo(deck);
+						pagecount++;
+						pagination[pagecount] = new Array();
+						qpp = 0;
+						card = $('<div />', {'class' : 'questionpage item'});
+						card.append(getHrDiv());				
+					}
+					var pageqs = pagination[pagecount];
+					pageqs[qpp] = question;
+					qpp++;
+					var questionrow = $('<div />', {'class' : 'row'}).append($('<div />', {
+						'class' : 'col-xs-1 col-sm-1 col-md-1 col-lg-1 text-right questiontext',
+						'text'	: qcount + '.'
+					}));
+					var qcontent = $('<div />', {'class' : 'col-xs-11 col-sm-11 col-md-11 col-lg-11'});
+					qcontent.append(getDisplayQuestion(question));
+					qcontent.append(getPlainResponseForm(question, respondant, qcount, pagecount));
+					questionrow.append(qcontent);		
+					card.append(questionrow);
+					card.append(getHrDiv());
+			}
 		}
-		var pageqs = pagination[pagecount];
-		pageqs[qpp] = question;
-		qpp++;
-		 var questionrow = $('<div />', {
-			 'class' : 'row'
-		 }).append(getPlainResponseForm(question, respondant, qcount, pagecount));
-		 var widerow = $('<div />', {
-			 'class' : 'col-xs-12 col-sm-12 col-md-12'
-		 }).append(questionrow);
-		 card.append(widerow);
-		 card.append(getHrDiv());
 	});
-	
-	card.append(getSurveyNav(pagecount, totalpages));	
+		
+	card.append(getSurveyNav(pagecount, totalpages,3));	
 	card.append($('<div />', {
 		'class' : 'col-xs-12 col-sm-12 col-md-12',
 		'height' : '75px'}));
@@ -376,11 +391,50 @@ function assemblePlainSurvey(collection) {
 	}
 }
 
+// Show Assessment Preamble
+function getPreamble(pagecount, totalpages) {
+	var preamble = $('<div />', {'class' : 'item active'});
+	
+	preamble.append(getHrDiv());
+	preamble.append($('<div />', {
+		'class' : 'col-xs-12 col-sm-12 col-md-12',
+		}).html(survey.survey_preamble_text));
+	preamble.append(getHrDiv());
+	preamble.append(getSurveyNav(pagecount, totalpages, 1));	
+
+	return preamble;
+}
+
+//Show Section Instructions
+function getInstructions(section, pagecount, totalpages) {
+	var instr = $('<div />', {'class' : 'item'});
+	
+	instr.append(getHrDiv());
+	instr.append($('<div />', {
+		'class' : 'col-xs-12 col-sm-12 col-md-12',
+		}).html(section.section_instructions));
+	instr.append(getHrDiv());
+	instr.append(getSurveyNav(pagecount, totalpages, 2));	
+
+	return instr;
+}
+
+// create the question / response form
+function getDisplayQuestion(question) {
+	var qtextdiv = $('<div />', {
+		'class' : 'col-xs-12 col-sm-6 col-md-6 questiontext text-left',
+		'text' : question.question_text
+	});
+	return qtextdiv;
+}
+
 function getPlainResponseForm(question, respondant, qcount, pagecount) {
+	var ansblock = $('<div />', {'class' : 'col-xs-12 col-sm-6 col-md-6'});
+
 	var form =  $('<form />', {
 		 'name' : 'question_'+question.question_id,
 		 'action' : "/response"
-	 });
+	});
 	form.append($('<input/>', {
 		name : 'response_id',
 		type : 'hidden',
@@ -397,29 +451,17 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 		type : 'hidden',
 		value : question.question_id
 	}));
-	var qtextdiv = $('<div />', {
-		'class' : 'col-xs-12 col-sm-6 col-md-6'
-	});
-	var questionlist = $('<ol />', {
-		'start' : qcount,
-		'class' : 'questiontext'
-	}).append($('<li />', {
-		'text' : question.question_text
-	}));
-	
-	qtextdiv.append(questionlist);
-	form.append(qtextdiv);
 
 	switch (question.question_type) {
 	case 6: // yes-notsure-no
 		var ansdiv = $('<div />', {
-			'class' : 'col-xs-12 col-sm-6 col-md-6'
+			'class' : 'row'
 		});
 		for (var ans=0;ans<question.answers.length;ans++) {
 			var answer = question.answers[ans];
 			var qrespdiv = $('<div />', {
-				'class' : 'col-xs-4 col-sm-4 col-md-4',
-				'style' : 'padding-right: 1px; padding-left: 1px;'
+				'style' : 'padding-right: 1px; padding-left: 1px;',
+				'class' : 'col-xs-4 col-sm-4 col-md-4'
 			});
 			var radiobox = $('<input />', {
 				'id'   : 'radiobox-' + question.question_id +"-"+ answer.answer_value,
@@ -570,7 +612,8 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 		form.append(qrespdiv);
 		break;
 	}
-	return form;
+	ansblock.append(form);
+	return ansblock;
 }
 
 function getHrDiv () {
@@ -580,43 +623,46 @@ function getHrDiv () {
 	});
 }
 
-function getSurveyNav(pagecount, totalpages) {
-	var navigation = $('<div />', {
-		'class': 'col-xs-12 col-sm-12 col-md-12',		
-	});
-	var leftnav = $('<div />', {
-		'class': 'col-xs-4 col-sm-4 col-md-4 text-center',		
-	});
-	if (pagecount > 1) {
+function getSurveyNav(pagecount, totalpages, pageType) {
+	var navigation = $('<div />', {'class': 'col-xs-12 col-sm-12 col-md-12'});
+	var leftnav = $('<div />', {'class': 'col-xs-4 col-sm-4 col-md-4 text-center'});
+	var centernav = $('<div />', {
+		'class': 'col-xs-4 col-sm-4 col-md-4 text-center',
+		'text' : 'Page '+ pagecount + ' of ' + totalpages });
+	var rightnav = $('<div />', {'class': 'col-xs-4 col-sm-4 col-md-4 text-center'});
+
+	
+	var nextbutton = $('<button />', {
+		'id' : 'nextbtn-' + pagecount, 
+		'class' : 'btn btn-primary',
+		'text' : "Next >>",
+		'onClick':'nextPage();' });
+	
+	switch (pageType) {
+	case 1: //First Page
+		$(nextbutton).text('I Agree');
+		break;
+	case 2: //Instruction Page
+		$(nextbutton).text('Start Assessment');
+		// nextbutton.attr('onClick','submitSurvey();'); - for timed sections?
+		break;
+	case 3: //Thank You Page
+		$(nextbutton).text('Confirm Submission');
+		nextbutton.attr('onClick','submitSurvey();');
+		break;
+	case 4: //Question Page
+	default:		
+		nextbutton.attr('disabled', true);
 		leftnav.append($('<button />', {
 			'id' : 'prevbtn-' + pagecount, 
 			'class' : 'btn btn-primary',
 			'text' : "<< Back",
 			'onClick':'prevPage();'
 		}));
+		break;
 	}
-	var centernav = $('<div />', {
-		'class': 'col-xs-4 col-sm-4 col-md-4 text-center',
-		'text' : 'Page '+ pagecount + ' of ' + totalpages
-	});
-	var rightnav = $('<div />', {
-		'class': 'col-xs-4 col-sm-4 col-md-4 text-center',		
-	});
-	var nextbutton = $('<button />', {
-		'id' : 'nextbtn-' + pagecount, 
-		'class' : 'btn btn-primary',
-		'text' : "Next >>",
-		'onClick':'nextPage();'
-	});
-	if (pagecount == totalpages) {
-		nextbutton.attr('disabled', true);
-		$(nextbutton).text('Finished');
-		nextbutton.attr('onClick','submitSurvey();');
-	} else if (pagecount > 1) {
-		nextbutton.attr('disabled', true);
-	}
-	rightnav.append(nextbutton);
 	
+	rightnav.append(nextbutton);
 	navigation.append(leftnav);
 	navigation.append(centernav);
 	navigation.append(rightnav);
@@ -657,254 +703,4 @@ function saveResponse(response) {
     $('.progress-bar').attr('style','width:'+progress+'%;');
     $('.progress-bar').attr('aria-valuenow',progress);
     return;
-}
-
-
-// ON HOLD - VISUAL SURVEY BUILDING FUNCTIONS FOR LATER
-
-function buildVisualSurveyWithRespondantId(uuId) {
-    $.ajax({
-        type: "POST",
-        async: true,
-        url: "/survey/getsurvey",
-        data: {
-        	"respondant_uuid" : uuId,
-        	"noRedirect" : true        	
-        },
-        beforeSend: function() {
-        	$('#wait').removeClass('hidden');
-        },
-        success: function(data)
-        {
-           assembleVisualSurvey(data);
-        },
-        complete: function() {
-        	$('#wait').addClass('hidden');
-        }
-      });
-}
-
-function getVisualSurveyForNewRespondant(form) {
-    $.ajax({
-        type: "POST",
-        async: true,
-        url: "/survey/order",
-        data: $(form).serialize(),
-        beforeSend: function() {
-        	$('#wait').removeClass('hidden');
-        },
-        success: function(data)
-        {
-            assembleVisualSurvey(data);
-        },
-        complete: function() {
-        	$('#wait').addClass('hidden');
-        }
-      });	
-}
-
-function submitAnswer(form) {
-    $.ajax({
-           type: "POST",
-           async: true,
-           url: "/survey/response",
-           data: $(form).serialize(), 
-           success: function(data)
-           {
-              saveResponse(data);
-           }
-         });    
-    nextPage();  
-}
-
-function assembleVisualSurvey(collection) {
-	var deck = document.getElementById('wrapper');
-	respondant = collection.respondant;
-	survey = collection.survey;
-	questions = survey.questions;
-
-	var card = $('<div />', {});
-	var qpanel = $('<div />', {
-		 'class' : "qpanel qpanel-default",
-		 'style' : "background-image:url('/images/background-1.jpg');"
-	});
-	var header = $('<div />', {
-		 'class' : "qpanel-header text-center",
-	}).append($('<h4/>', {	'html': 'Welcome' }));
-	var footer = $('<div />', {
-		 'class' : "qpanel-footer text-center",
-	}).append($('<h4/>', {	'text': 'Swipe Left to Begin  ' }).append($('<i/>',{
-		'class': "fa fa-play-circle-o", 
-		'onClick':'nextPage();'
-		})
-	));
-	qpanel.append(header);
-	qpanel.append(footer);
-	card.append(qpanel);
-	card.appendTo(deck);
-	
-	$.each(questions, function(index, question) {
-		 card = $('<div />', {});
-		 qpanel = $('<div />', {
-			 'class' : "qpanel qpanel-default",
-			 'style' : "background-image:url('/images/question-"+question.question_display_id+".jpg');"
-		 });
-		 header = $('<div />', {
-			 'class' : "qpanel-header text-center",
-		 }).append($('<h4/>', {	'text': question.question_text }));
-		 footer = $('<div />', {
-			 'class' : "qpanel-footer text-center",
-		 }).append(getResponseForm(question, respondant));
-		 qpanel.append(header);
-		 qpanel.append(footer);
-		 card.append(qpanel);
-		 card.appendTo(deck);
-	});
-	
-	card = $('<div />', {});
-	qpanel = $('<div />', {
-		 'class' : "qpanel qpanel-default",
-		 'style' : "background-image:url('/images/background-1.jpg');"
-	});
-	header = $('<div />', {
-		 'class' : "qpanel-header text-center",
-	}).append($('<h4/>', {	'text': 'Thank You' }));
-	footer = $('<div />', {
-		 'class' : "qpanel-footer text-center",
-	}).append($('<button/>', {
-		'class' : 'button btn-block',
-		'style' : 'font-family: Comfortaa;font-size: 24px;',
-		'type': 'button',
-		'text': 'Click to Submit',
-		'onClick':'window.location.assign(\"'+'/respondant_score.jsp?&respondant_id='+respondant.respondant_id+'\");'
-		}));
-	
-	qpanel.append(header);
-	qpanel.append(footer);
-	card.append(qpanel);
-	card.appendTo(deck);
-
-	responses = new Array();
-}
-
-
-function getResponseForm(question, respondant) {
-	var form =  $('<form />', {
-		 'name' : 'question_'+question.question_id,
-		 'action' : "/response"
-	 });
-	form.append($('<input/>', {
-		name : 'response_id',
-		type : 'hidden',
-		id : 'qr'+question.question_id,
-		value : ''
-	}));
-	form.append($('<input/>', {
-		name : 'response_respondant_id',
-		type : 'hidden',
-		value : respondant.respondant_id
-	}));
-	form.append($('<input/>', {
-		name : 'response_question_id',
-		type : 'hidden',
-		value : question.question_id
-	}));
-	
-	switch (question.question_type) {
-	case 1:
-		break;
-	case 2:
-		var thumbs = $('<div />', {
-			'class' : 'thumbs'
-		});
-		thumbs.append($('<input/>', {
-			'class': 'thumbs-up',
-			'id': "thumbs-up-" + question.question_id,
-			'type': "radio",
-			'name': "response_value",
-			'onclick': 'submitAnswer(this.form)',
-			'value': 11
-		}));
-		thumbs.append($('<label/>', {
-			'class': 'thumbs-up',
-			'for': "thumbs-up-" + question.question_id,
-			'text': 'Me'			
-		}));
-		thumbs.append($('<input/>', {
-			'class': 'thumbs-down',
-			'id': "thumbs-down-" + question.question_id,
-			'type': "radio",
-			'name': "response_value",
-			'onclick': 'submitAnswer(this.form)',
-			'value': 1
-		}));
-		thumbs.append($('<label/>', {
-			'class': 'thumbs-down',
-			'for': "thumbs-down-" + question.question_id,
-			'text': 'Not Me'
-		}));
-		form.append(thumbs);
-		break;
-	case 4:
-		form.append($('<div />', {
-			'class' : 'stars text-center',
-			'style' : 'font-size: 18px;',
-			'text' : 'Rate on a scale of 1-5'
-		}));
-		var stars = $('<div />', {
-			'class' : 'stars'
-		});
-
-		for (var i = 1; i <=11; i+= 2) {
-			stars.append($('<input/>',{
-				'class' : 'star star-' + i,
-				'id' : 'star-' + i + '-' + question.question_id,
-				'type': 'radio',
-				'name': "response_value",
-				'onclick': 'submitAnswer(this.form)',
-				'value': i
-			}));
-			stars.append($('<label/>',{
-				'class' : 'star star-' + i,
-				'for' : 'star-' + i + '-' + question.question_id				
-			}));
-		}
-		form.append(stars);
-		break;
-	case 5:
-		form.append($('<div />', {
-			'class' : 'likert text-center',
-			'style' : 'font-size: 18px;',
-			'text' : 'Disagree | Neutral | Agree  '
-		}));
-		var likert = $('<div />', {
-			'class' : 'likert'
-		});
-
-		for (var i = 1; i <=11; i+= 2) {
-			likert.append($('<input/>',{
-				'class' : 'likert likert-' + i,
-				'id' : 'likert-' + i + '-' + question.question_id,
-				'type': 'radio',
-				'name': "response_value",
-				'onclick': 'submitAnswer(this.form)',
-				'value': i
-			}));
-			likert.append($('<label/>',{
-				'class' : 'likert likert-' + i,
-				'for' : 'likert-' + i + '-' + question.question_id				
-			}));
-		}		
-		form.append(likert);
-		break;
-	case 4:
-		break;
-	case 6:
-		break;
-	}	
-	return form;
-}
-
-function createVisualNewRespondant(surveyId, accountId) {
-	  // code to create a form to fill out for a new survey respondant	
 }

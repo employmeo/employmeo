@@ -28,7 +28,7 @@ import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
 
 public class DefaultPartnerUtil implements PartnerUtil {
-	private static Logger logger = Logger.getLogger("PartnerUtility");
+	private static Logger logger = Logger.getLogger("com.employmeo.integration");
 	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
 			.entity("{ message: 'Missing Required Parameters' }").build();
 	private Partner partner = null;
@@ -121,7 +121,8 @@ public class DefaultPartnerUtil implements PartnerUtil {
 	public Position getPositionFrom(JSONObject position, Account account) {
 
 		Position pos = null;
-		Long positionId = position.optLong("position_id");
+		Long positionId = null;
+		if (position != null) positionId = position.optLong("position_id");
 		if (positionId != null) pos = Position.getPositionById(positionId);
 		if (pos == null) pos = account.getDefaultPosition();
 		return pos;
@@ -258,6 +259,7 @@ public class DefaultPartnerUtil implements PartnerUtil {
 		applicant.put("applicant_ats_id", trimPrefix(respondant.getRespondantAtsId()));
 		applicant.put("applicant_id", respondant.getRespondantId());
 		applicant.put("applicant_profile", respondant.getRespondantProfile());
+		applicant.put("applicant_composite_score", respondant.getCompositeScore());
 		applicant.put("applicant_profile_a", respondant.getProfileA());
 		applicant.put("applicant_profile_b", respondant.getProfileB());
 		applicant.put("applicant_profile_c", respondant.getProfileC());

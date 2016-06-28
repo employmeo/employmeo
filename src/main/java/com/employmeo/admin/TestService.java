@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 @PermitAll
 public class TestService {
 
-	private static Logger logger = Logger.getLogger("TestService");
+	private static Logger logger = Logger.getLogger("com.employmeo.admin");
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

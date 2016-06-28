@@ -28,8 +28,8 @@ public class SurveySection extends PersistantObject implements Serializable {
 	@Column(name="ss_questions_per_page")
 	private Integer ssQuestionsPerPage;
 
-	@Column(name="ss_timed")
-	private Boolean ssTimed;
+	@Column(name="ss_time_seconds")
+	private Integer ssTimeSeconds;
 
 	// bi-directional many-to-one association to Survey
 	@ManyToOne
@@ -72,13 +72,17 @@ public class SurveySection extends PersistantObject implements Serializable {
 	}
 
 	public Boolean getSsTimed() {
-		return this.ssTimed;
+		return (this.ssTimeSeconds > 0);
 	}
 
-	public void setSsTimed(Boolean ssTimed) {
-		this.ssTimed = ssTimed;
+	public Integer getSsTimeSeconds() {
+		return this.ssTimeSeconds;
 	}
 
+	public void setSsTimeSeconds(Integer time) {
+		this.ssTimeSeconds = time;
+	}
+	
 	@Override
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
@@ -88,6 +92,7 @@ public class SurveySection extends PersistantObject implements Serializable {
 		json.put("section_questions_per_page",this.getSsQuestionsPerPage());
 		json.put("section_all_required",this.getSsAllRequired());
 		json.put("section_timed",this.getSsTimed());
+		json.put("section_time_seconds",this.getSsTimeSeconds());
 		
 		return json;
 	}
