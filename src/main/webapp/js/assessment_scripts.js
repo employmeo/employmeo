@@ -1,16 +1,20 @@
 //
 // Global Variables and actions for the survey page(s)
 //
-var workwithme;
+
+var urlParams;
+var collection;
 var respondant;
 var survey;
+var activeSection;
 var questions;
-var pagination;
 var totalpages;
 var responses;
+var pagination;
 var progress;
-var urlParams;
 var sections;
+var endAt;
+var timeinterval;
 
 (window.onpopstate = function () {
     var match,
@@ -106,6 +110,7 @@ function submitSurvey() {
 function nextPage() {	
 	if(isPageComplete($('.carousel-inner div.active').index())) {
 		$('#survey').carousel("next");
+		window.scrollTo(0,0);
 	} else {
 		// TODO - some sort of user feedback to show page is incomplete
 	}
@@ -113,7 +118,9 @@ function nextPage() {
 
 function prevPage() {
 	$('#survey').carousel("prev");
+	window.scrollTo(0,0);
 }
+
 function isPageComplete(pagenum) {
 	var qlist = pagination[pagenum];
 	var complete = true;
@@ -292,18 +299,18 @@ function createPlainNewRespondant(surveyId, accountId) {
 	$('#address').geocomplete({details:'form'});
 }
 
-
-
 //
 // Survey page buidling functions
 //
 
-function assemblePlainSurvey(collection) {
-
+function assemblePlainSurvey(data) {
+	collection = data;
 	var deck = document.getElementById('wrapper');
 	respondant = collection.respondant;
 	survey = collection.survey;
-	sections = survey.sections;
+	sections = survey.sections.sort(function(a,b) {
+		return a.section_number < b.section_number ? -1:1;
+	});
 	questions = survey.questions.sort(function(a,b) {
 		if (a.question_page == b.question_page) {
 			return a.question_sequence < b.question_sequence ? -1:1;
@@ -311,71 +318,93 @@ function assemblePlainSurvey(collection) {
 			return a.question_page < b.question_page ? -1:1;
 		}});;
 	
-	pagination = new Array();
-	$(deck).empty();
+	// Store Responses by Question ID
+	responses = new Array();
+	if (collection.responses != null) {
+		for (var i=0;i<collection.responses.length;i++) {
+			responses[collection.responses[i].response_question_id] = collection.responses[i];
+		}
+	}
 	
-	// prepare survey into sections:
-	var qlimit = 5; // questions per page
-	totalpages = Math.ceil(questions.length / qlimit) + 1 + 1; // (preamble + questions total)
+	activeSection = null;
+	// Analyze Sections to see if any are already finished
+	for (var key in sections) {
+		var section = sections[key];
+		section.qtotal = 0;
+		for (var q in questions) {
+			if (questions[q].question_page == section.section_number) section.qtotal++;
+		}
+		section.complete = false;
+		if (section.section_all_required) {
+			section.complete = isAllReqSectionComplete(section.section_number);
+		} else if (section.section_timed) {
+			section.complete = isTimedSectionStarted(section.section_number);
+		}
+		if ((activeSection == null) && (!section.complete)) activeSection = section;
+	}
 
-	var pagecount = 1;
-	var card = getPreamble(pagecount, totalpages);
+	$(deck).empty();	
+	getPreamble().appendTo(deck);
+	if (activeSection != null) {
+		createSurveySection(deck, activeSection);
+	} else {
+		getThankYouPage().appendTo(deck);
+	}
+}
+
+
+
+function createSurveySection(deck, section) {
+	var pagecount = 2; // starts at two, assumes pre-amble and instructions
+	pagination = new Array();
+	var qlimit = section.section_questions_per_page; // questions per page
+	totalpages = Math.ceil(section.qtotal / qlimit) + 1 + 1; // (preamble + inst + questions, ignore thankyou)
+
+	var card = getInstructions(section, pagecount, totalpages);
 	card.appendTo(deck);
 	pagecount++;
-
 	
-	$.each(sections, function(index, section) {
-		section.questions = new Array();
-		card = getInstructions(section, pagecount, totalpages);
-		card.appendTo(deck);
-		pagecount++;
-		
-		var qcount = 0;
-		var qpp = 0;
-		card = $('<div />', {'class' : 'questionpage item'});
-		card.append(getHrDiv());
-		pagination[pagecount] = new Array();
-		
-		for (var q=0;q<questions.length;q++) {
-			var question = questions[q];
-			if (question.question_page == section.section_number) {
-					qcount++;
-					if (qpp == qlimit) {
-						card.append(getSurveyNav(pagecount, totalpages, 4));	
-						card.append($('<div />', {
-							'class' : 'col-xs-12 col-sm-12 col-md-12',
-							'height' : '75px'}));
-						card.appendTo(deck);
-						pagecount++;
-						pagination[pagecount] = new Array();
-						qpp = 0;
-						card = $('<div />', {'class' : 'questionpage item'});
-						card.append(getHrDiv());				
-					}
-					var pageqs = pagination[pagecount];
-					pageqs[qpp] = question;
-					qpp++;
-					var questionrow = $('<div />', {'class' : 'row'}).append($('<div />', {
-						'class' : 'col-xs-1 col-sm-1 col-md-1 col-lg-1 text-right questiontext',
-						'text'	: qcount + '.'
-					}));
-					var qcontent = $('<div />', {'class' : 'col-xs-11 col-sm-11 col-md-11 col-lg-11'});
-					qcontent.append(getDisplayQuestion(question));
-					qcontent.append(getPlainResponseForm(question, respondant, qcount, pagecount));
-					questionrow.append(qcontent);		
-					card.append(questionrow);
-					card.append(getHrDiv());
-			}
+	if (section.section_timed) {
+		updateTimer();
+		$('#progress').addClass('hidden');
+		$('#timer').removeClass('hidden');
+	} else {
+		$('#progress').removeClass('hidden');
+		$('#timer').addClass('hidden');
+	}
+	
+	var qcount = 0;
+	var qpp = 0;
+	card = $('<div />', {'class' : 'questionpage item'});
+	card.append(getHrDiv());
+	pagination[pagecount] = new Array();
+	
+	for (var q=0;q<questions.length;q++) {
+		var question = questions[q];
+		if (question.question_page == section.section_number) {
+				qcount++;
+				if (qpp == qlimit) {
+					card.append(getSurveyNav(pagecount, totalpages, 5));	
+					card.appendTo(deck);
+					pagecount++;
+					pagination[pagecount] = new Array();
+					qpp = 0;
+					card = $('<div />', {'class' : 'questionpage item'});
+					card.append(getHrDiv());				
+				}
+				var pageqs = pagination[pagecount];
+				pageqs[qpp] = question;
+				qpp++;
+				var questionrow = $('<div />');
+				questionrow.append(getDisplayQuestion(question, qcount));
+				questionrow.append(getPlainResponseForm(question, respondant, qcount, pagecount));	
+				card.append(questionrow);
+				card.append(getHrDiv());
 		}
-	});
-		
+	}
 	card.append(getSurveyNav(pagecount, totalpages,3));	
-	card.append($('<div />', {
-		'class' : 'col-xs-12 col-sm-12 col-md-12',
-		'height' : '75px'}));
-	card.appendTo(deck);
-
-	responses = new Array();
+	card.appendTo(deck);		
+	// Done with section questions, put in footer as "complete"
 	
 	if (collection.responses != null) {
 		for (var i=0;i<collection.responses.length;i++) {
@@ -383,16 +412,16 @@ function assemblePlainSurvey(collection) {
 			var radios =$('form[name=question_'+collection.responses[i].response_question_id+
     		'] :input[name=response_value][value=' + collection.responses[i].response_value + ']');
 		    $(radios).prop('checked', true);
-		}
-		
-		for (var i=1;i<=totalpages;i++) {
-			isPageComplete(i);
-		}
+		}		
 	}
-}
+	for (var i=1;i<=totalpages;i++) {
+		isPageComplete(i);
+	}
 
+}
+	
 // Show Assessment Preamble
-function getPreamble(pagecount, totalpages) {
+function getPreamble() {
 	var preamble = $('<div />', {'class' : 'item active'});
 	
 	preamble.append(getHrDiv());
@@ -400,31 +429,70 @@ function getPreamble(pagecount, totalpages) {
 		'class' : 'col-xs-12 col-sm-12 col-md-12',
 		}).html(survey.survey_preamble_text));
 	preamble.append(getHrDiv());
-	preamble.append(getSurveyNav(pagecount, totalpages, 1));	
+	preamble.append(getSurveyNav(1, null, 1));	
 
 	return preamble;
 }
 
 //Show Section Instructions
-function getInstructions(section, pagecount, totalpages) {
-	var instr = $('<div />', {'class' : 'item'});
+function getInstructions(section) {
+	var instr = $('<div />', {'class' : 'item', 'id' : 'instructions'});
 	
+	instr.append(getHrDiv());
+	instr.append($('<h4 />', {
+		'text' : 'Section ' + section.section_number + ' of ' + sections.length,
+		'class' : 'text-center'
+	}));
 	instr.append(getHrDiv());
 	instr.append($('<div />', {
 		'class' : 'col-xs-12 col-sm-12 col-md-12',
 		}).html(section.section_instructions));
 	instr.append(getHrDiv());
-	instr.append(getSurveyNav(pagecount, totalpages, 2));	
+	instr.append(getSurveyNav(2, null, 2));	
 
 	return instr;
 }
 
+//Show Thank You + Completion
+function getThankYouPage() {
+	var preamble = $('<div />', {'class' : 'item'});
+	
+	preamble.append(getHrDiv());
+	preamble.append($('<div />', {
+		'class' : 'col-xs-12 col-sm-12 col-md-12',
+		}).html(survey.survey_thankyou_text));
+	preamble.append(getHrDiv());
+	preamble.append(getSurveyNav(null, null, 4));	
+
+	return preamble;
+}
+
+
+
 // create the question / response form
-function getDisplayQuestion(question) {
-	var qtextdiv = $('<div />', {
-		'class' : 'col-xs-12 col-sm-6 col-md-6 questiontext text-left',
-		'text' : question.question_text
-	});
+function getDisplayQuestion(question, qnum) {
+	var qtextdiv = $('<div />', {'class' : 'col-xs-12 col-sm-6 col-md-6 questiontext'})
+
+	if (question.question_type == 15) { //change display for alike / unlike
+		qtextdiv.append($('<p />',{
+			'text' : 'Are these two Alike or Unlike',
+			'qnum' : qnum
+		}));
+		qtextdiv.append($('<div />', {
+			'class' : 'col-xs-6 col-sm-6 col-md-6 questiontext text-center',
+			'text' : question.answers[0].answer_text
+				}));
+		qtextdiv.append($('<div />', {
+			'class' : 'col-xs-6 col-sm-6 col-md-6 questiontext text-center',
+			'text' : question.answers[1].answer_text
+				}));
+	} else {
+		qtextdiv.append($('<p />',{
+			'text' : question.question_text,
+			'qnum' : qnum
+		}));
+	}
+	
 	return qtextdiv;
 }
 
@@ -453,10 +521,14 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 	}));
 
 	switch (question.question_type) {
-	case 6: // yes-notsure-no
-		var ansdiv = $('<div />', {
-			'class' : 'row'
-		});
+	case 9: // five short ans
+	case 11: // two short ans
+	case 12: // four short ans
+	case 7: // yes-idk-no
+	case 8: // yes-sometimes-no
+	case 10: // yes-notsure-no
+	case 13: // other, multi-three-choice
+		var ansdiv = $('<div />');
 		for (var ans=0;ans<question.answers.length;ans++) {
 			var answer = question.answers[ans];
 			var qrespdiv = $('<div />', {
@@ -484,17 +556,93 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 		}
 		form.append(ansdiv);
 		break;
-	case 7:
-	case 9:
-	case 10:
-	case 11:
-	case 12:
-	case 13:
+	case 1: // multiple choice (checkbox)
+	case 2: // Me - Not Me
+	case 3: // Schedule (not used)
+	case 4: // Likert (Stars)
+	case 5: // Likert (Smileys)
+		break;
+	case 14: // Rank
+		var responseInp = $('<input />', {
+			'id'   : 'ranker-' + question.question_id,
+			'type' : 'hidden',
+			'class' : 'hidden',
+			'name' : 'response_value',
+			'value' :  '12345'
+		});
+		form.append(responseInp);
+		var listdiv = $('<div />');
+		var sortablelist = $('<ul />', {
+			'id' : 'sortable-' + question.question_id,
+			'class' : 'ranker'});
+		for (var ans=0;ans<question.answers.length;ans++) {
+			var answer = question.answers[ans];
+			var listitem = $('<li />', {
+				'data-value' : answer.answer_value
+			});
+			var span = $('<span />', {'text' : answer.answer_text });
+			listitem.append($('<i />', {
+				'class' : 'fa fa-arrow-up pull-right',
+				'onClick': 'rankUp('+question.question_id+','+ answer.answer_value+')'
+			}));
+			listitem.append($('<i />', {
+				'class' : 'fa fa-arrow-down pull-right',
+				'onClick': 'rankDown('+question.question_id+','+ answer.answer_value+')'
+			}));
+			listitem.append(span);
+			sortablelist.append(listitem);
+		}
+		sortablelist.sortable({handle: 'span',
+            stop: function(event, ui){updateRankerIndexes(question.question_id);}});
+		
+		listdiv.append(sortablelist);
+		listdiv.append($('<div />', {
+			'class' : 'row text-center'
+		}).append($('<button />', {
+				'type' : 'button',
+				'id' : 'saverank-' + question.question_id, 
+				'class' : 'ranker-button',
+				'text' : "Save Order",
+				'onClick':'submitRank(this.form,'+question.question_id+','+pagecount+');',
+				'disabled' : true
+			})));
+		form.append(listdiv);
+
+		break;
+	case 15: // Alike / Unlike
+		var ansdiv = $('<div />');
+		var alikediv = $('<div />', {'class' : 'col-xs-6 col-sm-6 col-md-6'});
+		alikediv.append($('<label />', {
+			'for'   : 'radiobox-' + question.question_id +"-1", 'class' : 'radio-short',
+			'text'  :  'ALIKE' }));
+		alikediv.append($('<input />', {
+			'id'   : 'radiobox-' + question.question_id +"-1",
+			'type' : 'radio', 'class' : 'radio-short', 'name' : 'response_value',
+			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')', 'value' :  '1'}));
+		var unlikediv = $('<div />', {'class' : 'col-xs-6 col-sm-6 col-md-6'});
+		unlikediv.append($('<label />', {
+			'for'   : 'radiobox-' + question.question_id +"-2", 'class' : 'radio-short',
+			'text'  :  'UNLIKE' }));
+		unlikediv.append($('<input />', {
+			'id'   : 'radiobox-' + question.question_id +"-2",
+			'type' : 'radio', 'class' : 'radio-short', 'name' : 'response_value',
+			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')', 'value' :  '2'}));
+		ansdiv.append(alikediv);
+		ansdiv.append(unlikediv);
+		form.append(ansdiv);
+		break;
+	case 6: // Multiple Choice (radio)
+	default:
 		// basic multichoice
 		for (var ans=0;ans<question.answers.length;ans++) {
 			var answer = question.answers[ans];
 			var qrespdiv = $('<div />', {
 				'class' : 'col-xs-12 col-sm-12 col-md-12'
+			});
+			var radiolabel = $('<label />', {
+				'for'   : 'radiobox-' + question.question_id +"-"+ answer.answer_value,
+				'class' : 'radio-select',
+				'text'  :  answer.answer_text
 			});
 			var radiobox = $('<input />', {
 				'id'   : 'radiobox-' + question.question_id +"-"+ answer.answer_value,
@@ -504,112 +652,11 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 				'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
 				'value' :  answer.answer_value
 			});
-			var radiolabel = $('<label />', {
-				'for'   : 'radiobox-' + question.question_id +"-"+ answer.answer_value,
-				'class' : 'radio-select',
-				'text'  :  answer.answer_text
-			});
-		
-			qrespdiv.append(radiobox);
-			qrespdiv.append(radiolabel);
 
-			form.append(qrespdiv);
+			form.append(radiobox);
+			form.append(radiolabel);
 		}
 		break;
-	case 14: // Rank
-		break;
-	case 15: // Alike / Unlike
-		break;
-	case 8:
-	default:
-		var qrespdiv = $('<div />', {
-			'class' : 'col-xs-12 col-sm-4 col-md-4'
-		});
-		var leftdiv = $('<div />', {
-			'class' : 'col-xs-4 yesnoleft'
-		});
-		var yesbox = $('<input />', {
-			'class': 'yesbox',
-			'id'   : 'yesbox-' + question.question_id,
-			'type' : 'radio',
-			'name' : 'response_value',
-			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : 1
-		});
-		var yesboxlabel = $('<label />', {
-			'class' : 'yesbox',
-			'for'   : 'yesbox-' + question.question_id
-		});
-		yesboxlabel.append($('<i />', {
-			'class' : 'fa fa-check-circle'			
-		}));
-		yesboxlabel.append($('<br/>'));
-		yesboxlabel.append($('<span />', {
-			'style' : 'font-size:10px;',
-			'text'   : 'Yes'
-		}));
-		
-		leftdiv.append(yesbox);
-		leftdiv.append(yesboxlabel);
-
-		var centerdiv = $('<div />', {
-			'class' : 'col-xs-4 yesnocenter'
-		});
-		var sometimesbox = $('<input />', {
-			'class': 'sometimesbox',
-			'id'   : 'sometimesbox-' + question.question_id,
-			'type' : 'radio',
-			'name' : 'response_value',
-			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : 2
-		});
-		var sometimesboxlabel = $('<label />', {
-			'class' : 'sometimesbox',
-			'for'   : 'sometimesbox-' + question.question_id
-		});
-		sometimesboxlabel.append($('<i />', {
-			'class' : 'fa fa-question-circle'			
-		}));
-		sometimesboxlabel.append($('<br/>'));
-		sometimesboxlabel.append($('<span />', {
-			'style' : 'font-size:10px;',
-			'text'   : 'Sometimes'
-		}));
-		
-		centerdiv.append(sometimesbox);
-		centerdiv.append(sometimesboxlabel);
-
-		var rightdiv = $('<div />', {
-			'class' : 'col-xs-4 yesnoright'
-		});
-		var nobox = $('<input />', {
-			'class': 'nobox',
-			'id'   : 'nobox-' + question.question_id,
-			'type' : 'radio',
-			'name' : 'response_value',
-			'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
-			'value' : 3
-		});
-		var noboxlabel = $('<label />', {
-			'class' : 'nobox',
-			'for'   : 'nobox-' + question.question_id
-		});
-		noboxlabel.append($('<i />', {
-			'class' : 'fa fa-times-circle'			
-		}));
-		noboxlabel.append($('<br/>'));
-		noboxlabel.append($('<span />', {
-			'style' : 'font-size:10px;',
-			'text'   : 'No'
-		}));
-		
-		rightdiv.append(nobox);
-		rightdiv.append(noboxlabel);	
-
-		qrespdiv.append(leftdiv);
-		qrespdiv.append(centerdiv);
-		qrespdiv.append(rightdiv);
-		form.append(qrespdiv);
 		break;
 	}
 	ansblock.append(form);
@@ -624,14 +671,10 @@ function getHrDiv () {
 }
 
 function getSurveyNav(pagecount, totalpages, pageType) {
-	var navigation = $('<div />', {'class': 'col-xs-12 col-sm-12 col-md-12'});
+	var navigation = $('<div />', {'class': 'container-fluid'});
 	var leftnav = $('<div />', {'class': 'col-xs-4 col-sm-4 col-md-4 text-center'});
-	var centernav = $('<div />', {
-		'class': 'col-xs-4 col-sm-4 col-md-4 text-center',
-		'text' : 'Page '+ pagecount + ' of ' + totalpages });
-	var rightnav = $('<div />', {'class': 'col-xs-4 col-sm-4 col-md-4 text-center'});
-
-	
+	var centernav = $('<div />', {'class': 'col-xs-4 col-sm-4 col-md-4 text-center'});
+	var rightnav = $('<div />', {'class': 'col-xs-4 col-sm-4 col-md-4 text-center'});	
 	var nextbutton = $('<button />', {
 		'id' : 'nextbtn-' + pagecount, 
 		'class' : 'btn btn-primary',
@@ -641,18 +684,36 @@ function getSurveyNav(pagecount, totalpages, pageType) {
 	switch (pageType) {
 	case 1: //First Page
 		$(nextbutton).text('I Agree');
+		centernav.append(nextbutton);
 		break;
 	case 2: //Instruction Page
 		$(nextbutton).text('Start Assessment');
-		// nextbutton.attr('onClick','submitSurvey();'); - for timed sections?
+		nextbutton.attr('onClick','startAssessment();');
+		centernav.append(nextbutton);
 		break;
-	case 3: //Thank You Page
+	case 3: //Last page of Section
+		leftnav.append($('<button />', {
+			'id' : 'prevbtn-' + pagecount, 
+			'class' : 'btn btn-primary',
+			'text' : "<< Back",
+			'onClick':'prevPage();'
+		}));
+		$(nextbutton).text('Complete');
+		nextbutton.attr('disabled', true);
+		nextbutton.attr('onClick','submitSection();');
+		$(centernav).text('Page '+ (pagecount - 2) + ' of ' + (totalpages-2));
+		rightnav.append(nextbutton);
+		break;
+	case 4: //Survey Complete (Thank You Page)
 		$(nextbutton).text('Confirm Submission');
 		nextbutton.attr('onClick','submitSurvey();');
+		centernav.append(nextbutton);
 		break;
-	case 4: //Question Page
-	default:		
+	case 5: //Question Page
+	default:
+		$(centernav).text('Page '+ (pagecount - 2) + ' of ' + (totalpages-2));
 		nextbutton.attr('disabled', true);
+		rightnav.append(nextbutton);
 		leftnav.append($('<button />', {
 			'id' : 'prevbtn-' + pagecount, 
 			'class' : 'btn btn-primary',
@@ -662,7 +723,6 @@ function getSurveyNav(pagecount, totalpages, pageType) {
 		break;
 	}
 	
-	rightnav.append(nextbutton);
 	navigation.append(leftnav);
 	navigation.append(centernav);
 	navigation.append(rightnav);
@@ -670,17 +730,63 @@ function getSurveyNav(pagecount, totalpages, pageType) {
 	return navigation;
 }
 
+function submitSection() {
+	activeSection.complete=true;
+	if (endAt != null) {
+		endAt = null;
+		clearInterval(timeinterval);
+	}
+	var nextSection = null;
+	for (var key in sections) {
+		var section = sections[key];
+		if ((nextSection == null) && (!section.complete)) nextSection = section;
+	}
+	var deck = document.getElementById('wrapper');
+	if(nextSection != null) {
+		activeSection = nextSection;
+		$(deck).empty();
+		createSurveySection(deck, activeSection);
+		$('#instructions').addClass('active');
+	} else {
+		getThankYouPage().appendTo(deck);
+		nextPage();
+	}
+}
+
+
 function isPageComplete(pagenum) {
-	var qlist = pagination[pagenum];
 	var complete = true;
-	for (var key in qlist ) {
-		if (responses[qlist[key].question_id] == null) complete = false;
+	if (activeSection != null) {
+		if(activeSection.section_all_required) {
+			var qlist = pagination[pagenum];
+			for (var key in qlist ) {
+				if (responses[qlist[key].question_id] == null) complete = false;
+			}
+		}
 	}
 	if (complete) {
 		var button = '#nextbtn-' + pagenum;
 		$(button).attr('disabled', false);
 	}
 	return complete;
+}
+
+function isAllReqSectionComplete(sectionnum) {
+	var complete = true;
+	for (var key in questions ) {
+		if ((questions[key].question_page == sectionnum) &&
+		    (responses[questions[key].question_id] == null)) complete = false;
+	}
+	return complete;
+}
+
+function isTimedSectionStarted(sectionnum) {
+	var started = false;
+	for (var key in questions ) {
+		if ((questions[key].question_page == sectionnum) &&
+		    (responses[questions[key].question_id] != null)) started = true;
+	}
+	return started;
 }
 
 function isSurveyComplete() {
@@ -695,12 +801,94 @@ function saveResponse(response) {
 	responses[response.response_question_id] = response;
     var field = '#qr' + response.response_question_id;
     $(field).val(response.response_id);
-    var totalresponses = 0;
-    for (var i in responses) {
-    	totalresponses ++;
+
+    if (activeSection.section_all_required) {
+	    var totalresponses = 0;
+	    for (var q in questions) { ques = questions[q]; 
+		    if (responses[ques.question_id] !=null) {
+		    	if (ques.question_page == activeSection.section_number) totalresponses++;
+		    }
+	    } 
+	    progress = 100* totalresponses / activeSection.qtotal;
+	    $('.progress-bar').attr('style','width:'+progress+'%;');
+	    $('.progress-bar').attr('aria-valuenow',progress);
     }
-    progress = 100* totalresponses / questions.length;
-    $('.progress-bar').attr('style','width:'+progress+'%;');
-    $('.progress-bar').attr('aria-valuenow',progress);
+    
     return;
+}
+
+function startAssessment() {
+	if (activeSection.section_timed) startTimer();
+	nextPage();
+}
+
+function startTimer() {
+	var t = 1000 * activeSection.section_time_seconds;
+	$('#timer').removeClass('hidden');
+	$('#progress').addClass('hidden');
+	endAt = Date.parse(new Date()) + t;
+	timeinterval = setInterval(function(){
+		var t = endAt - Date.parse(new Date());
+		updateTimer();
+	    if(t<=0){
+	    	clearInterval(timeinterval);
+	    	window.alert('Time Expired');
+	    	endAt = null;
+	    	submitSection();
+	    }
+		},1000);
+}
+
+function updateTimer(){
+	var t = 1000 * activeSection.section_time_seconds;
+	if (endAt !=null) {
+	  t = endAt - Date.parse(new Date());
+	}
+	var secs = Math.floor( (t/1000) % 60 );
+	var mins = Math.floor( (t/1000/60) % 60 );
+	$('#timer').text(mins + ':' + (secs<10 ? '0':'') + secs);
+}
+
+function rankUp(id, num){
+	var items = $('#sortable-'+id).children();
+	var currentIndex = -1; // not found yet
+	for (var index in items) { 
+		if ((currentIndex == -1) && ($(items[index]).attr('data-value') == num)) currentIndex = index;
+	}
+	if (currentIndex > 0) {
+		$(items[currentIndex]).insertBefore(items[(currentIndex-1)]);
+	}
+	updateRankerIndexes(id);
+}
+
+function rankDown(id, num){
+	var items = $('#sortable-'+id).children();
+	var currentIndex = -1; // not found yet
+	for (var index in items) { 
+		if ((currentIndex == -1) && ($(items[index]).attr('data-value') == num)) currentIndex = index;
+	}
+	currentIndex++;
+	if ((currentIndex > 0) && (currentIndex < (items.length))) {
+		$(items[currentIndex]).insertBefore(items[currentIndex-1]);
+	}
+	updateRankerIndexes(id);
+}
+
+function updateRankerIndexes(id){
+	var items = $('#sortable-'+id).children();
+	var rankerval = "";
+    $(items).each(function(i){
+    	rankerval += $(this).attr('data-value');
+    });
+    $('#ranker-' + id).val(rankerval);
+    if (responses[id] != null) {
+    	$('#saverank-'+id).text('Update Rank');
+    }
+    $('#saverank-'+id).attr('disabled', false);
+}
+
+function submitRank(form, id, pagenum) {
+	$('#saverank-'+id).text('Saved');
+	$('#saverank-'+id).attr('disabled', true);
+    submitPlainAnswer(form, pagenum);
 }

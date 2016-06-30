@@ -2,13 +2,13 @@
  * 1.0Survey panel details
  * ----------------------------------------------------------------------------
  */
-
-.surveyheader {
-	
+ 
+.surveyheader h3 {
+		font-size: 18px;
 }
 
-.surveyheader progress {
-	margin-top: 10px;
+.surveyheader .progress {
+	margin-top: 18px;
 	margin-bottom: 10px;
 }
 
@@ -65,18 +65,23 @@
 	margin-top: 5px;
 	margin-bottom: 20px;
 }
-
 .questiontext {
 	font-family: Verdana,Arial,sans-serif;
 	font-size: 16px;
 	margin-bottom: 10px;
 	color: #34495e;
 }
-
-
-ol.questiontext {
-	min-height: 47px;
+.questiontext p {
+    font-family: Verdana, Arial, FontAwesome;
+    text-align: left;
+    padding-left: 1.0em;
+    text-indent: -1.5em;
 }
+.questiontext p:before  {
+	content: attr(qnum) ". ";
+	text-align: right;
+}
+
 /**
  * 2.0 Stars
  * ----------------------------------------------------------------------------
@@ -119,8 +124,8 @@ label.star:before {
   width: 100%;
   display: block;
 }
-input.thumbs-up, input.thumbs-down, input.check-square, input.radio-select { display: none; }
-label.thumbs-up, label.thumbs-down, label.check-square, label.radio-select {
+input.thumbs-up, input.thumbs-down, input.check-square { display: none; }
+label.thumbs-up, label.thumbs-down, label.check-square {
   font-family: Verdana,FontAwesome;
   padding: 8px;
   font-size: 18px;
@@ -220,17 +225,19 @@ input.likert-5:checked ~ label.likert-5:before {
 label.check-square:before { content: '\f096'; padding-right: 10px; }
 input.check-square:checked+label.check-square:before { content: '\f046'; padding-right: 10px; }
 
-label.radio-select:before { content: '\f10c'; padding-right: 10px; }
-input.radio-select:checked+label.radio-select:before { content: '\f192'; padding-right: 10px; }
-
-
 /**
  * 4.1 Multichoice (radios)
  * ----------------------------------------------------------------------------
  */
-label.radio-short {
-	font-family: Verdana,FontAwesome;
-	font-size: 11px;
+input.radio-short, input.radio-select {
+	display: none;
+	position: absolute;	
+	clip: rect(0 0 0 0);	
+}
+
+label.radio-short, label.radio-select {
+	font-family: Arial, Verdana,FontAwesome;
+	font-size: 12px;
 	padding: 6px;
 	transition: all .2s;
 	display: block;
@@ -245,18 +252,80 @@ label.radio-short {
  	cursor: hand;
 }
 
-input.radio-short:checked+label.radio-short {
+label.radio-short, label.radio-select {
+}
+
+
+label.radio-select {
+	font-family: Verdana, Arial, FontAwesome;
+	text-align: left;
+    padding-left: 2.0em;
+    text-indent: -1.5em;
+}
+
+label.radio-select:before { content: '\f10c'; padding-right: 10px; }
+input.radio-select:checked+label.radio-select:before { content: '\f192'; padding-right: 10px; }
+
+input.radio-short:checked+label.radio-short, 
+input.radio-select:checked+label.radio-select 
+{
 	background-color: #2e6da4;
     color: white;
 }
 
-input.radio-short {
-	display: none;
-	position: absolute;	
-	clip: rect(0 0 0 0);	
+/**
+ * 4.5 Schedules
+ * ----------------------------------------------------------------------------
+ */
+
+ul.ranker {
+	padding-left: 5px;
 }
 
+.ranker li {
+    cursor: pointer;
+	color: #2e6da4;
+	display: block;
+    background: white;
+	width : 100%;
+	margin: 3px;
+    padding: 2px;
+    vertical-align:middle;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+}
 
+.ranker li span, .ranker li i {
+    margin: 2px;
+    -moz-user-select: none;
+  	-webkit-user-select: none;
+  	-ms-user-select: none;
+  	-o-user-select: none;
+  	user-select: none;    
+}
+
+.ranker-button {
+	font-family: Arial, Verdana,FontAwesome;
+	font-size: 12px;
+	padding: 6px;
+	transition: all .2s;
+	border: solid;
+    background: white;
+	border-width: 1px;
+	border-color: #2e6da4;
+	border-radius: 2px;
+	color: #2e6da4;
+	font-weight: normal;
+	text-align: center;
+ 	cursor: pointer;
+ 	cursor: hand;	
+}
+
+.ranker-button:disabled {
+	color: darkgray;
+    background: lightgray;
+}
 
 /**
  * 4.5 Schedules
@@ -281,30 +350,3 @@ input.check-morning:checked+label.check-morning:before,
 input.check-afternoon:checked+label.check-afternoon:before ,
 input.check-evening:checked+label.check-evening:before { color: #0080ff;}
 
-
-/**
- * 5.0 Swipe stuff
- * ----------------------------------------------------------------------------
- */
-
-
-.swipe {
-  overflow: hidden;
-  visibility: hidden;
-  position: relative;
-  height:100%;
-}
-.swipe-wrap {
-  overflow: hidden;
-  position: relative;
-  height:100%;
-}
-.swipe-wrap > div {
-  float:left;
-  height:100%;
-  width:100%;
-  position: relative;
-}
-
-
-}
