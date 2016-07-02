@@ -3,7 +3,6 @@ package com.employmeo.admin;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-import javax.annotation.security.PermitAll;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +28,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @Path("updatedash")
-@PermitAll
 public class UpdateDash {
 
+	private static final long ONE_DAY = 24*60*60*1000; // one day in milliseconds
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
@@ -52,14 +52,7 @@ public class UpdateDash {
 			// {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
 		Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
-		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime()); // losing
-																		// rest
-																		// of
-																		// day
-																		// (need
-																		// to
-																		// add a
-																		// day)
+		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime() + ONE_DAY);
 
 		String locationSQL = "";
 		String positionSQL = "";
@@ -67,7 +60,7 @@ public class UpdateDash {
 			locationSQL = "AND r.respondantLocationId = :locationId ";
 		if (positionId > -1)
 			positionSQL = "AND r.respondantPositionId = :positionId ";
-		String dateSQL = "AND r.respondantCreatedDate >= :fromDate AND r.respondantCreatedDate <= :toDate ";
+		String dateSQL = "AND r.respondantCreatedDate >= :fromDate AND r.respondantCreatedDate < :toDate ";
 
 		EntityManager em = DBUtil.getEntityManager();
 		String sql = "SELECT r.respondantStatus, r.respondantProfile, COUNT(r) from Respondant r WHERE r.respondantAccountId = :accountId "
@@ -151,7 +144,7 @@ public class UpdateDash {
 		hireDatasets.put("data", hiredByProfile);
 		hireData.put("datasets", new JSONArray().put(hireDatasets));
 
-		// Hiring Mix History Data
+		// TODO write code to get Hiring Mix History Data
 
 		// Other Data
 		response.put("applicantData", applicantData);

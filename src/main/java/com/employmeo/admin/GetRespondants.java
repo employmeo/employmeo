@@ -3,7 +3,6 @@ package com.employmeo.admin;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-import javax.annotation.security.PermitAll;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
@@ -25,10 +24,12 @@ import com.employmeo.objects.User;
 import com.employmeo.util.DBUtil;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @Path("getrespondants")
-@PermitAll
 public class GetRespondants {
+	
+	private static Logger logger = Logger.getLogger("com.employmeo.admin");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

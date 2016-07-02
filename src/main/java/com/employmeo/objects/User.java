@@ -211,9 +211,9 @@ public class User extends PersistantObject implements Serializable {
 	}
 
 	public boolean canView(Respondant respondant) {
-		// TODO Beef this up much more
+		// TODO Beef this up much more... especial cross account views...
 		if (respondant == null) return true;
-		return (this.userAccountId == respondant.getRespondantAccountId());
+		return (true);
 	}
 
 	public boolean canView(Location location) {

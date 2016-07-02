@@ -174,19 +174,19 @@ function initializeDatePicker(callback) {
 
 
 //Section for inviting new applicants
-function inviteApplicant(e) {
+function inviteApplicant() {
 	$.ajax({
 		type: "POST",
 		async: true,
 		url: "/admin/inviteapplicant",
-		data: $(e).serialize(),
+		data: $('#inviteapplicant').serialize(),
 		beforeSend: function(data) {
 			$("#inviteapplicant :input").prop('readonly', true);
 			$("#spinner").removeClass('hidden');
 		},
 		success: function(data)
 		{
-			e.reset();
+			$('#inviteapplicant').trigger('reset');
 			$('#invitationform').addClass('hidden');
 			$('#invitationsent').removeClass('hidden');
 		},
@@ -195,6 +195,7 @@ function inviteApplicant(e) {
 			$("#spinner").addClass('hidden');
 		}
 	});
+	return false; // so as not to trigger actual action.
 }
 
 function resetInvitation() {
@@ -222,6 +223,7 @@ function initRespondantsTable() {
 		          { responsivePriority: 8, className: 'text-left', title: 'Location', data: 'respondant_location_name'}
 		          ]
 	});
+	$.fn.dataTable.ext.errMode = 'none';
 	updateRespondantsTable();
 }
 
@@ -240,17 +242,19 @@ function updateRespondantsTable() {
 		success: function(data)
 		{
 			rTable = $('#respondants').DataTable();
-			$('#respondants').dataTable().fnAddData(data);
-			rTable.$('tr').click(function (){
-				rTable.$('tr.selected').removeClass('selected');
-				$(this).addClass('selected');
-				var respondant = $('#respondants').dataTable().fnGetData(this);
-				showApplicantScoring(respondant);
-			});
-			rTable.on('click', 'i', function (){
-				var respondant = rTable.row($(this).parents('tr')).data();
-				window.location.assign('/respondant_score.jsp?&respondant_id='+respondant.respondant_id);
-			});
+			if (data.length > 0) {
+				$('#respondants').dataTable().fnAddData(data);
+				rTable.$('tr').click(function (){
+					rTable.$('tr.selected').removeClass('selected');
+					$(this).addClass('selected');
+					var respondant = $('#respondants').dataTable().fnGetData(this);
+					showApplicantScoring(respondant);
+				});
+				rTable.on('click', 'i', function (){
+					var respondant = rTable.row($(this).parents('tr')).data();
+					window.location.assign('/respondant_score.jsp?&respondant_id='+respondant.respondant_id);
+				});
+			}
 		},
 		complete: function() {
 			$("#waitingmodal").addClass("hidden");

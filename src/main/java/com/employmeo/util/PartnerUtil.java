@@ -18,7 +18,7 @@ public interface PartnerUtil {
 	public static HashMap<Partner,PartnerUtil> utils = new HashMap<Partner,PartnerUtil>();
 	
 	public static PartnerUtil getUtilFor(Partner lookupPartner) {
-		// TODO make this work for multiple partners
+		// TODO make this a little more dynamic for multiple partners, move to Partner object?
 		if (!utils.containsKey(lookupPartner)) {
 			if ("ICIMS".equalsIgnoreCase(lookupPartner.getPartnerName())) {
 				utils.put(lookupPartner, new ICIMSPartnerUtil(lookupPartner));

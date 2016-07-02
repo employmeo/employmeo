@@ -28,7 +28,6 @@ public class Logout {
 		rb.cookie(new NewCookie(nCookie, "user_fname", 1, false));
 
 		reqt.getSession().invalidate();
-		;
 
 		return rb.build();
 	}

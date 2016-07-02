@@ -1,8 +1,7 @@
 package com.employmeo.admin;
 
 import java.util.UUID;
-
-import javax.annotation.security.PermitAll;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,9 +20,10 @@ import com.employmeo.objects.Respondant;
 import com.employmeo.objects.User;
 
 @Path("getscore")
-@PermitAll
 public class GetRespondantScore {
 
+	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public String doPost(
@@ -31,6 +31,7 @@ public class GetRespondantScore {
 			@Context final HttpServletResponse resp,
 			@FormParam("respondant_id") Long respondantId, 
 			@FormParam("respondant_uuid") UUID respondantUuid) {
+
 		JSONObject json = new JSONObject();
 		
 		HttpSession sess = reqt.getSession();
@@ -50,8 +51,11 @@ public class GetRespondantScore {
 		if (respondant != null) {
 			if (!user.canView(respondant)) {
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+logger.info("user not allowed to view: " + respondant.getJSONString());
+logger.info("user account: " + user.getUserAccountId() + " respondant account: " + respondant.getRespondantAccountId());
 				return null;			
-			}			json.put("respondant", respondant.getJSON());
+			}
+			json.put("respondant", respondant.getJSON());
 			json.put("scores", respondant.getAssessmentScore());
 			json.put("detailed_scores", respondant.getAssessmentDetailedScore());
 			Position position = Position.getPositionById(respondant.getRespondantPositionId());

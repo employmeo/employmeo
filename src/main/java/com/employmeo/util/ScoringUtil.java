@@ -36,38 +36,43 @@ public class ScoringUtil {
 		if ((responses == null) || (responses.size() == 0))	return; // return nothing
 
 		if (respondant.getSurvey().getSurveyType() == Survey.TYPE_MERCER) { 
-			postMercerScores(respondant);
+			mercerScore(respondant);
 		} else {
-
-			int[] count = new int[50];
-			int[] score = new int[50];
-	
-			for (int i = 0; i < responses.size(); i++) {
-				Response response = responses.get(i);
-				Integer cfId = Question.getQuestionById(response.getResponseQuestionId()).getQuestionCorefactorId();
-				count[cfId]++;
-				score[cfId] += response.getResponseValue();
-			}
-			for (int i = 0; i < 50; i++) {
-				if (count[i] > 0) {
-					RespondantScore rs = new RespondantScore();
-					rs.setPK(i, respondant.getRespondantId());
-					rs.setRsQuestionCount(count[i]);
-					rs.setRsValue((double) Math.round(100.0 * ((double) score[i] / (double) count[i])) / 100.0);
-					rs.mergeMe();
-					respondant.addRespondantScore(rs);
-				}
-			}
+			defaultScore(respondant);
 		}
 
-		respondant.setRespondantStatus(Respondant.STATUS_SCORED);
-		respondant.mergeMe();
 
 		return;
 	}
 
-	private static void postMercerScores(Respondant respondant) {
-		logger.info("Mercer Scoring Repondant: " + respondant.getJSONString());
+	private static void defaultScore(Respondant respondant) {
+		List<Response> responses = respondant.getResponses();
+		int[] count = new int[50];
+		int[] score = new int[50];
+
+		for (int i = 0; i < responses.size(); i++) {
+			Response response = responses.get(i);
+			Integer cfId = Question.getQuestionById(response.getResponseQuestionId()).getQuestionCorefactorId();
+			count[cfId]++;
+			score[cfId] += response.getResponseValue();
+		}
+		for (int i = 0; i < 50; i++) {
+			if (count[i] > 0) {
+				RespondantScore rs = new RespondantScore();
+				rs.setPK(i, respondant.getRespondantId());
+				rs.setRsQuestionCount(count[i]);
+				rs.setRsValue((double) Math.round(100.0 * ((double) score[i] / (double) count[i])) / 100.0);
+				rs.mergeMe();
+				respondant.addRespondantScore(rs);
+			}
+		}
+		respondant.setRespondantStatus(Respondant.STATUS_SCORED);
+		respondant.mergeMe();
+	}
+	
+	
+	private static void mercerScore(Respondant respondant) {
+		logger.info("Requesting Mercer Score for respondant_id: " + respondant.getRespondantId());
 		List<Response> responses = respondant.getResponses();
 		Client client = ClientBuilder.newClient();
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(MERCER_USER, MERCER_PASS);
@@ -90,12 +95,20 @@ public class ScoringUtil {
 		message.put("applicant", applicant);
 		message.put("responses", answers);
 
-		WebTarget target = client.target(MERCER_SERVICE);
-		String mercerResponse = target.request(MediaType.APPLICATION_JSON)
-						.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON), String.class);
+		JSONArray result;
+		javax.ws.rs.core.Response resp = null;
 
-		JSONArray result = new JSONArray(mercerResponse);
-		
+		try {
+			WebTarget target = client.target(MERCER_SERVICE);
+			resp = target.request(MediaType.APPLICATION_JSON)
+						.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON));
+			result = new JSONArray(resp.readEntity(String.class));
+		} catch (Exception e) {
+			logger.severe("Failed to get results from mercer: " + e.getMessage());
+			if (resp != null) logger.info("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
+			return;
+		}
+
 		for (int i = 0; i < result.length(); i++) {
 			JSONObject data = result.getJSONObject(i);
 			int score = data.getInt("score");
@@ -111,10 +124,17 @@ public class ScoringUtil {
 					logger.severe("Failed to record score: " + data + " for repondant " + respondant.getJSONString());
 			}
 		}
+
+		respondant.setRespondantStatus(Respondant.STATUS_SCORED);
+		respondant.mergeMe();
 		
 		return;
 	}
 
+	
+	
+	
+	
 	public static void predictRespondant(Respondant respondant) {
 		if (respondant.getRespondantStatus() <= Respondant.STATUS_SCORED) respondant.refreshMe();
 		if (respondant.getRespondantStatus() == Respondant.STATUS_SCORED) {

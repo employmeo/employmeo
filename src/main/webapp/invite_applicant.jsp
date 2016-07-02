@@ -10,7 +10,7 @@
     			<button type="button" class="btn btn-block btn-default" onclick='resetInvitation();'>Invite Another</button> 
         	</div>
         	<div class="x_content" id="invitationform">
-        	  <form name="inviteapplicant" action="/mp" method="post" class="form form-horizontal form-label-left input_mask">
+        	  <form id='inviteapplicant' name="inviteapplicant" class="form form-horizontal form-label-left input_mask">
 			    <div class="col-xs-12 col-sm-12 col-md-6">
 				  <h4>Contact Info</h4><hr>
 				  <label for="fname">First Name:</label> 
@@ -26,11 +26,11 @@
 				  <label for="email">Email:</label>
 				  <div class="input-group has-feedback">
 				    <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
-				    <input required class="form-control" type="email" name="email" required placeholder="email">
+				    <input required class="form-control" type="email" name="email" required placeholder="email" required>
  				  </div>
 				    <label for="street1">Address:</label>
 				    <div class="form-group has-feedback">
-				    <input class="form-control" id="address" name="address">
+				    <input required class="form-control" id="address" name="address">
 				    </div>
 				    <input type='hidden' id='lat' name='lat'>
 				    <input type='hidden' id='lng' name='lng'>
@@ -54,9 +54,7 @@
 				</div>
 				 <div class="col-sm-12 col-lg-12">
 					<hr>
-				    <input type="hidden" id="formname" name="formname" value="inviteapplicant">
-				    <input type="hidden" name="noRedirect" value="true">
-				    <button type="button" class="btn btn-block btn-default" onclick='inviteApplicant(this.form);'>
+				    <button type="submit" class="btn btn-block btn-default"><!--  onclick='inviteApplicant(this.form);'-->
 				    	Send Invitation 
 				    	<i id="spinner" class="fa fa-spinner fa-spin hidden"></i>
 				    	</button>   
@@ -70,10 +68,15 @@
 <%@ include file="/WEB-INF/includes/inc_header.jsp" %>
 
 <script>
+$(document).ready(function() {
   updatePositionsSelect(false);
   updateLocationsSelect(false);
   updateSurveysSelect(false);
   $('#address').geocomplete({details:'form'});
+  $('#inviteapplicant').submit(function(){
+	  inviteApplicant();
+	  return false;});
+});
 </script>
 
 </html>

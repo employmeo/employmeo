@@ -1,6 +1,5 @@
 package com.employmeo.admin;
 
-import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -17,10 +16,12 @@ import com.employmeo.objects.Position;
 import com.employmeo.objects.User;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @Path("getpositions")
-@PermitAll
 public class GetPositionList {
+
+	private static Logger logger = Logger.getLogger("com.employmeo.admin");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

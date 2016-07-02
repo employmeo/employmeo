@@ -1,6 +1,5 @@
 package com.employmeo.admin;
 
-import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -20,7 +19,6 @@ import com.employmeo.objects.User;
 import java.util.List;
 
 @Path("getlocations")
-@PermitAll
 public class GetLocationList {
 
 	@POST

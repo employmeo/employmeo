@@ -1,6 +1,5 @@
 package com.employmeo.admin;
 
-import javax.annotation.security.PermitAll;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +23,6 @@ import com.employmeo.util.DBUtil;
 import java.util.List;
 
 @Path("getlastten")
-@PermitAll
 public class GetLastTenRespondants {
 
 	@POST

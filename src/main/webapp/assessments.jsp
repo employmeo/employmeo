@@ -74,6 +74,7 @@
 
 <%@ include file="/WEB-INF/includes/inc_header.jsp"%>
 <script type="text/javascript">
+$(document).ready(function() {
 	$('#completionguage').easyPieChart({
     	easing: 'easeOutBounce',
     	lineWidth: '10',
@@ -83,6 +84,7 @@
     	onStep: function(from, to, percent) { $(this.el).find('.percent').text(Math.round(percent));}
   	});
 	updateSurveysSelect(true);
+});
 </script>
 
 </html>
