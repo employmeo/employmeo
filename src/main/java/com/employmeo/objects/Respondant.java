@@ -508,6 +508,8 @@ public class Respondant extends PersistantObject implements Serializable {
 			ScoringUtil.scoreAssessment(this);
 		}
 
+		if (this.getRespondantStatus() == Respondant.STATUS_SCORED) ScoringUtil.predictRespondant(this);
+
 		if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
 			for (int i = 0; i < getRespondantScores().size(); i++) {
 				Corefactor corefactor = Corefactor.getCorefactorById(getRespondantScores().get(i).getRsCfId());
@@ -528,6 +530,8 @@ public class Respondant extends PersistantObject implements Serializable {
 		} else if (this.getRespondantStatus() == Respondant.STATUS_COMPLETED) {
 			ScoringUtil.scoreAssessment(this);
 		}
+
+		if (this.getRespondantStatus() == Respondant.STATUS_SCORED) ScoringUtil.predictRespondant(this);
 
 		if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
 			for (int i = 0; i < getRespondantScores().size(); i++) {

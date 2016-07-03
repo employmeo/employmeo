@@ -13,8 +13,9 @@ import com.employmeo.util.SecurityUtil;
 
 import java.util.*;
 
-@WebFilter(filterName = "autoLoginFilter", urlPatterns = {
-		"*.jsp" }, initParams = @WebInitParam(name = "unrestrictedPages", value = "/login.jsp,/error.jsp,/error404.jsp"))
+@WebFilter( filterName = "autoLoginFilter",
+			urlPatterns = {"*.jsp" },
+			initParams = @WebInitParam(name = "unrestrictedPages", value = "/login.jsp,/error.jsp,/error404.jsp"))
 public class EmpAutoLoginFilter implements Filter {
 
 	private List<String> unrestrictedPageList = null;
