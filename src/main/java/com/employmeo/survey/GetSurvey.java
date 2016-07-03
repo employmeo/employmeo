@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
@@ -27,17 +29,20 @@ public class GetSurvey {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String doPost(
 			// @FormParam("start_time") TimeStamp startTime,
+			@Context final HttpServletRequest reqt,
 			@FormParam("respondant_uuid") UUID respondantUuid) {
+
 		logger.info("processing with: " + respondantUuid);
+		
 		JSONObject json = new JSONObject();
 		Respondant respondant = Respondant.getRespondantByUuid(respondantUuid);
 
 		if (respondant != null) {
 			respondant.refreshMe(); // make sure to get latest and greatest from
-									// DB
 			if (respondant.getRespondantStatus() < Respondant.STATUS_STARTED) {
 				respondant.setRespondantStatus(Respondant.STATUS_STARTED);
 				respondant.setRespondantStartTime(new Timestamp(new Date().getTime()));
+				respondant.setRespondantUserAgent(reqt.getHeader("User-Agent"));
 				respondant.mergeMe();
 			} else if (respondant.getRespondantStatus() >= Respondant.STATUS_COMPLETED) {
 				// TODO put in better error handling here.

@@ -133,6 +133,10 @@ public class Respondant extends PersistantObject implements Serializable {
 	@Column(name = "respondant_score_postmethod")
 	private String respondantScorePostMethod;
 
+	// Scoring info
+	@Column(name = "respondant_user_agent")
+	private String respondantUserAgent;
+
 	@Column(name = "respondant_start_time")
 	private Timestamp respondantStartTime;
 
@@ -396,6 +400,15 @@ public class Respondant extends PersistantObject implements Serializable {
 	public void setRespondantEmailRecipient(String respondantEmailRecipient) {
 		this.respondantEmailRecipient = respondantEmailRecipient;
 	}
+
+	public String getRespondantUserAgent() {
+		return this.respondantUserAgent;
+	}
+
+	public void setRespondantUserAgent(String userAgent) {
+		this.respondantUserAgent = userAgent;
+	}
+
 
 	public void setRespondantStartTime(Timestamp start) {
 		this.respondantStartTime = start;

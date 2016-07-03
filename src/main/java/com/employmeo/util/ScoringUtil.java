@@ -80,12 +80,26 @@ public class ScoringUtil {
 
 		JSONArray answers = new JSONArray();
 		for (int i=0;i<responses.size();i++) {
-			JSONObject jResp = new JSONObject();
 			Question question = Question.getQuestionById(responses.get(i).getResponseQuestionId());
-			jResp.put("response_value", responses.get(i).getResponseValue());
-			jResp.put("question_id", question.getQuestionForeignId());
-			jResp.put("test_name", question.getQuestionForeignSource());
-			answers.put(jResp);
+			String testname = question.getQuestionForeignSource();
+			if (testname.equalsIgnoreCase("behavior_b")) {
+				String[] priorities = Integer.toString(responses.get(i).getResponseValue()).split("(?!^)");
+				for (int j=0;j<priorities.length;j++) {
+					int value = Integer.valueOf(priorities[j]);
+					String quesId = question.getQuestionForeignId() + "_" + j;
+					JSONObject jResp = new JSONObject();
+					jResp.put("response_value", value);
+					jResp.put("question_id", quesId);
+					jResp.put("test_name", testname);
+					answers.put(jResp);	
+				}
+			} else {
+				JSONObject jResp = new JSONObject();			
+				jResp.put("response_value", responses.get(i).getResponseValue());
+				jResp.put("question_id", question.getQuestionForeignId());
+				jResp.put("test_name", testname);
+				answers.put(jResp);
+			}
 		}
 		
 		JSONObject applicant = new JSONObject();
@@ -97,15 +111,20 @@ public class ScoringUtil {
 
 		JSONArray result;
 		javax.ws.rs.core.Response resp = null;
-
+		String output = null;
 		try {
 			WebTarget target = client.target(MERCER_SERVICE);
 			resp = target.request(MediaType.APPLICATION_JSON)
 						.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON));
-			result = new JSONArray(resp.readEntity(String.class));
+			output = resp.readEntity(String.class);
+			result = new JSONArray(output);
 		} catch (Exception e) {
 			logger.severe("Failed to get results from mercer: " + e.getMessage());
-			if (resp != null) logger.info("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
+			logger.info("Failed to get results from mercer: " + message.toString());
+			if (resp != null) {
+				logger.info("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
+				logger.info("Failed to get results from mercer: " + output);
+			}
 			return;
 		}
 

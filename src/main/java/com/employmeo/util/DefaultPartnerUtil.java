@@ -260,6 +260,8 @@ public class DefaultPartnerUtil implements PartnerUtil {
 		applicant.put("applicant_id", respondant.getRespondantId());
 		applicant.put("applicant_profile", respondant.getRespondantProfile());
 		applicant.put("applicant_composite_score", respondant.getCompositeScore());
+		applicant.put("applicant_profile_label", 
+				PositionProfile.getProfileDefaults(respondant.getRespondantProfile()).getString("profile_name"));
 		applicant.put("applicant_profile_a", respondant.getProfileA());
 		applicant.put("applicant_profile_b", respondant.getProfileB());
 		applicant.put("applicant_profile_c", respondant.getProfileC());

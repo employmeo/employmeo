@@ -38,7 +38,8 @@ public class GetRespondantScore {
 		User user = (User) sess.getAttribute("User");
 		if (user == null) {
 			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return null;
+			json.put("message", "Access Restricted");
+			return json.toString();
 		} 
 		
 		Respondant respondant = null;
@@ -51,9 +52,9 @@ public class GetRespondantScore {
 		if (respondant != null) {
 			if (!user.canView(respondant)) {
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-logger.info("user not allowed to view: " + respondant.getJSONString());
-logger.info("user account: " + user.getUserAccountId() + " respondant account: " + respondant.getRespondantAccountId());
-				return null;			
+				logger.warning("Unauthorized Access Attempted by User: " + user.getUserId());
+				json.put("message", "Access Restricted");
+				return json.toString();			
 			}
 			json.put("respondant", respondant.getJSON());
 			json.put("scores", respondant.getAssessmentScore());
@@ -61,6 +62,8 @@ logger.info("user account: " + user.getUserAccountId() + " respondant account: "
 			Position position = Position.getPositionById(respondant.getRespondantPositionId());
 			if (position != null)
 				json.put("position", position.getJSON());
+		} else {
+			json.put("message", "Applicant not found");
 		}
 
 		return json.toString();
