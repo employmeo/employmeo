@@ -56,6 +56,7 @@ public class GetRespondantScore {
 				json.put("message", "Access Restricted");
 				return json.toString();			
 			}
+			if (respondant.getRespondantStatus() < Respondant.STATUS_PREDICTED) respondant.refreshMe();
 			json.put("respondant", respondant.getJSON());
 			json.put("scores", respondant.getAssessmentScore());
 			json.put("detailed_scores", respondant.getAssessmentDetailedScore());
