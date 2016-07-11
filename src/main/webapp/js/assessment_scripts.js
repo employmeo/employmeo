@@ -122,7 +122,7 @@ function nextPage() {
 		}
 		break;
 	default: // "2"=thank you "3"=questions
-		allowed = isPageComplete($('.carousel-inner div.active').index());
+		allowed = isPageComplete($('.carousel-inner div.active').index() + 1);
 		break;
 	}
 	if (allowed) {
