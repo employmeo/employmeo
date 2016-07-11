@@ -117,6 +117,7 @@ function nextPage() {
 		if (activeSection.section_timed) {
 			allowed = (endAt != null);
 		} else {
+			$('#progress').removeClass('hidden');	
 			allowed = true;
 		}
 		break;
@@ -377,24 +378,21 @@ function assemblePlainSurvey(data) {
 
 
 function createSurveySection(deck, section) {
-	var pagecount = 2; // starts at two, assumes pre-amble and instructions
+	var pagecount = $(deck).children().length + 1; // starts at two, assumes pre-amble and instructions
 	pagination = new Array();
 	var qlimit = section.section_questions_per_page; // questions per page
-	totalpages = Math.ceil(section.qtotal / qlimit) + 1 + 1; // (preamble + inst + questions, ignore thankyou)
-
+	totalpages = Math.ceil(section.qtotal / qlimit) + pagecount;
+	
 	var card = getInstructions(section, pagecount, totalpages);
 	card.appendTo(deck);
 	pagecount++;
 	
 	if (section.section_timed) {
 		updateTimer();
-		$('#progress').addClass('hidden');
-		$('#timer').removeClass('hidden');
-	} else {
-		$('#progress').removeClass('hidden');
-		$('#timer').addClass('hidden');
 	}
-	
+	$('#progress').addClass('hidden');
+	$('#timer').addClass('hidden');
+
 	var qcount = 0;
 	var qpp = 0;
 	card = $('<div />', {'class' : 'questionpage item'});
@@ -600,7 +598,7 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 		var listdiv = $('<div />');
 		listdiv.append($('<div />', {
 			'class' : 'instructions',
-			'text' : 'Rank options from most preferred (1) to least (5)'
+			'text' : 'Drag options to rank most preferred (1) to least (5)'
 		}));
 		var sortablelist = $('<ol />', {
 			'id' : 'sortable-' + question.question_id,
@@ -622,8 +620,8 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 			listitem.append(span);
 			sortablelist.append(listitem);
 		}
-		sortablelist.sortable({handle: 'span',
-            stop: function(event, ui){updateRankerIndexes(question.question_id);}});
+		sortablelist.sortable({stop: 
+			function(event, ui){updateRankerIndexes(question.question_id);}});
 		
 		listdiv.append(sortablelist);
 
@@ -733,7 +731,7 @@ function getSurveyNav(pagecount, totalpages, pageType) {
 		$(nextbutton).text('Complete');
 		nextbutton.attr('disabled', true);
 		nextbutton.attr('onClick','submitSection();');
-		$(centernav).text('Page '+ (pagecount - 2) + ' of ' + (totalpages-2));
+		$(centernav).text('Page '+ pagecount + ' of ' + totalpages);
 		rightnav.append(nextbutton);
 		break;
 	case 4: //Survey Complete (Thank You Page)
@@ -743,7 +741,7 @@ function getSurveyNav(pagecount, totalpages, pageType) {
 		break;
 	case 5: //Question Page
 	default:
-		$(centernav).text('Page '+ (pagecount - 2) + ' of ' + (totalpages-2));
+		$(centernav).text('Page '+ pagecount + ' of ' + totalpages);
 		nextbutton.attr('disabled', true);
 		rightnav.append(nextbutton);
 		leftnav.append($('<button />', {
@@ -863,7 +861,7 @@ function startAssessment() {
 function startTimer() {
 	var t = 1000 * activeSection.section_time_seconds;
 	$('#timer').removeClass('hidden');
-	$('#progress').addClass('hidden');
+
 	endAt = Date.parse(new Date()) + t;
 	timeinterval = setInterval(function(){
 		if (endAt !=null) {

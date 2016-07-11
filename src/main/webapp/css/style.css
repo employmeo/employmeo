@@ -2,9 +2,19 @@
  * 1.0Survey panel details
  * ----------------------------------------------------------------------------
  */
+
  
 .surveyheader h3 {
 		font-size: 18px;
+}
+
+@media (max-width: 332px) {
+	.surveyheader h3 {
+		font-size: 6vw;
+	}
+	.surveyheader i {
+		display: none;
+	}
 }
 
 .surveyheader .progress {
