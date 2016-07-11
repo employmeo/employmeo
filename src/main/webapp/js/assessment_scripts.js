@@ -389,6 +389,8 @@ function createSurveySection(deck, section) {
 	
 	if (section.section_timed) {
 		updateTimer();
+	} else {
+		updateProgress();		
 	}
 	$('#progress').addClass('hidden');
 	$('#timer').addClass('hidden');
@@ -610,11 +612,11 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 			});
 			var span = $('<span />', {'text' : answer.answer_text });
 			listitem.append($('<i />', {
-				'class' : 'fa fa-arrow-up pull-right',
+				'class' : 'fa fa-long-arrow-up pull-right',
 				'onClick': 'rankUp('+question.question_id+','+ answer.answer_value+')'
 			}));
 			listitem.append($('<i />', {
-				'class' : 'fa fa-arrow-down pull-right',
+				'class' : 'fa fa-long-arrow-down pull-right',
 				'onClick': 'rankDown('+question.question_id+','+ answer.answer_value+')'
 			}));
 			listitem.append(span);
@@ -833,18 +835,23 @@ function saveResponse(response) {
     $(field).val(response.response_id);
 
     if (activeSection.section_all_required) {
-	    var totalresponses = 0;
-	    for (var q in questions) { ques = questions[q]; 
-		    if (responses[ques.question_id] !=null) {
-		    	if (ques.question_page == activeSection.section_number) totalresponses++;
-		    }
-	    } 
-	    progress = 100* totalresponses / activeSection.qtotal;
-	    $('.progress-bar').attr('style','width:'+progress+'%;');
-	    $('.progress-bar').attr('aria-valuenow',progress);
+    	updateProgress();
     }
     
     return;
+}
+
+function updateProgress() {
+    var totalresponses = 0;
+    for (var q in questions) { ques = questions[q]; 
+	    if (responses[ques.question_id] !=null) {
+	    	if (ques.question_page == activeSection.section_number) totalresponses++;
+	    }
+    } 
+    progress = 100* totalresponses / activeSection.qtotal;
+    $('.progress-bar').attr('style','width:'+progress+'%;');
+    $('.progress-bar').attr('aria-valuenow',progress);
+	
 }
 
 function startAssessment() {
@@ -876,7 +883,8 @@ function startTimer() {
 function timesUp() {
 	clearInterval(timeinterval);
 	endAt = null;
-    $('#timesup').modal({ backdrop: 'static', keyboard: false });
+    $('#timesup').modal();
+	submitSection();
 }
 
 function updateTimer(){
@@ -904,7 +912,9 @@ function rankUp(id, num){
 		if ((currentIndex == -1) && ($(items[index]).attr('data-value') == num)) currentIndex = index;
 	}
 	if (currentIndex > 0) {
+		$(items[currentIndex]).fadeOut(100);
 		$(items[currentIndex]).insertBefore(items[(currentIndex-1)]);
+		$(items[currentIndex]).fadeIn(100);
 	}
 	updateRankerIndexes(id);
 }
@@ -917,7 +927,9 @@ function rankDown(id, num){
 	}
 	currentIndex++;
 	if ((currentIndex > 0) && (currentIndex < (items.length))) {
+		$(items[currentIndex-1]).fadeOut(100);
 		$(items[currentIndex]).insertBefore(items[currentIndex-1]);
+		$(items[currentIndex-1]).fadeIn(100);
 	}
 	updateRankerIndexes(id);
 }
