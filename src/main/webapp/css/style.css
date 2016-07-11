@@ -274,18 +274,29 @@ input.radio-select:checked+label.radio-select
 }
 
 /**
- * 4.5 Schedules
+ * 4.5 List Ranking
  * ----------------------------------------------------------------------------
  */
 
-ul.ranker {
+.instructions {
+	text-align: center;
+	display: block;
+	font-size: 75%;
+	text-transform: uppercase;	
+}
+
+ol.ranker, ul.ranker {
 	padding-left: 5px;
+}
+
+ol.ranker li::before {
+	color:black;
+	content: counter();
 }
 
 .ranker li {
     cursor: pointer;
 	color: #2e6da4;
-	display: block;
     background: white;
 	width : 100%;
 	margin: 3px;
@@ -294,6 +305,10 @@ ul.ranker {
     border-width: 1px;
     border-style: solid;
     border-radius: 2px;
+}
+
+ul.ranker li {
+	display: block;
 }
 
 .ranker li span, .ranker li i {
@@ -305,6 +320,10 @@ ul.ranker {
   	user-select: none;    
 }
 
+form.unsubmitted li, form.submitted li {
+	color: #2e6da4;
+}
+
 .ranker-button {
 	font-family: Arial, Verdana,FontAwesome;
 	font-size: 12px;
@@ -313,18 +332,41 @@ ul.ranker {
 	border: solid;
     background: white;
 	border-width: 1px;
-	border-color: #2e6da4;
 	border-radius: 2px;
-	color: #2e6da4;
-	font-weight: normal;
+	color: #808080;
 	text-align: center;
+	text-transform: uppercase;
  	cursor: pointer;
  	cursor: hand;	
 }
 
-.ranker-button:disabled {
-	color: darkgray;
-    background: lightgray;
+.ranker-edited {
+	font-weight: bold;
+	color: #2e6da4;
+	border-color: #2e6da4;
+}
+
+.ranker-edited::before {
+    background-color: #FF0066;
+    border-radius: 3px 3px 3px 3px;
+    color: #FFFFFF;
+    content: "Click save when finished ordering \00BB";
+    font-size: 11px;
+    padding: 1px 3px 1px 3px;
+    left: 25px;
+    position: absolute;
+}
+
+.ranker-saved {
+	font-weight: bold;
+	color: white;
+	background: #29c329;
+	border-color: #1d921d;
+}
+
+.ranker-saved::after {
+    padding: 0px 0px 0px 2px;
+    content: "\f00c" ;
 }
 
 /**

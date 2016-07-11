@@ -51,10 +51,12 @@ public class EmailUtility {
 	public static void sendEmailInvitation(Respondant respondant) {
 
 		String link = ExternalLinksUtil.getAssessmentLink(respondant);
+
 		String body = "Dear " + respondant.getPerson().getPersonFname() + ",\n" + "\n"
-				+ "Congratulations, we are excited to invite you to complete a preliminary "
-				+ "assessment for this position.\nThis assessment can be completed on a "
-				+ "mobile device or in a browser at this link: \n" + link;
+				+ "You have been invited to take a questionnaire as part of your application to "
+				+ respondant.getRespondantAccount().getAccountName() + ".\n"
+				+ "This assessment can be completed on a mobile device or in a browser at this link: \n"
+				+ link;
 		
 		// TODO: Figure out respondant.getRespondantAccount().getAccountSentbyText());
 		

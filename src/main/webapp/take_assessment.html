@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Employmeo | Take Assessment</title>
+<title>Employmeo | Take Questionnaire</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,8 +25,9 @@
 </head>
 <header>
 <nav id='header' class="navbar navbar-default navbar-fixed-top surveyheader">
+<div style='max-width:900px;margin:0 auto' class='row'> 
   <div class="col-xs-6 col-sm-6 col-md-9">
-    <h3><i class="fa fa-edit"></i>Assessment</h3>
+    <h3><i class="fa fa-edit"></i> Questionnaire</h3>
   </div>
   <div class="col-xs-6 col-sm-6 col-md-3" id="surveyprogress">
     <div class="col-xs-12 col-sm-12 col-md-12">
@@ -38,9 +39,40 @@
       </div>
     </div>
   </div>
+</div>
 </nav>
 </header>
 <body style='padding-top: 35px;'>
+  <div class="modal fade" id="timesup" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Time Expired</h4>
+        </div>
+	    <div class="modal-footer">
+		  <button type="button" data-dismiss="modal" class="btn btn-primary" data-value="1" onClick='submitSection()'>OK</button>
+		</div>
+      </div> 
+    </div>
+  </div> 
+  <div class="modal fade" id="honesty" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">QUESTION FOR YOU TO ANSWER</h4>
+        </div>
+        <div class="modal-body">
+			<p>Do you understand this questionnaire may see if your  answers are <span class="text-danger"><strong>HONEST</strong></span> ? </p>
+			<p>Please answer by clicking “YES” or “NO” – below.</p>
+		</div>        
+	    <div class="modal-footer">
+		  <button type="button" data-dismiss="modal" class="btn btn-primary" data-value="0" onClick='nextPage();'>Yes</button>
+		  <button type="button" data-dismiss="modal" class="btn btn-primary" data-value="1">No</button>
+		</div>
+      </div> 
+    </div>
+  </div> 
+
 	<div id='wait' class="hidden text-center" style='position:absolute;width:100%;margin-top:20%;z-index:99;'>
 	<span style="font-size:18px;font-family:Comfortaa;">Loading</span><br>
 	<i class="fa fa-spinner fa-5x fa-spin"></i>

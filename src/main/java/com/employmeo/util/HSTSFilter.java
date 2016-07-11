@@ -34,7 +34,6 @@ public class HSTSFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub
 		FORCE_SECURE = Boolean.valueOf(System.getenv("FORCE_SECURE"));
 		if (FORCE_SECURE) logger.info("Using HSTS to force traffic through https");
 	}

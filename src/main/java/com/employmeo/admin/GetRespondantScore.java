@@ -50,6 +50,7 @@ public class GetRespondantScore {
 		}
 
 		if (respondant != null) {
+			respondant.refreshMe();
 			if (!user.canView(respondant)) {
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				logger.warning("Unauthorized Access Attempted by User: " + user.getUserId());
