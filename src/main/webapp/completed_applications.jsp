@@ -5,6 +5,8 @@
 	</div>
 	<div class="col-md-9 col-sm-9 col-xs-12 pull-right">
 		<form class="form-inline pull-right" id='refinequery'>
+			<input type="hidden" name="respondant_status_low" value="10">
+			<input type="hidden" name="respondant_status_high" value="15">
 			<div class="form-group">
 				<div id="reportrange" class="form-control"
 					style="line-height: 1.42857143;">

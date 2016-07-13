@@ -10,6 +10,7 @@ import com.employmeo.util.ScoringUtil;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,9 +42,9 @@ public class Respondant extends PersistantObject implements Serializable {
 	private Long respondantId;
 
 	@Column(name = "respondant_uuid", insertable = false, updatable = false, columnDefinition = "UUID")
-	@Convert(converter=com.employmeo.util.UuidConverter.class)
+	@Convert(converter = com.employmeo.util.UuidConverter.class)
 	private UUID respondantUuid;
-	
+
 	// bi-directional many-to-one association to Account
 	@ManyToOne
 	@JoinColumn(name = "respondant_account_id", insertable = false, updatable = false)
@@ -71,7 +72,7 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	@Column(name = "respondant_partner_id", insertable = true, updatable = true)
 	private Integer respondantPartnerId;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "respondant_position_id", insertable = false, updatable = false)
 	private Position position;
@@ -105,7 +106,7 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	@Column(name = "respondant_composite_score")
 	private Double compositeScore;
-	
+
 	@Column(name = "respondant_profile_a")
 	private Double profileA;
 
@@ -225,7 +226,7 @@ public class Respondant extends PersistantObject implements Serializable {
 	}
 
 	public Partner getPartner() {
-		if ((this.partner == null) && (this.respondantPartnerId != null)) 
+		if ((this.partner == null) && (this.respondantPartnerId != null))
 			this.partner = Partner.getPartnerById(this.respondantPartnerId);
 		return this.partner;
 	}
@@ -264,12 +265,60 @@ public class Respondant extends PersistantObject implements Serializable {
 		this.respondantStatus = respondantStatus;
 	}
 
+	public String getRespondantStatusText() {
+		String text = null;
+
+		switch (this.respondantStatus) {
+		case STATUS_INVITED:
+			text = "Invited";
+			break;
+		case STATUS_STARTED:
+			text = "Started";
+			break;
+		case STATUS_COMPLETED:
+			text = "Completed";
+			break;
+		case STATUS_SCORED:
+		case STATUS_PREDICTED:
+			text = "Scored";
+			break;
+		case STATUS_REJECTED:
+			text = "Rejected";
+			break;
+		case STATUS_OFFERED:
+			text = "Offered";
+			break;
+		case STATUS_DECLINED:
+			text = "Declined Offer";
+			break;
+		case STATUS_HIRED:
+			text = "Hired";
+			break;
+		case STATUS_QUIT:
+			text = "Quit";
+			break;
+		case STATUS_TERMINATED:
+			text = "Terminated";
+			break;
+		default:
+			break;
+
+		}
+
+		return text;
+	}
+
 	public String getRespondantProfile() {
 		return this.respondantProfile;
 	}
 
 	public void setRespondantProfile(String profile) {
 		this.respondantProfile = profile;
+	}
+
+	public String getProfileLabel() {
+		if(getRespondantProfile()!= null) return PositionProfile.getProfileDefaults(getRespondantProfile()).getString("profile_name");
+		return null;
 	}
 
 	public Double getCompositeScore() {
@@ -377,7 +426,8 @@ public class Respondant extends PersistantObject implements Serializable {
 	}
 
 	public String getRespondantRedirectUrl() {
-		if (this.respondantRedirectUrl != null)	return this.respondantRedirectUrl;
+		if (this.respondantRedirectUrl != null)
+			return this.respondantRedirectUrl;
 		return this.accountSurvey.getAsRedirectPage();
 	}
 
@@ -409,7 +459,6 @@ public class Respondant extends PersistantObject implements Serializable {
 		this.respondantUserAgent = userAgent;
 	}
 
-
 	public void setRespondantStartTime(Timestamp start) {
 		this.respondantStartTime = start;
 	}
@@ -437,8 +486,7 @@ public class Respondant extends PersistantObject implements Serializable {
 
 	public static Respondant getRespondantByUuid(UUID uuid) {
 		EntityManager em = DBUtil.getEntityManager();
-		TypedQuery<Respondant> q = em.createQuery(
-				"SELECT r FROM Respondant r WHERE r.respondantUuid = :uuId",
+		TypedQuery<Respondant> q = em.createQuery("SELECT r FROM Respondant r WHERE r.respondantUuid = :uuId",
 				Respondant.class);
 		q.setParameter("uuId", uuid);
 		Respondant respondant = null;
@@ -449,14 +497,17 @@ public class Respondant extends PersistantObject implements Serializable {
 		}
 		return respondant;
 	}
-	
+
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
 		json.put("respondant_id", this.respondantId);
 		json.put("respondant_uuid", this.respondantUuid.toString());
 		json.put("respondant_created_date", this.respondantCreatedDate);
 		json.put("respondant_status", this.respondantStatus);
+		json.put("respondant_status_text", this.getRespondantStatusText());
 		json.put("respondant_profile", this.respondantProfile);
+		json.put("respondant_composite_score", this.compositeScore);
+		json.put("respondant_profile_label", this.getProfileLabel());
 		json.put("respondant_profile_a", this.profileA);
 		json.put("respondant_profile_b", this.profileB);
 		json.put("respondant_profile_c", this.profileC);
@@ -499,7 +550,8 @@ public class Respondant extends PersistantObject implements Serializable {
 	 */
 
 	public JSONObject getAssessmentScore() {
-		if (getRespondantStatus() <= Respondant.STATUS_COMPLETED) this.refreshMe();
+		if (getRespondantStatus() <= Respondant.STATUS_COMPLETED)
+			this.refreshMe();
 
 		JSONObject scores = new JSONObject();
 		if (this.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
@@ -508,7 +560,8 @@ public class Respondant extends PersistantObject implements Serializable {
 			ScoringUtil.scoreAssessment(this);
 		}
 
-		if (this.getRespondantStatus() == Respondant.STATUS_SCORED) ScoringUtil.predictRespondant(this);
+		if (this.getRespondantStatus() == Respondant.STATUS_SCORED)
+			ScoringUtil.predictRespondant(this);
 
 		if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
 			for (int i = 0; i < getRespondantScores().size(); i++) {
@@ -520,9 +573,9 @@ public class Respondant extends PersistantObject implements Serializable {
 		return scores;
 	}
 
-	
 	public JSONArray getAssessmentDetailedScore() {
-		if (getRespondantStatus() <= Respondant.STATUS_COMPLETED) this.refreshMe();
+		if (getRespondantStatus() <= Respondant.STATUS_COMPLETED)
+			this.refreshMe();
 
 		JSONArray scores = new JSONArray();
 		if (this.getRespondantStatus() < Respondant.STATUS_COMPLETED) {
@@ -531,13 +584,15 @@ public class Respondant extends PersistantObject implements Serializable {
 			ScoringUtil.scoreAssessment(this);
 		}
 
-		if (this.getRespondantStatus() == Respondant.STATUS_SCORED) ScoringUtil.predictRespondant(this);
+		if (this.getRespondantStatus() == Respondant.STATUS_SCORED)
+			ScoringUtil.predictRespondant(this);
 
 		if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
 			for (int i = 0; i < getRespondantScores().size(); i++) {
 				Corefactor corefactor = Corefactor.getCorefactorById(getRespondantScores().get(i).getRsCfId());
 				JSONObject score = corefactor.getJSON();
-				score.put("cf_description", corefactor.getDescriptionForScore(getRespondantScores().get(i).getRsValue()));
+				score.put("cf_description",
+						corefactor.getDescriptionForScore(getRespondantScores().get(i).getRsValue()));
 				score.put("cf_score", getRespondantScores().get(i).getRsValue());
 				scores.put(score);
 			}
@@ -546,5 +601,4 @@ public class Respondant extends PersistantObject implements Serializable {
 		return scores;
 	}
 
-	
 }

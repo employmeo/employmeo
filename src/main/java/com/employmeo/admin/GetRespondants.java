@@ -29,11 +29,14 @@ import java.util.logging.Logger;
 @Path("getrespondants")
 public class GetRespondants {
 	
+	private static final long ONE_DAY = 24*60*60*1000; // one day in milliseconds
 	private static Logger logger = Logger.getLogger("com.employmeo.admin");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
+			@DefaultValue("-1") @FormParam("respondant_status_low") int statusLow,
+			@DefaultValue("99") @FormParam("respondant_status_high") int statusHigh,
 			@DefaultValue("-1") @FormParam("location_id") Long locationId,
 			@DefaultValue("-1") @FormParam("position_id") Long positionId,
 			@DefaultValue("2015-01-01") @FormParam("fromdate") String fromDate,
@@ -49,19 +52,22 @@ public class GetRespondants {
 			// {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
 		Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
-		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime()); // must add a day
+		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime() + ONE_DAY);
 
 		String locationSQL = "";
 		String positionSQL = "";
+		String statusSQL = "AND r.respondantStatus >= :statusLow AND r.respondantStatus <= :statusHigh ";
+		
 		if (locationId > -1)
 			locationSQL = "AND r.respondantLocationId = :locationId ";
 		if (positionId > -1)
 			positionSQL = "AND r.respondantPositionId = :positionId ";
 
+
 		EntityManager em = DBUtil.getEntityManager();
 		String dateSQL = "AND r.respondantCreatedDate >= :fromDate AND r.respondantCreatedDate <= :toDate ";
-		String sql = "SELECT r from Respondant r WHERE "
-				+ "r.respondantStatus >= :status AND r.respondantAccountId = :accountId " + locationSQL + positionSQL
+		String sql = "SELECT r from Respondant r WHERE r.respondantAccountId = :accountId "
+				+ locationSQL + positionSQL + statusSQL 
 				+ dateSQL + "ORDER BY r.respondantCreatedDate DESC";
 		TypedQuery<Respondant> query = em.createQuery(sql, Respondant.class);
 		query.setParameter("accountId", user.getAccount().getAccountId());
@@ -69,15 +75,17 @@ public class GetRespondants {
 			query.setParameter("locationId", locationId);
 		if (positionId > -1)
 			query.setParameter("positionId", positionId);
+		query.setParameter("statusLow", statusLow);
+		query.setParameter("statusHigh", statusHigh);
 		query.setParameter("fromDate", from);
 		query.setParameter("toDate", to);
-		query.setParameter("status", Respondant.STATUS_PREDICTED);
 
 		List<Respondant> respondants = query.getResultList();
 		for (int j = 0; j < respondants.size(); j++) {
 			respondants.get(j).getAssessmentScore();
 			JSONObject jresp = respondants.get(j).getJSON();
 			jresp.put("scores", respondants.get(j).getAssessmentScore());
+			jresp.put("detailed_scores", respondants.get(j).getAssessmentDetailedScore());
 			jresp.put("position", respondants.get(j).getPosition().getJSON());
 
 			response.put(jresp);
