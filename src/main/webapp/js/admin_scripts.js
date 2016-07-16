@@ -4,6 +4,8 @@ var profileChart;
 var respondantProfile;
 var positionProfile;
 var historyChart;
+var dashApplicants;
+var dashHires;
 
 var respondant;
 var surveyList;
@@ -42,8 +44,55 @@ function logout() {
 			withCredentials: true
 		},
 		success: function(data) {
-			console.log(data);
 			window.location.assign('/login.jsp');
+		}
+	});	
+}
+
+function forgotPass() {
+	$.ajax({
+		type: "POST",
+		async: true,
+		data : $('#forgotpassform').serialize(),
+		url: "/admin/forgotpassword",
+		success: function(data) {
+			// disable forms
+			$('#forgotpassform :submit').text('Request Sent');
+			$('#forgotpassform :input').prop('disabled', true);
+			$('#emailtoyou').text('An password reset request has been submitted. Please check your email for instructions to reset your password.');	
+		},
+		error: function(data) {
+			console.log(data);			
+		}
+	});	
+}
+
+function resetPassword() {
+	$.ajax({
+		type: "POST",
+		url: "/admin/changepass",
+		async: true,
+	    headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+	    dataType: 'json',
+		data : JSON.stringify({
+			'email' : email,
+			'hash' : hash,
+			'newpass' : $('input[name=newpass]').val()
+		}),
+		success: function(data) {
+			if (data.user_fname != null) {
+				// drop a cookie
+				document.cookie = "user_fname=" + data.user_fname;
+				window.location.assign('/index.jsp');
+			} else {
+				$('#errormsg').text('Unable to change your password. Please request another password reset.');
+			}
+		},
+		error: function(data) {
+			console.log(data);			
 		}
 	});	
 }
@@ -337,9 +386,9 @@ function updateDash() {
 
 
 function refreshDashApplicants(dataApplicants) {
+	if (dashApplicants != null) dashApplicants.destroy();
 	// Build Applicants Widget
-	var dashApplicants = $("#dashApplicants").get(0).getContext("2d");
-	var appDoughnutChart = new Chart(dashApplicants, {
+	dashApplicants = new Chart($("#dashApplicants").get(0).getContext("2d"), {
 		type: 'doughnut',
 		data: dataApplicants,
 		options: {
@@ -350,16 +399,26 @@ function refreshDashApplicants(dataApplicants) {
 }
 
 function refreshDashHires(dataHires) {
+	if (dashHires != null) {
+		dashHires.destroy();
+		dashHires = null;
+	}
+
 	// Build Hires Widget
-	var dashHires = $("#dashHires").get(0).getContext("2d");
-	new Chart(dashHires, {
+	dashHires = new Chart($("#dashHires").get(0).getContext("2d"), {
 		type: 'doughnut', 
 		data: dataHires, 
 		options: {
 			cutoutPercentage : 35,
 			responsive : true,
+			animation : { onProgress : function (chart){
+				var ctx = chart.chartInstance.chart.ctx;
+				var total = 0;
+				ctx.fillText(total, ctx.width/2 - 20, ctx.width/2, 200);
+
+			}},	
 			legend: { display: false }
-		}});
+	}});
 }
 
 function refreshProgressBars(dataApplicants, dataHires) {

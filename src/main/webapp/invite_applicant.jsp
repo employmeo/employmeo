@@ -51,6 +51,10 @@
 					<div class="form-group has-feedback">
 				    	<select class="form-control" id="position_id" name="position_id"></select>
 					</div>
+                    <div class="form-group">
+                        <input type="checkbox" id="notifyme" name="notifyme" value="true" checked>
+                        <label for="notifyme">Notify me upon scoring</label>
+                    </div>
 				</div>
 				 <div class="col-sm-12 col-lg-12">
 					<hr>

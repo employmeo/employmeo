@@ -20,37 +20,53 @@
 <script type="text/javascript" src='/js/custom.js'></script>
 </head>
 <body class="coverpage" style="background-image:url('/images/background-<%=new java.util.Random().nextInt(8)+1%>.jpg');">
-  <div class="">
-    <a class="hiddenanchor" id="toregister"></a>
-    <a class="hiddenanchor" id="tologin"></a>
-
+<div class="container-fluid">
     <div id="wrapper">
-      <div id="login" style="background: black;color: white;opacity: .85;">
-	  <div class="col-xs-12 text-center"><img src='/images/emp-logo-sm.png' style="width:65%;"></div>
-      <div class="col-xs-1"></div><div class="col-xs-10">
-        <section class="login_content">
-		  <form name="login" method="post" action="javascript:login();" id='loginform'>
+      
+<div class="container" style="background: black;color: white;opacity: .85;">
+	<div class="col-xs-12 text-center"><img src="/images/emp-logo-sm.png" style="width:65%;"></div>
+	<div class="col-xs-12 text-center"><hr></div>
+    <div id='logindiv' class="col-xs-12 text-center">
+		  <form name="login" method="post" action="javascript:login();" id="loginform">
             <h1>Sign In</h1>
+			<div class="clearfix" style="height: 15px;"></div>
 			<div><input class="form-control" type="email" name="email" required placeholder="Email Address"></div>
+			<div class="clearfix" style="height: 15px;"></div>
 			<div><input class="form-control" type="password" name="password" placeholder="Password" required></div>
-			<div class="text-right"></div>
+			<div class="clearfix" style="height: 15px;"></div>
             <div>
-              <div class="col-xs-6"><button class="btn btn-default submit" type="submit">Sign In</button></div>
-              <div class="col-xs-6"><input type="checkbox" id="rememberme" name="rememberme" value="true" checked><label for="rememberme">Stay Logged In</label></div>
+              <div class="col-xs-12 col-sm-6 col-md-6"><input type="checkbox" id="rememberme" name="rememberme" value="true" checked><label for="rememberme">Stay Logged In</label></div>
+              <div class="col-xs-12 col-sm-6 col-md-6"><button class="btn btn-info btn-block submit" type="submit">Sign In</button></div>
             </div>
-            <div class="clearfix"></div>
-            <div class="separator"><p class="change_link">New to site?
-                <a href="http://www.employmeo.com/contact-us"> Create Account </a></p>
+			<div class="clearfix" style="height: 15px;"></div>
+			<div class="col-xs-12 text-center"><hr></div>
+            <div class="col-xs-12 text-center"><p class="change_link">Forgot Password?
+                <a href="#" onClick="$('#logindiv').toggleClass('hidden');$('#forgotdiv').toggleClass('hidden');"> Request Reset </a></p>
             </div>
-			<input id='toPage' type="hidden" value='/index.jsp'>
+			<input id="toPage" type="hidden" value="/index.jsp">
           </form>
-        </section>
+        </div>
+        <div id='forgotdiv' class="col-xs-12 text-center hidden">
+		  <form name="forgotpass" method="post" action="javascript:forgotPass();" id="forgotpassform">
+            <h1>Forgot Password</h1>
+            <div class="col-xs-12 text-center"><p class="change_link">Enter your email address and click the "Request Password Reset" button below.</p></div>
+			<div class="clearfix" style="height: 15px;"></div>
+			<div><input class="form-control" type="email" name="email" required placeholder="Email Address"></div>
+			<div class="clearfix" style="height: 15px;"></div>
+            <div>
+              <div class="col-xs-12"><button class="btn btn-info submit" type="submit">Request Password Reset</button></div>
+            </div>
+			<div class="clearfix" style="height: 15px;"></div>
+          </form>
+			<div class="col-xs-12 text-center"><hr></div>
+            <div class="col-xs-12 text-center"><p id='emailtoyou' class="change_link">An email will be sent to you, with instructions to reset your password.</p>           
+                <a href="#" onClick="$('#logindiv').toggleClass('hidden');$('#forgotdiv').toggleClass('hidden');"> Return to Login Screen </a>
+            </div>
+        </div>
 
       </div>
-      <div class="col-xs-1"></div></div>
-    </div>
   </div>
-
+</div>
 </body>
 
 

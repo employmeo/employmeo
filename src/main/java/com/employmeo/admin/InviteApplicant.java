@@ -28,7 +28,7 @@ public class InviteApplicant {
 			@FormParam("address") String address, @FormParam("lat") Double personLat,
 			@FormParam("lng") Double personLng, @FormParam("asid") Long asid,
 			@FormParam("position_id") Long positionId, @FormParam("location_id") Long locationId,
-			@DefaultValue("false") @FormParam("rememberme") boolean persistLogin) {
+			@DefaultValue("false") @FormParam("notifyme") boolean notifyMe) {
 		// Collect expected input fields
 		User user = (User) reqt.getSession().getAttribute("User");
 		if (user == null) {
@@ -53,6 +53,7 @@ public class InviteApplicant {
 		respondant.setRespondantAsid(asid);
 		respondant.setRespondantLocationId(locationId);// ok for null location
 		respondant.setRespondantPositionId(positionId);// ok for null location
+		if (notifyMe) respondant.setRespondantEmailRecipient(user.getUserEmail());
 		respondant.persistMe();
 		respondant.refreshMe(); // gets the remaining auto-gen-fields
 		

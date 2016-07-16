@@ -3,6 +3,7 @@ package com.employmeo.util;
 import java.net.URL;
 import org.json.JSONObject;
 import com.employmeo.objects.Respondant;
+import com.employmeo.objects.User;
 
 public class ExternalLinksUtil {
 	
@@ -46,6 +47,17 @@ public class ExternalLinksUtil {
 		} catch (Exception e) {
 			link = BASE_PORTAL_URL + "/render.html" + "?&scores=" + applicant.getJSONArray("scores").toString();
 		}
+		return link.toString();
+	}
+
+	public static String getForgotPasswordLink(User user) {
+		String link = null;
+		try {
+			link = new URL(BASE_PORTAL_URL + "/reset_password.jsp?&user=" + user.getUserEmail()
+							+ "&hash=" + user.getUserPassword()).toString();
+		} catch (Exception e) {
+			link = BASE_PORTAL_URL + "/reset_password.jsp?&user=" + user.getUserEmail()
+					+ "&hash=" + user.getUserPassword();		}
 		return link.toString();
 	}
 

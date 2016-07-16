@@ -45,9 +45,9 @@
 		<div class="tile-stats">
 			<div class="right">
 				<div class="icon">
-					<i class="fa fa-check-square-o"></i>
+					<i class="fa fa-check-square-o">0</i>
 				</div>
-				<div class="count" id='completedcount'></div>
+				<div class="count" id='completedcount'>0</div>
 				<h3>Completed</h3>
 			</div>
 		</div>
@@ -58,7 +58,7 @@
 				<div class="icon">
 					<i class="fa fa-bar-chart"></i>
 				</div>
-				<div class="count" id='scoredcount'></div>
+				<div class="count" id='scoredcount'>0</div>
 				<h3>Scored</h3>
 			</div>
 		</div>
@@ -69,7 +69,7 @@
 				<div class="icon">
 					<i class="fa fa-user-plus"></i>
 				</div>
-				<div class="count" id='hiredcount'></div>
+				<div class="count" id='hiredcount'>0</div>
 				<h3>Hired</h3>
 			</div>
 		</div>

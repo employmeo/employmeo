@@ -14,12 +14,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.employmeo.objects.Respondant;
+import com.employmeo.objects.User;
 
 
 public class EmailUtility {
 
 	private static final String INVITE_TEMPLATE_ID = "ea059aa6-bac6-41e0-821d-98dc4dbfc31d";
 	private static final String RESULTS_TEMPLATE_ID = "8e5983ac-913d-4370-8ea9-312ff8665f39";
+	private static final String FORGOT_PASSWORD_TEMPLATE_ID = "dfae3d61-007a-4991-a8f3-f46290313859";
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
 	private static String SG_API = System.getenv("SENDGRID_API");
 	private static final String END_POINT = "https://api.sendgrid.com/v3/mail/send";
@@ -82,10 +84,44 @@ public class EmailUtility {
 		return;
 	}
 	
+	public static void sendForgotPass(User user) {
+
+		String link = ExternalLinksUtil.getForgotPasswordLink(user);
+		
+		String body = "Dear " + user.getUserFname() + ",\n" + "\n"
+				+ "A password reset was requested on your behalf. If you initiated this request,\n"
+				+ "please click the Reset Password button below to continue:\n" + link 
+				+ "\nIf you did not initiate this request, please ignore this email.";
+		
+		// TODO: Figure out respondant.getRespondantAccount().getAccountSentbyText());
+		
+		JSONObject email = new JSONObject();
+		email.put("from", FROM_ADDRESS);
+		email.put("subject", "Forgot Password");
+		email.accumulate("content", new JSONObject("{\"type\":\"text/plain\"}").put("value", body));
+		email.accumulate("content", new JSONObject("{\"type\":\"text/html\"}").put("value", body));
+		email.put("template_id",FORGOT_PASSWORD_TEMPLATE_ID);
+		JSONObject pers = new JSONObject();
+		JSONObject custom = new JSONObject();
+		JSONArray toAddrs = new JSONArray();
+		toAddrs.put(new JSONObject().put("email",user.getUserEmail()));
+		custom.put("[LINK]", link );
+		custom.put("[FNAME]", user.getUserFname());
+		custom.put("[ACCOUNT_NAME]",user.getAccount().getAccountName());
+		pers.put("to", toAddrs);
+		pers.put("substitutions", custom);
+		email.put("personalizations", new JSONArray().put(pers));
+
+		asynchSend(email);
+
+		return;
+	}
+	
+	
 	public static void sendResults(Respondant respondant) {
 
 		String link = ExternalLinksUtil.getPortalLink(respondant);
-		String body = "Dear User,\n" + "\n" + "The assessment for applicant " 
+		String body = "The assessment for applicant "
 		        + respondant.getPerson().getPersonFullName()
 				+ " has been submitted and scored. The results are now available on the portal at:\n"
 		        + link + "\n";

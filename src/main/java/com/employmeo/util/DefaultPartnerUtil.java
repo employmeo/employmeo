@@ -43,6 +43,7 @@ public class DefaultPartnerUtil implements PartnerUtil {
 
 	@Override
 	public String trimPrefix(String id) {
+		if (id == null) return null;
 		return id.substring(id.indexOf(getPrefix())+getPrefix().length());
 	}
 	
@@ -74,8 +75,8 @@ public class DefaultPartnerUtil implements PartnerUtil {
 	public Location getLocationFrom(JSONObject jLocation, Account account) {
 		Location location = null;
 		String locationAtsId = null;
-		if (jLocation != null)
-			locationAtsId = jLocation.optString("location_ats_id");
+		if ((jLocation != null) && (jLocation.has("location_ats_id"))) 
+			locationAtsId = jLocation.getString("location_ats_id");
 		if (locationAtsId != null) {
 			EntityManager em = DBUtil.getEntityManager();
 			TypedQuery<Location> q = em.createQuery(
@@ -112,7 +113,11 @@ public class DefaultPartnerUtil implements PartnerUtil {
 			}
 
 		} else {
+			if ((jLocation != null) && (jLocation.has("location_id"))) {
+				location = Location.getLocationById(jLocation.getLong("location_id"));
+			} else {
 			location = account.getDefaultLocation();
+			}
 		}
 		return location;
 	}
