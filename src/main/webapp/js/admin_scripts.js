@@ -13,7 +13,6 @@ var positionList;
 var locationList;
 var qTable;
 var detailedScores;
-var startPage = '/index.jsp';
 
 //basic user / account functions (login/logout/etc)
 function login() {
@@ -27,7 +26,8 @@ function login() {
 			withCredentials: true
 		},
 		success: function(data) {
-			window.location.assign(startPage);
+			var startPage = $('#toPage').val();
+			if (startPage != null) window.location.assign(startPage);
 		},
 		error: function(data) {
 			console.log(data);			

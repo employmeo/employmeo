@@ -68,6 +68,13 @@
   </div>
 </div>
 </body>
-
-
+<script>
+    $(document).ready(function() {
+    	if (document.URL.indexOf('login.jsp') == -1) {
+        	$('#toPage').val(document.URL);    		
+    	} else {
+        	$('#toPage').val('index.jsp');    		    		
+    	}
+    });
+</script>
 </html>
