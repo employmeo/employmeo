@@ -22,14 +22,16 @@
 <body class="coverpage" style="background-image:url('/images/background-<%=new java.util.Random().nextInt(8)+1%>.jpg');">
 <div class="container-fluid">
     <div id="wrapper">
-      
 <div class="container" style="background: black;color: white;opacity: .85;">
+	<div id='wait' class="hidden text-center" style='position:absolute;width:100%;position: absolute;background: black;opacity: .75;padding: 35%;height: 100%;z-index: 99;'>
+		<i class="fa fa-spinner fa-5x fa-spin"></i>
+	</div>
 	<div class="col-xs-12 text-center"><img src="/images/emp-logo-sm.png" style="width:65%;"></div>
 	<div class="col-xs-12 text-center"><hr></div>
     <div id='logindiv' class="col-xs-12 text-center">
 		  <form name="login" method="post" action="javascript:login();" id="loginform">
             <h1>Sign In</h1>
-			<div class="clearfix" style="height: 15px;"></div>
+			<div class="clearfix" style="height: 15px;"><span class='text-danger' id='loginresponse'></span></div>
 			<div><input class="form-control" type="email" name="email" required placeholder="Email Address"></div>
 			<div class="clearfix" style="height: 15px;"></div>
 			<div><input class="form-control" type="password" name="password" placeholder="Password" required></div>

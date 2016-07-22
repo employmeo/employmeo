@@ -25,13 +25,20 @@ function login() {
 		xhrFields: {
 			withCredentials: true
 		},
+		beforeSend : function() {
+			$("#wait").addClass('hidden');			
+		},
 		success: function(data) {
 			var startPage = $('#toPage').val();
 			if (startPage != null) window.location.assign(startPage);
 		},
 		error: function(data) {
-			console.log(data);			
+			$('#loginresponse').val('Login failed');
+		},
+		complete: function(data) {
+		$("#wait").removeClass('hidden');
 		}
+		
 	});	
 }
 
