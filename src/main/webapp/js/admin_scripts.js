@@ -25,7 +25,7 @@ function login() {
 			withCredentials: true
 		},
 		beforeSend : function() {
-			$("#wait").addClass('hidden');			
+			$("#wait").removeClass('hidden');			
 			$('#loginresponse').text('');
 		},
 		success: function(data) {
@@ -35,12 +35,12 @@ function login() {
 		statusCode: {
 		      401: function(){
 					$('#loginresponse').text('Login failed');
-					$("#wait").toggleClass('hidden');
+					$("#wait").addClass('hidden');
 		      }
 		},
 		error: function(data) {
 			$('#loginresponse').text('Login failed');
-			$("#wait").toggleClass('hidden');
+			$("#wait").addClass('hidden');
 		}		
 	});	
 }
