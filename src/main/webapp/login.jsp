@@ -31,7 +31,8 @@
     <div id='logindiv' class="col-xs-12 text-center">
 		  <form name="login" method="post" action="javascript:login();" id="loginform">
             <h1>Sign In</h1>
-			<div class="clearfix" style="height: 15px;"><span class='text-danger' id='loginresponse'></span></div>
+			<div class="clearfix"><span class='text-danger h4' id='loginresponse'></span></div>
+			<div class="clearfix" style="height: 15px;"></div>
 			<div><input class="form-control" type="email" name="email" required placeholder="Email Address"></div>
 			<div class="clearfix" style="height: 15px;"></div>
 			<div><input class="form-control" type="password" name="password" placeholder="Password" required></div>

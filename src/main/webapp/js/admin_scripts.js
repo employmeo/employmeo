@@ -16,7 +16,6 @@ var detailedScores;
 
 //basic user / account functions (login/logout/etc)
 function login() {
-
 	$.ajax({
 		type: "POST",
 		async: true,
@@ -27,18 +26,22 @@ function login() {
 		},
 		beforeSend : function() {
 			$("#wait").addClass('hidden');			
+			$('#loginresponse').text('');
 		},
 		success: function(data) {
 			var startPage = $('#toPage').val();
 			if (startPage != null) window.location.assign(startPage);
 		},
-		error: function(data) {
-			$('#loginresponse').val('Login failed');
+		statusCode: {
+		      401: function(){
+					$('#loginresponse').text('Login failed');
+					$("#wait").toggleClass('hidden');
+		      }
 		},
-		complete: function(data) {
-		$("#wait").removeClass('hidden');
-		}
-		
+		error: function(data) {
+			$('#loginresponse').text('Login failed');
+			$("#wait").toggleClass('hidden');
+		}		
 	});	
 }
 
