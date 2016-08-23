@@ -525,6 +525,10 @@ function getDisplayQuestion(question, qnum) {
 function getPlainResponseForm(question, respondant, qcount, pagecount) {
 	var ansblock = $('<div />', {'class' : 'col-xs-12 col-sm-6 col-md-6'});
 
+	question.answers.sort(function(a,b) {
+		return a.answer_display_id < b.answer_display_id ? -1:1;
+	});
+	
 	var form =  $('<form />', {
 		 'name' : 'question_'+question.question_id,
 		 'action' : "/response"
@@ -586,7 +590,35 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 	case 2: // Me - Not Me
 	case 3: // Schedule (not used)
 	case 4: // Likert (Stars)
+		break;
 	case 5: // Likert (Smileys)
+		var ansdiv = $('<div />', {
+			'class' : 'stars text-center',
+			'style' : 'font-size: 18px;',
+			'text' : 'Strongly Agree - Neutral - Strongly Disagree'
+		});
+		var stars = $('<div />', {
+			'class' : 'stars'
+		});
+
+		for (var ans=0;ans<question.answers.length;ans++) {
+			var answer = question.answers[ans];
+			var i = ans +1;
+			stars.append($('<input/>',{
+				'class' : 'star star-' + i,
+				'id' : 'star-' + i + '-' + question.question_id,
+				'type': 'radio',
+				'name': "response_value",
+				'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
+				'value': answer.answer_value
+			}));
+			stars.append($('<label/>',{
+				'class' : 'star star-' + i,
+				'for' : 'star-' + i + '-' + question.question_id				
+			}));
+		}
+		ansdiv.append(stars);
+		form.append(ansdiv);
 		break;
 	case 14: // Rank
 		var responseInp = $('<input />', {

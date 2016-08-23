@@ -28,6 +28,7 @@ public class ScoringUtil {
 	private static String MERCER_SERVICE = System.getenv("MERCER_SERVICE");
 	private static String MERCER_USER = "employmeo";
 	private static String MERCER_PASS = "employmeo";
+	private static int MERCER_COREFACTOR = 34;
 
 	
 	public static void scoreAssessment(Respondant respondant) {
@@ -35,13 +36,13 @@ public class ScoringUtil {
 		List<Response> responses = respondant.getResponses();
 		if ((responses == null) || (responses.size() == 0))	return; // return nothing
 
-		if (respondant.getSurvey().getSurveyType() == Survey.TYPE_MERCER) { 
-			mercerScore(respondant);
-		} else {
-			defaultScore(respondant);
+		mercerScore(respondant); // for questions with corefactor 34
+		defaultScore(respondant);
+
+		if (respondant.getRespondantScores().size() > 0) {
+			respondant.setRespondantStatus(Respondant.STATUS_SCORED);
+			respondant.mergeMe();
 		}
-
-
 		return;
 	}
 
@@ -53,21 +54,21 @@ public class ScoringUtil {
 		for (int i = 0; i < responses.size(); i++) {
 			Response response = responses.get(i);
 			Integer cfId = Question.getQuestionById(response.getResponseQuestionId()).getQuestionCorefactorId();
-			count[cfId]++;
-			score[cfId] += response.getResponseValue();
+			if (cfId != MERCER_COREFACTOR) {
+				count[cfId]++;
+				score[cfId] += response.getResponseValue();
+			}
 		}
 		for (int i = 0; i < 50; i++) {
 			if (count[i] > 0) {
 				RespondantScore rs = new RespondantScore();
 				rs.setPK(i, respondant.getRespondantId());
 				rs.setRsQuestionCount(count[i]);
-				rs.setRsValue((double) Math.round(100.0 * ((double) score[i] / (double) count[i])) / 100.0);
+				rs.setRsValue((double) score[i] / (double) count[i]);
 				rs.mergeMe();
 				respondant.addRespondantScore(rs);
 			}
 		}
-		respondant.setRespondantStatus(Respondant.STATUS_SCORED);
-		respondant.mergeMe();
 	}
 	
 	
@@ -81,78 +82,75 @@ public class ScoringUtil {
 		JSONArray answers = new JSONArray();
 		for (int i=0;i<responses.size();i++) {
 			Question question = Question.getQuestionById(responses.get(i).getResponseQuestionId());
-			String testname = question.getQuestionForeignSource();
-			if (testname.equalsIgnoreCase("behavior_b")) {
-				String[] priorities = Integer.toString(responses.get(i).getResponseValue()).split("(?!^)");
-				for (int j=0;j<priorities.length;j++) {
-					int value = Integer.valueOf(priorities[j]);
-					String quesId = question.getQuestionForeignId() + "_" + j;
-					JSONObject jResp = new JSONObject();
-					jResp.put("response_value", value);
-					jResp.put("question_id", quesId);
+			if (question.getQuestionCorefactorId() == MERCER_COREFACTOR) {
+				String testname = question.getQuestionForeignSource();
+				if (testname.equalsIgnoreCase("behavior_b")) {
+					String[] priorities = Integer.toString(responses.get(i).getResponseValue()).split("(?!^)");
+					for (int j=0;j<priorities.length;j++) {
+						int value = Integer.valueOf(priorities[j]);
+						String quesId = question.getQuestionForeignId() + "_" + j;
+						JSONObject jResp = new JSONObject();
+						jResp.put("response_value", value);
+						jResp.put("question_id", quesId);
+						jResp.put("test_name", testname);
+						answers.put(jResp);	
+					}
+				} else {
+					JSONObject jResp = new JSONObject();			
+					jResp.put("response_value", responses.get(i).getResponseValue());
+					jResp.put("question_id", question.getQuestionForeignId());
 					jResp.put("test_name", testname);
-					answers.put(jResp);	
+					answers.put(jResp);
 				}
-			} else {
-				JSONObject jResp = new JSONObject();			
-				jResp.put("response_value", responses.get(i).getResponseValue());
-				jResp.put("question_id", question.getQuestionForeignId());
-				jResp.put("test_name", testname);
-				answers.put(jResp);
 			}
 		}
-		
-		JSONObject applicant = new JSONObject();
-		JSONObject message = new JSONObject();
-		applicant.put("applicant_id", respondant.getRespondantId());
-		applicant.put("applicant_account_name", respondant.getRespondantAccount().getAccountName());
-		message.put("applicant", applicant);
-		message.put("responses", answers);
-
-		JSONArray result;
-		javax.ws.rs.core.Response resp = null;
-		String output = null;
-		try {
-			WebTarget target = client.target(MERCER_SERVICE);
-			resp = target.request(MediaType.APPLICATION_JSON)
-						.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON));
-			output = resp.readEntity(String.class);
-			result = new JSONArray(output);
-		} catch (Exception e) {
-			logger.severe("Failed to get results from mercer: " + e.getMessage());
-			logger.info("Failed to get results from mercer: " + message.toString());
-			if (resp != null) {
-				logger.info("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
-				logger.info("Failed to get results from mercer: " + output);
-			}
-			return;
-		}
-
-		for (int i = 0; i < result.length(); i++) {
-			JSONObject data = result.getJSONObject(i);
-			int score = data.getInt("score");
-			RespondantScore rs = new RespondantScore();
+		if (answers.length() > 0) {
+			JSONObject applicant = new JSONObject();
+			JSONObject message = new JSONObject();
+			applicant.put("applicant_id", respondant.getRespondantId());
+			applicant.put("applicant_account_name", respondant.getRespondantAccount().getAccountName());
+			message.put("applicant", applicant);
+			message.put("responses", answers);
+	
+			JSONArray result;
+			javax.ws.rs.core.Response resp = null;
+			String output = null;
 			try {
-					Corefactor cf = Corefactor.getCorefactorByForeignId(MERCER_PREFIX + data.getString("id"));
-					rs.setPK(cf.getCorefactorId(), respondant.getRespondantId());
-					rs.setRsQuestionCount(responses.size());
-					rs.setRsValue((double) score);
-					rs.mergeMe();
-					respondant.addRespondantScore(rs);
+				WebTarget target = client.target(MERCER_SERVICE);
+				resp = target.request(MediaType.APPLICATION_JSON)
+							.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON));
+				output = resp.readEntity(String.class);
+				result = new JSONArray(output);
 			} catch (Exception e) {
-					logger.severe("Failed to record score: " + data + " for repondant " + respondant.getJSONString());
+				logger.severe("Failed to get results from mercer: " + e.getMessage());
+				logger.info("Failed to get results from mercer: " + message.toString());
+				if (resp != null) {
+					logger.info("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
+					logger.info("Failed to get results from mercer: " + output);
+				}
+				return;
+			}
+	
+			for (int i = 0; i < result.length(); i++) {
+				JSONObject data = result.getJSONObject(i);
+				int score = data.getInt("score");
+				RespondantScore rs = new RespondantScore();
+				try {
+						Corefactor cf = Corefactor.getCorefactorByForeignId(MERCER_PREFIX + data.getString("id"));
+						rs.setPK(cf.getCorefactorId(), respondant.getRespondantId());
+						rs.setRsQuestionCount(responses.size());
+						rs.setRsValue((double) score);
+						rs.mergeMe();
+						respondant.addRespondantScore(rs);
+				} catch (Exception e) {
+						logger.severe("Failed to record score: " + data + " for repondant " + respondant.getJSONString());
+				}
 			}
 		}
-
-		respondant.setRespondantStatus(Respondant.STATUS_SCORED);
-		respondant.mergeMe();
 		
 		return;
 	}
 
-	
-	
-	
 	
 	public static void predictRespondant(Respondant respondant) {
 		if (respondant.getRespondantStatus() <= Respondant.STATUS_SCORED) respondant.refreshMe();

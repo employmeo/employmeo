@@ -21,6 +21,7 @@ public class Survey extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public static final int TYPE_INTERNAL = 1;
 	public static final int TYPE_MERCER = 2;
+	public static final int TYPE_MIXED = 3;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
