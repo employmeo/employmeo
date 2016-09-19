@@ -124,6 +124,79 @@ label.star:before {
   content: '\f006';
   font-family: FontAwesome;
 }
+/**
+ * 2.1 Likert Boxes
+ * ----------------------------------------------------------------------------
+ */
+
+.qpanel div.likertboxes {
+  align: center;
+  display: inline;
+}
+
+div.likertboxes ul
+{
+margin: 0;
+padding: 0;
+list-style-type: none;
+}
+div.likertboxes ul li
+{
+  display: inline-block;
+  width: 19%;
+  font-size: 10px;
+  text-align: center;
+}
+
+input.likertbox { display: none; }
+label.likertbox {
+  font-family: FontAwesome;
+  font-size: 36px;
+  transition: all .2s;
+}
+label.likertbox:before {
+  //content: '\f096';
+  content: '\f0c8';  
+  color: #fff;
+  font-family: FontAwesome;
+  -webkit-text-stroke-width: 2px;
+}
+input.likertbox:checked  + label.likertbox:before {
+  transition: all .25s;
+}
+label.likertbox:hover { 
+	transform: scale(1.3);
+ }
+input.likertbox-1:checked  + label.likertbox-1:before {
+  color: #ff0000;
+}
+label.likertbox-1 {
+  -webkit-text-stroke-color: #ff0000;
+}
+input.likertbox-2:checked  + label.likertbox-2:before {
+  color: #ff8000;
+}
+label.likertbox-2 {
+  -webkit-text-stroke-color: #ff8000;
+}
+input.likertbox-3:checked  + label.likertbox-3:before {
+  color: #ffff00;
+}
+label.likertbox-3 {
+  -webkit-text-stroke-color: #ffff00;
+}
+input.likertbox-4:checked  + label.likertbox-4:before {
+  color: #80ff80;
+}
+label.likertbox-4 {
+  -webkit-text-stroke-color: #80ff80;
+}
+input.likertbox-5:checked  + label.likertbox-5:before {
+  color: #00ff00;
+}
+label.likertbox-5 {
+  -webkit-text-stroke-color: #00ff00;
+}
 
 /**
  * 3.0 Thumbs up/down

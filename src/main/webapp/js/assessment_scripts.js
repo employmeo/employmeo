@@ -591,33 +591,38 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 	case 3: // Schedule (not used)
 	case 4: // Likert (Stars)
 		break;
-	case 5: // Likert (Smileys)
-		var ansdiv = $('<div />', {
-			'class' : 'stars text-center',
-			'style' : 'font-size: 18px;',
-			'text' : 'Strongly Agree - Neutral - Strongly Disagree'
+	case 5: // Likert (Boxes)
+		var ansdiv  = $('<div />', {
+			'class' : 'likertboxes'
 		});
-		var stars = $('<div />', {
-			'class' : 'stars'
-		});
-
+		var list = $('<ul />');
+		var labels = $('<ul />');
 		for (var ans=0;ans<question.answers.length;ans++) {
 			var answer = question.answers[ans];
 			var i = ans +1;
-			stars.append($('<input/>',{
-				'class' : 'star star-' + i,
-				'id' : 'star-' + i + '-' + question.question_id,
+			var scale = $('<li />');
+			scale.append($('<input/>',{
+				'class' : 'likertbox likertbox-' + i,
+				'id' : 'likertbox-' + i + '-' + question.question_id,
 				'type': 'radio',
 				'name': "response_value",
 				'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
 				'value': answer.answer_value
 			}));
-			stars.append($('<label/>',{
-				'class' : 'star star-' + i,
-				'for' : 'star-' + i + '-' + question.question_id				
+			scale.append($('<label/>',{
+				'class' : 'likertbox likertbox-' + i,
+				'for' : 'likertbox-' + i + '-' + question.question_id				
 			}));
+			list.append(scale);
 		}
-		ansdiv.append(stars);
+		labels.append($('<li />', { text : 'Strongly Disagree' }));
+		labels.append($('<li />', { text : 'Disagree' }));
+		labels.append($('<li />', { text : 'Neutral' }));
+		labels.append($('<li />', { text : 'Agree' }));
+		labels.append($('<li />', { text : 'Strongly Agree' }));
+
+		ansdiv.append(list);
+		ansdiv.append(labels);
 		form.append(ansdiv);
 		break;
 	case 14: // Rank
