@@ -1,22 +1,14 @@
 package com.employmeo.survey;
 
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 
-import javax.json.Json;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.POST;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -59,12 +51,11 @@ public class SurveyDefinition {
 		
 		if(null != surveyDefinition) {
 			JSONObject json = new JSONObject(surveyDefinition);
-			logger.info("Hydrated JSONObject: " + json);
+			//logger.info("Hydrated JSONObject: " + json);
 			
 			Survey survey = Survey.fromJSON(json);
 			logger.info("processing new survey definition with id: " + survey.getSurveyId());
 			
-			// TODO: error handling and propagation
 			try {
 				SurveyUtil.persistSurvey(survey);
 				responseBuilder = Response.status(Response.Status.OK);

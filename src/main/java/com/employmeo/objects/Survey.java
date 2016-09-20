@@ -25,7 +25,8 @@ public class Survey extends PersistantObject implements Serializable {
 	public static final int TYPE_MIXED = 3;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic(optional = false)
 	@Column(name = "survey_id")
 	private Long surveyId;
 
