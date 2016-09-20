@@ -5,6 +5,8 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import com.employmeo.util.DBUtil;
+
 
 /**
  * The persistent class for the survey_sections database table.
@@ -95,6 +97,32 @@ public class SurveySection extends PersistantObject implements Serializable {
 		json.put("section_time_seconds",this.getSsTimeSeconds());
 		
 		return json;
+	}
+	
+	public static SurveySection fromJSON(JSONObject json) {
+		SurveySection surveySection = new SurveySection();
+		
+		SurveySectionPK surveySectionPK = new SurveySectionPK();
+		surveySectionPK.setSsSurveyId(json.getLong("section_survey_id"));
+		surveySectionPK.setSsSurveySection(json.getInt("section_number"));
+		surveySection.setId(surveySectionPK);
+		
+		surveySection.setSsInstructions(json.getString("section_instructions"));
+		surveySection.setSsQuestionsPerPage(json.getInt("section_questions_per_page"));
+		surveySection.setSsAllRequired(json.getBoolean("section_all_required"));
+		surveySection.setSsTimeSeconds(json.getInt("section_time_seconds"));
+		
+		return surveySection;
+		
+	}
+	
+	public static SurveySection findById(Long surveyId, Integer surveySectionId) {
+		SurveySectionPK surveySectionPK = new SurveySectionPK();
+		surveySectionPK.setSsSurveyId(surveyId);
+		surveySectionPK.setSsSurveySection(surveySectionId);
+		
+		EntityManager em = DBUtil.getEntityManager();
+		return em.find(SurveySection.class, surveySectionPK);
 	}
 
 }
