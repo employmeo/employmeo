@@ -3,10 +3,12 @@ package com.employmeo.objects;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -247,6 +249,28 @@ public class Question extends PersistantObject implements Serializable {
 			json.accumulate("answers", this.answers.get(i).getJSON());
 		}
 		return json;
+	}
+	
+	public static Question fromJSON(JSONObject json) {
+		Question question = new Question();
+		
+		question.setQuestionId(json.getLong("question_id"));
+		question.setQuestionDescription(json.getString("question_description"));
+		question.setQuestionDisplayId(json.getInt("question_display_id"));
+		question.setQuestionText(json.getString("question_text"));
+		question.setQuestionType(json.getInt("question_type"));
+		question.setQuestionCorefactorId(json.getInt("question_corefactor_id"));
+		question.setQuestionDirection(json.getInt("question_direction"));
+		
+		List<Answer> answers = new ArrayList<Answer>();
+		JSONArray jsonAnswers = json.getJSONArray("answers");
+		for(int i=0; i < jsonAnswers.length(); i++) {		
+			Answer answer = Answer.fromJSON(jsonAnswers.getJSONObject(i));
+			answers.add(answer);
+		}
+		question.setAnswers(answers);
+		
+		return question;
 	}
 
 }

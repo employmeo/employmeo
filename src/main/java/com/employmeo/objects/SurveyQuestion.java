@@ -111,5 +111,21 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 		json.put("question_sqid", this.sqId);
 		return json;
 	}
+	
+	public static SurveyQuestion fromJSON(JSONObject json) {
+		SurveyQuestion surveyQuestion = new SurveyQuestion();
+		
+		Question question = Question.fromJSON(json);
+		surveyQuestion.setQuestion(question);
+		
+		surveyQuestion.setSqSeqence(json.getInt("question_sequence"));
+		surveyQuestion.setSqPage(json.getInt("question_page"));
+		surveyQuestion.setSqRequired(json.getBoolean("question_required"));
+		surveyQuestion.setSqDependency(json.getBoolean("question_dependency"));
+		surveyQuestion.setSqId(json.getLong("question_sqid"));
+		
+		return surveyQuestion;
+		
+	}	
 
 }
