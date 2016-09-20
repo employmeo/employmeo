@@ -19,7 +19,6 @@ import com.employmeo.objects.Question;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.RespondantScore;
 import com.employmeo.objects.Response;
-import com.employmeo.objects.Survey;
 
 public class ScoringUtil {
 
