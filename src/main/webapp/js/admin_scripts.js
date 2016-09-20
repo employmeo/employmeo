@@ -176,6 +176,25 @@ function updateSurveysSelect(detail) {
 	});
 }
 
+function listSurveysSelect(detail) {
+	$.ajax({
+		type: "GET",
+		async: true,
+		url: "/survey/list",
+		success: function(data)
+		{
+			surveyList = data;
+			$.each(data, function (index, value) {
+				$('#survey_id').append($('<option />', { 
+					value: this.survey_id,
+					text : this.survey_name
+				}));
+			});
+			if (detail) changeSurveyTo($('#survey_id').val());
+		}
+	});
+}
+
 function initializeDatePicker(callback) {
 
 	var cb = function(start, end, label) {
@@ -260,6 +279,38 @@ function inviteApplicant() {
 function resetInvitation() {
 	$('#invitationsent').addClass('hidden');
 	$('#invitationform').removeClass('hidden');	
+}
+
+function exportSurvey() {
+	$.ajax({
+		type: "GET",
+		async: true,
+		url: "/survey/definition",
+		data: $('#exportsurvey').serialize(),
+		beforeSend: function(data) {
+			$("#exportsurvey :input").prop('readonly', true);
+			$("#spinner").removeClass('hidden');
+		},
+		success: function(data)
+		{
+			$('#exportsurvey').trigger('reset');
+			$('#exportsurveyform').addClass('hidden');
+			$('#surveyexported').removeClass('hidden');
+			
+			$('#surveydefinition').text(JSON.stringify(data));		
+		},
+		complete: function(data) {
+			$("#exportsurvey :input").prop('readonly', false);
+			$("#spinner").addClass('hidden');
+		}
+	});
+	return false; // so as not to trigger actual action.
+}
+
+function resetExport() {
+	$('#surveyexported').addClass('hidden');
+	$('#exportsurveyform').removeClass('hidden');
+	$('#surveydefinition').text('');
 }
 
 //Section for search respondants / build respondants table
