@@ -47,7 +47,9 @@ public class SurveyDefinition {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createSurveyDefinition(String surveyDefinition) {
 		logger.info("Creating new survey definition");
-		ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST);
+		JSONObject resultEntity = new JSONObject();
+		ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST)
+				.entity(resultEntity.put("message", "Bad Request - Incorrect Survey Definition").toString());
 		
 		if(null != surveyDefinition) {
 			JSONObject json = new JSONObject(surveyDefinition);
@@ -58,10 +60,12 @@ public class SurveyDefinition {
 			
 			try {
 				SurveyUtil.persistSurvey(survey);
-				responseBuilder = Response.status(Response.Status.OK);
+				responseBuilder = Response.status(Response.Status.OK)
+						.entity(resultEntity.put("message", "Survey definition persisted successfully").toString());;
 			} catch (Exception e) {
 				logger.info("Failed to persist survey. " + e);
-				responseBuilder = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
+				responseBuilder = Response.status(Response.Status.OK)
+						.entity(resultEntity.put("message", e.getMessage()).toString());
 			}			
 		}
 		

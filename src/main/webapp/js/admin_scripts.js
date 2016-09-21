@@ -313,6 +313,39 @@ function resetExport() {
 	$('#surveydefinition').text('');
 }
 
+function persistSurvey() {
+	$.ajax({
+		type: "POST",
+		async: true,
+		headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+	    dataType: 'json',		
+		url: "/survey/definition",
+		data: $('#inputsurveydefinition').val(),
+		beforeSend: function(data) {
+			$("#persistsurvey :input").prop('readonly', true);
+			$("#spinner").removeClass('hidden');
+		},
+		success: function(data)
+		{
+			$('#persistsurvey').trigger('reset');
+			$('#persistsurveyform').addClass('hidden');
+			$('#surveypersisted').removeClass('hidden');
+			console.log(data);
+			if(data.message != null) {
+				$('#persistenceresults').text(data.message);
+			}
+		},	
+		complete: function(data) {
+			$("#persistsurvey :input").prop('readonly', false);
+			$("#spinner").addClass('hidden');
+		}
+	});
+	return false; // so as not to trigger actual action.
+}
+
 //Section for search respondants / build respondants table
 function initRespondantsTable() {
 	var rTable = $('#respondants').DataTable( {
