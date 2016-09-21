@@ -85,6 +85,8 @@
 $(document).ready(function() {
 	if (urlParams.respondant_uuid != null) {
 	    buildPlainSurveyWithRespondantId(urlParams.respondant_uuid);
+	} else if (urlParams.account_id != null) {
+		buildLookupSurvey(urlParams.account_id);
 	} else {
 		var asid = urlParams.asid;
 		createPlainNewRespondant(asid);
