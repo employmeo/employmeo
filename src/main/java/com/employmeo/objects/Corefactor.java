@@ -22,6 +22,7 @@ public class Corefactor extends PersistantObject implements Serializable {
 	private static List<Corefactor> corefactors = null;
 
 	@Id
+	@Basic(optional=false)
 	@Column(name = "corefactor_id")
 	private Integer corefactorId;
 
@@ -171,6 +172,14 @@ public class Corefactor extends PersistantObject implements Serializable {
 	public void setCorefactorName(String corefactorName) {
 		this.corefactorName = corefactorName;
 	}
+	
+	public List<CorefactorDescription> getCorefactorDescriptions() {
+		return cfDescriptions;
+	}
+
+	public void setCorefactorDescriptions(List<CorefactorDescription> cfDescriptions) {
+		this.cfDescriptions = cfDescriptions;
+	}
 
 	@Override
 	public JSONObject getJSON() {
@@ -190,6 +199,25 @@ public class Corefactor extends PersistantObject implements Serializable {
 		return json;
 	}
 
+	public static Corefactor fromJSON(JSONObject json) {
+		Corefactor corefactor = new Corefactor();
+		
+		corefactor.setCorefactorId(json.getInt("corefactor_id"));
+		corefactor.setCorefactorName(json.getString("corefactor_name"));
+		corefactor.setCfDisplayGroup(json.optString("corefactor_display_group", null)); 
+		corefactor.setCorefactorDescription(json.getString("corefactor_description"));
+		corefactor.setCfHigh(json.optDouble("corefactor_high"));
+		corefactor.setCfLow(json.optDouble("corefactor_low"));
+		corefactor.setCfHighDescription(json.optString("corefactor_high_desc",null));
+		corefactor.setCfLowDescription(json.optString("corefactor_low_desc",null));
+		corefactor.setCfMeanScore(json.optDouble("corefactor_mean_score"));
+		corefactor.setCfScoreDeviation(json.optDouble("corefactor_score_deviation"));
+		corefactor.setCfMeasurements(json.optLong("corefactor_measurements"));
+		corefactor.setCfSource(json.optString("corefactor_source",null));
+		
+		return corefactor;
+	}
+	
 	public static List<Corefactor> getAllCorefactors() {
 		if (corefactors == null) {
 			EntityManager em = DBUtil.getEntityManager();
@@ -216,5 +244,7 @@ public class Corefactor extends PersistantObject implements Serializable {
 		corefactor =  q.getSingleResult();
 		return corefactor;
 	}
+
+
 
 }
