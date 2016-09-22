@@ -57,3 +57,4 @@ Temporary Items
 src/main/java/com/employmeo/testing/
 target/
 /bin/
+*.bat
