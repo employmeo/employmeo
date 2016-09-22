@@ -313,6 +313,12 @@ function resetExport() {
 	$('#surveydefinition').text('');
 }
 
+function resetPersistence() {
+	$('#surveypersisted').addClass('hidden');
+	$('#persistsurveyform').removeClass('hidden');
+	$('#persistenceresults').text('');
+}
+
 function persistSurvey() {
 	$.ajax({
 		type: "POST",
@@ -340,6 +346,79 @@ function persistSurvey() {
 		},	
 		complete: function(data) {
 			$("#persistsurvey :input").prop('readonly', false);
+			$("#spinner").addClass('hidden');
+		}
+	});
+	return false; // so as not to trigger actual action.
+}
+
+// Corefactor migrations
+
+function exportCorefactors() {
+	$.ajax({
+		type: "GET",
+		async: true,
+		url: "/survey/corefactor",
+		//data: $('#exportsurvey').serialize(),
+		beforeSend: function(data) {
+			$("#exportcf :input").prop('readonly', true);
+			$("#spinner").removeClass('hidden');
+		},
+		success: function(data)
+		{
+			//$('#exportcf').trigger('reset');
+			$('#exportcfform').addClass('hidden');
+			$('#cfexported').removeClass('hidden');
+			
+			$('#cfdefinition').text(JSON.stringify(data));		
+		},
+		complete: function(data) {
+			$("#exportcf :input").prop('readonly', false);
+			$("#spinner").addClass('hidden');
+		}
+	});
+	return false; // so as not to trigger actual action.
+}
+
+function resetCfExport() {
+	$('#cfexported').addClass('hidden');
+	$('#exportcfform').removeClass('hidden');
+	$('#cfdefinition').text('');
+}
+
+function resetCfPersistence() {
+	$('#cfpersisted').addClass('hidden');
+	$('#persistcfform').removeClass('hidden');
+	$('#cfpersistenceresults').text('');
+}
+
+function persistCorefactors() {
+	$.ajax({
+		type: "POST",
+		async: true,
+		headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+	    dataType: 'json',		
+		url: "/survey/corefactor",
+		data: $('#inputcfdefinition').val(),
+		beforeSend: function(data) {
+			$("#persistcf :input").prop('readonly', true);
+			$("#spinner").removeClass('hidden');
+		},
+		success: function(data)
+		{
+			$('#persistcf').trigger('reset');
+			$('#persistcfform').addClass('hidden');
+			$('#cfpersisted').removeClass('hidden');
+			console.log(data);
+			if(data.message != null) {
+				$('#cfpersistenceresults').text(data.message);
+			}
+		},	
+		complete: function(data) {
+			$("#persistcf :input").prop('readonly', false);
 			$("#spinner").addClass('hidden');
 		}
 	});
