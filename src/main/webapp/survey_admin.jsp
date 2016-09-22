@@ -5,7 +5,7 @@
 		<li class="active"><a data-toggle="tab" href="#surveys">Surveys</a></li>
 		<li><a data-toggle="tab" href="#corefactors">Corefactors</a></li>
 	</ul>
-	<div class="tab-content">
+	<div class="row tab-content">
 	<!--  surveys tab begin -->
 		<div id="surveys" class="tab-pane fade in active">
 			<div class="row content">
