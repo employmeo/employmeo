@@ -17,7 +17,8 @@ public class CorefactorDescription extends PersistantObject implements Serializa
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic(optional=false)
 	@Column(name="cfdesc_id")
 	private Long cfdescId;
 
@@ -83,8 +84,27 @@ public class CorefactorDescription extends PersistantObject implements Serializa
 
 	@Override
 	public JSONObject getJSON() {
-		// TODO Auto-generated method stub
-		return null;
+		JSONObject json = new JSONObject();
+		
+		json.put("corefactor_description_id", this.cfdescId);
+		json.put("corefactor_id", this.cfId);
+		json.put("corefactor_description", this.cfDescription);
+		json.put("corefactor_high_end", this.cfHighEnd);
+		json.put("corefactor_low_end", this.cfLowEnd);
+		
+		return json;
 	}
+	
+	public static CorefactorDescription fromJSON(JSONObject json) {
+		CorefactorDescription corefactorDescription = new CorefactorDescription();
+		
+		corefactorDescription.setCfdescId(json.getLong("corefactor_description_id"));
+		corefactorDescription.setCfId(json.getLong("corefactor_id"));
+		corefactorDescription.setCfDescription(json.optString("corefactor_description",null));
+		corefactorDescription.setCfHighEnd(json.optDouble("corefactor_high_end"));
+		corefactorDescription.setCfLowEnd(json.optDouble("corefactor_low_end"));
+		
+		return corefactorDescription;
+	}	
 
 }

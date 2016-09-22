@@ -51,7 +51,7 @@ public class SurveyDefinition {
 		ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST)
 				.entity(resultEntity.put("message", "Bad Request - Incorrect Survey Definition").toString());
 		
-		if(null != surveyDefinition) {
+		if(null != surveyDefinition && !surveyDefinition.isEmpty()) {
 			JSONObject json = new JSONObject(surveyDefinition);
 			//logger.info("Hydrated JSONObject: " + json);
 			
