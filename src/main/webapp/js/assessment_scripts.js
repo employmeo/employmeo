@@ -84,7 +84,7 @@ function getSurveyByPayrollId(form) {
         success: function(data)
         {
         	if (data.message != null) {
-        		showAssessmentNotAvailable(data);
+        		showIdNotFound(data);
         	} else {
                 assemblePlainSurvey(data);        		
         	}
@@ -201,6 +201,32 @@ function showAssessmentNotAvailable(data) {
 		card.append($('<div />', {
 			'class' : 'col-xs-12 col-sm-12 col-md-12',
 			}).append($('<h3 />', { 'class' : 'text-center', 'text' : data.message})));
+		card.append(getHrDiv());
+		card.appendTo(deck);
+}
+
+//Error Handling Functions
+function showIdNotFound(data) {
+	  // code to create a form to fill out for a new survey respondant	
+		var deck = document.getElementById('wrapper');
+		$(deck).empty();
+		totalpages = 1;
+		var card = $('<div />', {
+			'class' : 'item active'
+		});		
+		card.append(getHrDiv());
+		card.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12',
+			}).append($('<h3 />', { 'class' : 'text-center', 'text' : data.message})));
+
+		card.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+		}).append($('<button />',{
+					'type' : 'button',
+					'class' : 'btn btn-primary',
+					'onClick' : 'buildLookupSurvey(urlParams.account_id);',
+					'text' : 'Try Again'
+				})));								
 		card.append(getHrDiv());
 		card.appendTo(deck);
 }
@@ -353,8 +379,8 @@ function buildLookupSurvey(accountId) {
 		var infopage = $('<div />', {});
 		infopage.append(getHrDiv());
 		infopage.append($('<div />', {
-			'class' : 'col-xs-12 col-sm-12 col-md-12',
-			}).html("<h3>Applicant Info</h3>"));
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+			}).html("<h3>Enter Employee ID</h3>"));
 		infopage.append(getHrDiv());
 
 		var form = $('<form />',{
@@ -383,16 +409,20 @@ function buildLookupSurvey(accountId) {
 			'required' : true			
 		}));
 		form.append(row);
-		form.append($('<button />', {
+		form.append(getHrDiv());
+		form.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+			}).append($('<button />', {
 			'type' : 'button',
 			'class' : 'btn btn-primary',
 			'onClick' : 'getSurveyByPayrollId(this.form);',
 			'text' : 'Submit'
-		}));
+		})));
 
 		infopage.append($('<div />', {
 			'class' : 'col-xs-12 col-sm-12 col-md-12',
 			}).append(form));
+		infopage.append(getHrDiv());
 		infopage.appendTo(deck);
 }
 
