@@ -13,9 +13,6 @@ CREATE TABLE employmeo.changelog (
 ) WITH (
     OIDS = FALSE
   );
-
-ALTER TABLE employmeo.changelog
-  OWNER TO postgres;
   
 --//@UNDO
  
