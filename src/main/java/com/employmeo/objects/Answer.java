@@ -5,6 +5,8 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import com.employmeo.util.DBUtil;
+
 /**
  * The persistent class for the answers database table.
  * 
@@ -16,7 +18,8 @@ public class Answer extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic(optional = false)
 	@Column(name = "ANSWER_ID")
 	private String answerId;
 
@@ -100,4 +103,20 @@ public class Answer extends PersistantObject implements Serializable {
 		return json;
 	}
 
+	public static Answer fromJSON(JSONObject json) {
+		Answer answer = new Answer();
+
+		answer.setAnswerId(json.getString("answer_id"));
+		answer.setAnswerDescription(json.getString("answer_description"));
+		answer.setAnswerText(json.getString("answer_text"));
+		answer.setAnswerValue(json.getInt("answer_value"));
+		answer.setAnswerDisplayId(json.getLong("answer_display_id"));
+		
+		return answer;
+	}
+	
+	public static Answer findById(String lookupId) {
+		EntityManager em = DBUtil.getEntityManager();
+		return em.find(Answer.class, lookupId);
+	}	
 }
