@@ -66,6 +66,7 @@
                     <ul class="nav child_menu" style="display: none;">
 						<li><a href="/data_admin.jsp">User Administration</a></li>
 						<li><a href="/data_admin.jsp">Payroll Administration</a></li>
+						<li><a href="/survey_admin.jsp">Survey Administration</a></li>
 						<li><a href="/data_admin.jsp">My Account</a></li>
                     </ul>
                   </li>

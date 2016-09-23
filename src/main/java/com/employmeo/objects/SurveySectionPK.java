@@ -54,4 +54,11 @@ public class SurveySectionPK implements Serializable {
 		
 		return hash;
 	}
+	
+	@Override
+	public String toString() {
+		return "SurveySectionPK [ssSurveyId=" + ssSurveyId + ", ssSurveySection=" + ssSurveySection + "]";
+	}
+	
+	
 }

@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +25,8 @@ public class Survey extends PersistantObject implements Serializable {
 	public static final int TYPE_MIXED = 3;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic(optional = false)
 	@Column(name = "survey_id")
 	private Long surveyId;
 
@@ -151,6 +153,14 @@ public class Survey extends PersistantObject implements Serializable {
 		return surveyQuestion;
 	}
 
+	public List<SurveySection> getSurveySections() {
+		return this.surveySections;
+	}
+
+	public void setSurveySections(List<SurveySection> surveySections) {
+		this.surveySections = surveySections;
+	}
+	
 	public static Survey getSurveyById(String lookupId) {
 		return getSurveyById(new Long(lookupId));
 	}
@@ -185,6 +195,36 @@ public class Survey extends PersistantObject implements Serializable {
 		json.put("sections", sections);
 
 		return json;
+	}
+	
+	public static Survey fromJSON(JSONObject json) {
+		Survey survey = new Survey();
+		survey.setSurveyId(json.getLong("survey_id"));
+		survey.setSurveyName(json.getString("survey_name"));
+		survey.setSurveyDescription(json.getString("survey_description"));
+		survey.setSurveyStatus(json.getInt("survey_status"));
+		survey.setSurveyType(json.getInt("survey_type"));
+		survey.setSurveyListPrice(json.getDouble("survey_list_price"));
+		survey.setSurveyCompletionPct(json.getDouble("survey_completion_pct"));
+		survey.setSurveyCompletionTime(json.getLong("survey_completion_time"));
+		
+		List<SurveyQuestion> surveyQuestions = new ArrayList<SurveyQuestion>();
+		JSONArray jsonQuestions = json.getJSONArray("questions");
+		for(int i=0; i < jsonQuestions.length(); i++) {		
+			SurveyQuestion surveyQuestion = SurveyQuestion.fromJSON(jsonQuestions.getJSONObject(i));
+			surveyQuestions.add(surveyQuestion);
+		}
+		survey.setSurveyQuestions(surveyQuestions);
+		
+		List<SurveySection> surveySections = new ArrayList<SurveySection>();
+		JSONArray jsonSections = json.getJSONArray("sections");
+		for(int i=0; i < jsonSections.length(); i++) {		
+			SurveySection surveySection = SurveySection.fromJSON(jsonSections.getJSONObject(i));
+			surveySections.add(surveySection);
+		}
+		survey.setSurveySections(surveySections);
+		
+		return survey;
 	}
 
 }
