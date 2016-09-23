@@ -72,6 +72,29 @@ function buildPlainSurveyWithRespondantId(uuId) {
       });
 }
 
+function getSurveyByPayrollId(form) {
+    $.ajax({
+        type: "POST",
+        async: true,
+        url: "/survey/getbypayrollid",
+        data: $(form).serialize(),
+        beforeSend: function() {
+        	$('#wait').removeClass('hidden');
+        },
+        success: function(data)
+        {
+        	if (data.message != null) {
+        		showIdNotFound(data);
+        	} else {
+                assemblePlainSurvey(data);        		
+        	}
+        },
+        complete: function() {
+        	$('#wait').addClass('hidden');
+        }
+      });	
+}
+
 function getPlainSurveyForNewRespondant(form) {
     $.ajax({
         type: "POST",
@@ -178,6 +201,32 @@ function showAssessmentNotAvailable(data) {
 		card.append($('<div />', {
 			'class' : 'col-xs-12 col-sm-12 col-md-12',
 			}).append($('<h3 />', { 'class' : 'text-center', 'text' : data.message})));
+		card.append(getHrDiv());
+		card.appendTo(deck);
+}
+
+//Error Handling Functions
+function showIdNotFound(data) {
+	  // code to create a form to fill out for a new survey respondant	
+		var deck = document.getElementById('wrapper');
+		$(deck).empty();
+		totalpages = 1;
+		var card = $('<div />', {
+			'class' : 'item active'
+		});		
+		card.append(getHrDiv());
+		card.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12',
+			}).append($('<h3 />', { 'class' : 'text-center', 'text' : data.message})));
+
+		card.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+		}).append($('<button />',{
+					'type' : 'button',
+					'class' : 'btn btn-primary',
+					'onClick' : 'buildLookupSurvey(urlParams.account_id);',
+					'text' : 'Try Again'
+				})));								
 		card.append(getHrDiv());
 		card.appendTo(deck);
 }
@@ -322,8 +371,64 @@ function createPlainNewRespondant(surveyId, accountId) {
 	$('#address').geocomplete({details:'form'});
 }
 
+// 
+function buildLookupSurvey(accountId) {
+	  // code to create a form to fill out for a new survey respondant	
+		var deck = document.getElementById('wrapper');
+		$(deck).empty();
+		var infopage = $('<div />', {});
+		infopage.append(getHrDiv());
+		infopage.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+			}).html("<h3>Enter Employee ID</h3>"));
+		infopage.append(getHrDiv());
+
+		var form = $('<form />',{
+			'class' : 'form'
+		});
+		form.append($('<input />', {
+			'type' : 'hidden',
+			'name' : 'account_id',
+			'value' : accountId
+		}));
+		form.append($('<label />', {
+			'for' : 'fname',
+			'text' : 'Employee ID:'
+		}));
+		
+		var row = $('<div />', {
+			'class' : 'input-group has-feedback'
+		});
+		row.append($('<span />', {
+			'class' : 'input-group-addon'}).html("<i class='fa fa-user fa-fw'></i>"));
+		row.append($('<input />', {
+			'class' : 'form-control',
+			'type' : 'text',
+			'name' : 'payroll_id',
+			'placeholder' : 'ID#',
+			'required' : true			
+		}));
+		form.append(row);
+		form.append(getHrDiv());
+		form.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+			}).append($('<button />', {
+			'type' : 'button',
+			'class' : 'btn btn-primary',
+			'onClick' : 'getSurveyByPayrollId(this.form);',
+			'text' : 'Submit'
+		})));
+
+		infopage.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12',
+			}).append(form));
+		infopage.append(getHrDiv());
+		infopage.appendTo(deck);
+}
+
+
 //
-// Survey page buidling functions
+// Survey page building functions
 //
 
 function assemblePlainSurvey(data) {
