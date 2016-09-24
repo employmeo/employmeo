@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Gather action="/survey/getvoicesurvey?account_id=1" method="GET">
+        <Say>
+            Please enter your employee ID#, followed by the pound sign
+        </Say>
+    </Gather>
+    <Say>We didn't receive any input. Goodbye!</Say>
+</Response>
