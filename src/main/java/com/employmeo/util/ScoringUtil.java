@@ -1,7 +1,8 @@
 package com.employmeo.util;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -22,7 +23,7 @@ import com.employmeo.objects.Response;
 
 public class ScoringUtil {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.util.ScoringUtil");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.ScoringUtil");
 	private static String MERCER_PREFIX = "Mercer";
 	private static String MERCER_SERVICE = System.getenv("MERCER_SERVICE");
 	private static String MERCER_USER = "employmeo";
@@ -72,7 +73,7 @@ public class ScoringUtil {
 	
 	
 	private static void mercerScore(Respondant respondant) {
-		logger.info("Requesting Mercer Score for respondant_id: " + respondant.getRespondantId());
+		log.debug("Requesting Mercer Score for respondant_id: " + respondant.getRespondantId());
 		List<Response> responses = respondant.getResponses();
 		Client client = ClientBuilder.newClient();
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(MERCER_USER, MERCER_PASS);
@@ -121,11 +122,11 @@ public class ScoringUtil {
 				output = resp.readEntity(String.class);
 				result = new JSONArray(output);
 			} catch (Exception e) {
-				logger.severe("Failed to get results from mercer: " + e.getMessage());
-				logger.info("Failed to get results from mercer: " + message.toString());
+				log.warn("Failed to get results from mercer: " + e.getMessage());
+				log.debug("Failed to get results from mercer: " + message.toString());
 				if (resp != null) {
-					logger.info("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
-					logger.info("Failed to get results from mercer: " + output);
+					log.debug("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
+					log.debug("Failed to get results from mercer: " + output);
 				}
 				return;
 			}
@@ -142,7 +143,7 @@ public class ScoringUtil {
 						rs.mergeMe();
 						respondant.addRespondantScore(rs);
 				} catch (Exception e) {
-						logger.severe("Failed to record score: " + data + " for repondant " + respondant.getJSONString());
+						log.warn("Failed to record score: " + data + " for repondant " + respondant.getJSONString());
 				}
 			}
 		}

@@ -4,7 +4,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
@@ -23,7 +24,7 @@ import com.employmeo.objects.Response;
 @Path("getsurvey")
 public class GetSurvey {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -32,7 +33,7 @@ public class GetSurvey {
 			@Context final HttpServletRequest reqt,
 			@FormParam("respondant_uuid") UUID respondantUuid) {
 
-		logger.info("processing with: " + respondantUuid);
+		log.debug("processing with: " + respondantUuid);
 		
 		JSONObject json = new JSONObject();
 		Respondant respondant = Respondant.getRespondantByUuid(respondantUuid);

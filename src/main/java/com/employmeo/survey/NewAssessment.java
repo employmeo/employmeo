@@ -1,7 +1,7 @@
 package com.employmeo.survey;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -17,7 +17,7 @@ import com.employmeo.objects.Respondant;
 
 @Path("order")
 public class NewAssessment {
-	private static Logger logger = Logger.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -51,7 +51,7 @@ public class NewAssessment {
 		json.put("respondant", respondant.getJSON());
 		json.put("survey", as.getJSON());
 
-		logger.log(Level.INFO, json.toString());
+		log.debug(json.toString());
 		return json.toString();
 	}
 

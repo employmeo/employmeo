@@ -1,6 +1,7 @@
 package com.employmeo.integration;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -26,20 +27,20 @@ public class ATSOrder {
 	@Context
 	private SecurityContext sc;
 
-	private static Logger logger = Logger.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost(JSONObject json) {
-		logger.info("ATS Requesting Assessment with: " + json.toString());
+		log.debug("ATS Requesting Assessment with: " + json.toString());
 
 		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
 		Account account = pu.getAccountFrom(json.getJSONObject("account"));
 		Respondant respondant = pu.createRespondantFrom(json, account);
 		JSONObject output = pu.prepOrderResponse(json, respondant);
 
-		logger.info("ATS Request for Assessment Complete: " + respondant.getRespondantAtsId());
+		log.debug("ATS Request for Assessment Complete: " + respondant.getRespondantAtsId());
 		return output.toString();
 	}
 

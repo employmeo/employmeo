@@ -4,7 +4,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.FormParam;
@@ -24,7 +25,7 @@ import com.employmeo.util.ScoringUtil;
 @Path("submitassessment")
 public class SubmitAssessment {
 	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
-	private static Logger logger = Logger.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
 
 	@PermitAll
 	@POST
@@ -32,7 +33,7 @@ public class SubmitAssessment {
 	public String doPost(
 			// @FormParam("finish_time") TimeStamp finishTime,
 			@FormParam("respondant_id") Long respondantId) {
-		logger.info("Survey Submitted for Respondant: " + respondantId);
+		log.debug("Survey Submitted for Respondant: " + respondantId);
 
 		Respondant respondant = Respondant.getRespondantById(respondantId);
 		if (respondant.getRespondantStatus() < Respondant.STATUS_COMPLETED) {

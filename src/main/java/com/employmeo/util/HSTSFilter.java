@@ -1,7 +1,8 @@
 package com.employmeo.util;
 
 import java.io.IOException;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 public class HSTSFilter implements Filter {
 
 	public static boolean FORCE_SECURE = false;
-	private static Logger logger = Logger.getLogger("com.employmeo.util");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util");
 	
 	@Override
 	public void destroy() {
@@ -35,7 +36,7 @@ public class HSTSFilter implements Filter {
 	@Override
 	public void init(FilterConfig arg0) throws ServletException {
 		FORCE_SECURE = Boolean.valueOf(System.getenv("FORCE_SECURE"));
-		if (FORCE_SECURE) logger.info("Using HSTS to force traffic through https");
+		if (FORCE_SECURE) log.debug("Using HSTS to force traffic through https");
 	}
 
 }

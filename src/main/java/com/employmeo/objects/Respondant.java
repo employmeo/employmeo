@@ -26,6 +26,8 @@ import org.json.JSONObject;
 import com.employmeo.util.DBUtil;
 import com.employmeo.util.ScoringUtil;
 
+import lombok.ToString;
+
 /**
  * The persistent class for the respondants database table.
  * 
@@ -33,6 +35,7 @@ import com.employmeo.util.ScoringUtil;
 @Entity
 @Table(name = "respondants")
 @NamedQuery(name = "Respondant.findAll", query = "SELECT r FROM Respondant r")
+@ToString(of = {"respondantId", "respondantUuid", "respondantAccountId", "respondantAsid", "respondantStatus", "respondantPartnerId","person","respondantScores"})
 public class Respondant extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
