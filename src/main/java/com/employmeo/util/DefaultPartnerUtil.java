@@ -1,7 +1,8 @@
 package com.employmeo.util;
 
 import java.util.Iterator;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -28,7 +29,7 @@ import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
 
 public class DefaultPartnerUtil implements PartnerUtil {
-	private static Logger logger = Logger.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
 	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
 			.entity("{ message: 'Missing Required Parameters' }").build();
 	private Partner partner = null;
@@ -60,7 +61,7 @@ public class DefaultPartnerUtil implements PartnerUtil {
 			try {
 				account = q.getSingleResult();
 			} catch (NoResultException nre) {
-				logger.warning("Can't find account with atsId: " + accountAtsId);
+				log.warn("Can't find account with atsId: " + accountAtsId);
 				throw new WebApplicationException(
 						Response.status(Status.PRECONDITION_FAILED).entity(jAccount.toString()).build());
 			}
@@ -186,7 +187,7 @@ public class DefaultPartnerUtil implements PartnerUtil {
 		} catch (WebApplicationException we) {
 			throw we;
 		} catch (Exception e) {
-			logger.severe(e.toString());
+			log.warn(e.toString());
 			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
 		}
 		
@@ -312,9 +313,9 @@ public class DefaultPartnerUtil implements PartnerUtil {
 		try {
 			String result = target.request(MediaType.APPLICATION_JSON)
 					.post(Entity.entity(message.toString(), MediaType.APPLICATION_JSON), String.class);
-			logger.info("posted scores to echo with result:\n" + result);
+			log.debug("posted scores to echo with result:\n" + result);
 		} catch (Exception e) {
-			logger.severe("failed posting scores to: " + postmethod);
+			log.warn("failed posting scores to: " + postmethod);
 		}
 
 	}

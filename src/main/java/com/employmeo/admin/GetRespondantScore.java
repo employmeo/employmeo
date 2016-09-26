@@ -1,7 +1,8 @@
 package com.employmeo.admin;
 
 import java.util.UUID;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +23,7 @@ import com.employmeo.objects.User;
 @Path("getscore")
 public class GetRespondantScore {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -53,7 +54,7 @@ public class GetRespondantScore {
 			respondant.refreshMe();
 			if (!user.canView(respondant)) {
 				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				logger.warning("Unauthorized Access Attempted by User: " + user.getUserId());
+				log.warn("Unauthorized Access Attempted by User: " + user.getUserId());
 				json.put("message", "Access Restricted");
 				return json.toString();			
 			}

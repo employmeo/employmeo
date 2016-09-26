@@ -1,6 +1,7 @@
 package com.employmeo.util;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 
 public class AddressUtil {
 	private static final String MAPS_SERVICE = "https://maps.googleapis.com/maps/api/geocode/json";
-	private static Logger logger = Logger.getLogger("com.employmeo.util.AddressUtil");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.AddressUtil");
 
 	private static String googleApiKey = System.getenv("GOOGLE_MAPS_KEY");
 
@@ -41,7 +42,7 @@ public class AddressUtil {
 			if (results.length() != 1) {
 				// TODO - either multiple results, or no result. error handling
 				// needed?
-				logger.warning("Address retrieved " + results.length() + "results: " + formattedAddress);
+				log.warn("Address retrieved " + results.length() + "results: " + formattedAddress);
 			} else {
 				address.put("formatted_address", results.getJSONObject(0).getString("formatted_address"));
 				JSONObject geo = results.getJSONObject(0).getJSONObject("geometry");
@@ -51,7 +52,7 @@ public class AddressUtil {
 			}
 		} catch (Exception e) {
 			// TODO failed to validate address with lat & lng
-			logger.severe(e.getMessage() + " (lookup failed) for: " + formattedAddress);
+			log.warn(e.getMessage() + " (lookup failed) for: " + formattedAddress);
 		}
 
 	}

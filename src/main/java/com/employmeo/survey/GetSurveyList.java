@@ -2,35 +2,29 @@ package com.employmeo.survey;
 
 
 import java.util.List;
-import java.util.logging.Logger;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Survey;
 import com.employmeo.util.DBUtil;
-import com.employmeo.util.SurveyUtil;
 
 @Path("list")
 public class GetSurveyList {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getSurveyList() {
-		logger.info("Fetching survey list");
+		log.debug("Fetching survey list");
 
 		JSONArray response = new JSONArray();	
 		List<Survey> surveys = getSurveys();

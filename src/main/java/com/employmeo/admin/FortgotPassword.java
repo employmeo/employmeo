@@ -10,12 +10,13 @@ import javax.ws.rs.core.MediaType;
 import com.employmeo.objects.User;
 import com.employmeo.util.EmailUtility;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("forgotpassword")
 public class FortgotPassword {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
 	
 	@POST
 	@PermitAll

@@ -24,13 +24,14 @@ import com.employmeo.objects.User;
 import com.employmeo.util.DBUtil;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("getrespondants")
 public class GetRespondants {
 	
 	private static final long ONE_DAY = 24*60*60*1000; // one day in milliseconds
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

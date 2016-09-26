@@ -2,7 +2,8 @@ package com.employmeo.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -26,7 +27,7 @@ public class EmailUtility {
 	private static String SG_API = System.getenv("SENDGRID_API");
 	private static final String END_POINT = "https://api.sendgrid.com/v3/mail/send";
 	private static JSONObject FROM_ADDRESS = new JSONObject().put("email", "info@employmeo.com");
-	private static Logger logger = Logger.getLogger("com.employmeo.util.EmailUtility");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.EmailUtility");
 	
 	public static void sendMessage(String from, String to, String subject, String content, StringBuffer htmlpart) {
 		
@@ -154,7 +155,7 @@ public class EmailUtility {
 				WebTarget target = client.target(END_POINT);
 				javax.ws.rs.core.Response resp = target.request().header("Authorization", "Bearer " + SG_API)
 						.post(Entity.entity(jMail.toString(), MediaType.APPLICATION_JSON));		
-						logger.info("Sent Email: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
+						log.debug("Sent Email: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
 						// TODO handle errors, etc.
 			}
 		});

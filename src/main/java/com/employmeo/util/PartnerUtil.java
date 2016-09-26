@@ -1,7 +1,8 @@
 package com.employmeo.util;
 
 import java.util.HashMap;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.json.JSONObject;
 
@@ -13,7 +14,7 @@ import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
 
 public interface PartnerUtil {
-	public static Logger logger = Logger.getLogger("com.employmeo.integration");
+	public static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
 	public Partner partner = null;
 	public static HashMap<Partner,PartnerUtil> utils = new HashMap<Partner,PartnerUtil>();
 	
