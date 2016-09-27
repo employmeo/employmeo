@@ -25,7 +25,7 @@ public class ICIMSApplicationComplete {
 
 	@Context
 	private SecurityContext sc;
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(ICIMSApplicationComplete.class);
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

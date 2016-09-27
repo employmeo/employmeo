@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 public class HSTSFilter implements Filter {
 
 	public static boolean FORCE_SECURE = false;
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util");
+	private static final Logger log = LoggerFactory.getLogger(HSTSFilter.class);
 	
 	@Override
 	public void destroy() {

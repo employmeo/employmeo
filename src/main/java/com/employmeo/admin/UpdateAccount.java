@@ -19,7 +19,7 @@ import com.employmeo.objects.User;
 @Path("updateaccount")
 public class UpdateAccount {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(UpdateAccount.class);
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

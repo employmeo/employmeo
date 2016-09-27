@@ -23,7 +23,7 @@ import com.employmeo.objects.Response;
 
 @Path("getbypayrollid")
 public class GetAssessmentByEmpID {
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger(GetAssessmentByEmpID.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

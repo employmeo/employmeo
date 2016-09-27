@@ -20,7 +20,7 @@ import com.employmeo.objects.User;
 @PermitAll
 public class TestService {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(TestService.class);
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

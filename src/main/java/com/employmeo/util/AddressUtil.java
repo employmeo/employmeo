@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 public class AddressUtil {
 	private static final String MAPS_SERVICE = "https://maps.googleapis.com/maps/api/geocode/json";
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.AddressUtil");
+	private static final Logger log = LoggerFactory.getLogger(AddressUtil.class);
 
 	private static String googleApiKey = System.getenv("GOOGLE_MAPS_KEY");
 

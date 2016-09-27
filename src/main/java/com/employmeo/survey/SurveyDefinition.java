@@ -22,7 +22,7 @@ import com.employmeo.util.SurveyUtil;
 @Path("definition")
 public class SurveyDefinition {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger(SurveyDefinition.class);
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

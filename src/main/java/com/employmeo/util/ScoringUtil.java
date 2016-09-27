@@ -23,7 +23,7 @@ import com.employmeo.objects.Response;
 
 public class ScoringUtil {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.ScoringUtil");
+	private static final Logger log = LoggerFactory.getLogger(ScoringUtil.class);
 	private static String MERCER_PREFIX = "Mercer";
 	private static String MERCER_SERVICE = System.getenv("MERCER_SERVICE");
 	private static String MERCER_USER = "employmeo";
@@ -32,7 +32,7 @@ public class ScoringUtil {
 
 	
 	public static void scoreAssessment(Respondant respondant) {
-
+		log.debug("Scoring assessment for respondant {}", respondant);
 		List<Response> responses = respondant.getResponses();
 		if ((responses == null) || (responses.size() == 0))	return; // return nothing
 
@@ -136,14 +136,16 @@ public class ScoringUtil {
 				int score = data.getInt("score");
 				RespondantScore rs = new RespondantScore();
 				try {
-						Corefactor cf = Corefactor.getCorefactorByForeignId(MERCER_PREFIX + data.getString("id"));
+						String foreignId = MERCER_PREFIX + data.getString("id");
+						log.debug("Finding corefactor by foreign id '{}'", foreignId);
+						Corefactor cf = Corefactor.getCorefactorByForeignId(foreignId);
 						rs.setPK(cf.getCorefactorId(), respondant.getRespondantId());
 						rs.setRsQuestionCount(responses.size());
 						rs.setRsValue((double) score);
 						rs.mergeMe();
 						respondant.addRespondantScore(rs);
 				} catch (Exception e) {
-						log.warn("Failed to record score: " + data + " for repondant " + respondant.getJSONString());
+						log.warn("Failed to record score: " + data + " for repondant " + respondant.getJSONString(), e);
 				}
 			}
 		}

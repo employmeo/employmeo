@@ -23,7 +23,7 @@ import com.employmeo.objects.User;
 @Path("getscore")
 public class GetRespondantScore {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(GetRespondantScore.class);
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -58,7 +58,9 @@ public class GetRespondantScore {
 				json.put("message", "Access Restricted");
 				return json.toString();			
 			}
-			if (respondant.getRespondantStatus() < Respondant.STATUS_PREDICTED) respondant.refreshMe();
+			if (respondant.getRespondantStatus() < Respondant.STATUS_PREDICTED) {
+				respondant.refreshMe();
+			}
 			json.put("respondant", respondant.getJSON());
 			json.put("scores", respondant.getAssessmentScore());
 			json.put("detailed_scores", respondant.getAssessmentDetailedScore());

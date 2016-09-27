@@ -29,7 +29,7 @@ import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
 
 public class DefaultPartnerUtil implements PartnerUtil {
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(DefaultPartnerUtil.class);
 	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
 			.entity("{ message: 'Missing Required Parameters' }").build();
 	private Partner partner = null;

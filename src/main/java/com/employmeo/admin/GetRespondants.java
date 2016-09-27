@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class GetRespondants {
 	
 	private static final long ONE_DAY = 24*60*60*1000; // one day in milliseconds
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(GetRespondants.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -52,6 +52,7 @@ public class GetRespondants {
 		} // else if (false) { //
 			// {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
+		log.debug("Fetching respondants");
 		Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
 		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime() + ONE_DAY);
 

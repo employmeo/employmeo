@@ -19,7 +19,7 @@ import com.employmeo.util.DBUtil;
 @Path("list")
 public class GetSurveyList {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger(GetSurveyList.class);
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

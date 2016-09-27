@@ -32,7 +32,7 @@ public class HireNotice {
 			.entity("{ message: 'Unknown Applicant Status' }").build();
 	private final static Response ACCOUNT_MATCH = Response.status(Response.Status.CONFLICT)
 			.entity("{ message: 'Applicant ID not found for Account ID' }").build();
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(HireNotice.class);
 	@Context
 	private SecurityContext sc;
 

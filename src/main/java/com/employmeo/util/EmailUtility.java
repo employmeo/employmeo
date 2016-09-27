@@ -27,7 +27,7 @@ public class EmailUtility {
 	private static String SG_API = System.getenv("SENDGRID_API");
 	private static final String END_POINT = "https://api.sendgrid.com/v3/mail/send";
 	private static JSONObject FROM_ADDRESS = new JSONObject().put("email", "info@employmeo.com");
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.EmailUtility");
+	private static final Logger log = LoggerFactory.getLogger(EmailUtility.class);
 	
 	public static void sendMessage(String from, String to, String subject, String content, StringBuffer htmlpart) {
 		

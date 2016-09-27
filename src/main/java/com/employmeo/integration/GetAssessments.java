@@ -27,7 +27,7 @@ public class GetAssessments {
 
 	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
 			.entity("{ message: 'Missing Required Parameters' }").build();
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(GetAssessments.class);
 	@Context
 	private SecurityContext sc;
 	

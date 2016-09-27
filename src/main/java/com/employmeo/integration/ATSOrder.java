@@ -27,7 +27,7 @@ public class ATSOrder {
 	@Context
 	private SecurityContext sc;
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(ATSOrder.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

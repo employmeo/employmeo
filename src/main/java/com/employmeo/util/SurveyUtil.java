@@ -20,7 +20,7 @@ import com.employmeo.objects.SurveySection;
  */
 public class SurveyUtil {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.SurveyUtil");
+	private static final Logger log = LoggerFactory.getLogger(SurveyUtil.class);
 
 	public static void persistSurvey(Survey survey) throws IllegalStateException {
 		log.debug("Proceeding to persist survey with id: " + survey.getSurveyId());
