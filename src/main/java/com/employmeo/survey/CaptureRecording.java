@@ -16,6 +16,7 @@ import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Survey;
 import com.employmeo.objects.SurveyQuestion;
 import com.employmeo.objects.SurveySection;
+import com.employmeo.util.ExternalLinksUtil;
 import com.twilio.sdk.verbs.Record;
 import com.twilio.sdk.verbs.Redirect;
 import com.twilio.sdk.verbs.Say;
@@ -104,14 +105,16 @@ public class CaptureRecording {
 	        					question.getQuestion().getQuestionText());
 	        Record record = new Record();
 	        record.setMethod("GET");
-	        record.setAction("/survey/capturerecording?" + 
-	        						"&respondant_id=" + resp.getRespondantId() + 
-	        						"&question_id=" + question.getQuestion().getQuestionId());
+	        record.setAction(ExternalLinksUtil.BASE_SURVEY_URL + 
+	        						"/survey/capturerecording?" + 
+	        						"&amp;respondant_id=" + resp.getRespondantId() + 
+	        						"&amp;question_id=" + question.getQuestion().getQuestionId());
 	        record.setMaxLength(90);
 	
 	        Say tryagain = new Say("Sorry - we did not recieve a response. Please try again.");
-	        Redirect redirect = new Redirect("/survey/capturerecording?" +
-	        									"respondant_id=" + resp.getRespondantId());
+	        Redirect redirect = new Redirect(ExternalLinksUtil.BASE_SURVEY_URL + 
+												"/survey/capturerecording?" + 
+												"&amp;respondant_id=" + resp.getRespondantId());
 	        redirect.setMethod("GET");
 	        redirect.set("respondant_id",resp.getRespondantId().toString());
 	    	try {

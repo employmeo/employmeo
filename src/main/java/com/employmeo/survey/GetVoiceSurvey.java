@@ -16,6 +16,7 @@ import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Survey;
 import com.employmeo.objects.SurveyQuestion;
 import com.employmeo.objects.SurveySection;
+import com.employmeo.util.ExternalLinksUtil;
 import com.twilio.sdk.verbs.Record;
 import com.twilio.sdk.verbs.Redirect;
 import com.twilio.sdk.verbs.Say;
@@ -91,7 +92,7 @@ public class GetVoiceSurvey {
 		if (survey != null) {
 			Account account = Account.getAccountById(survey.getAsAccountId());
 			respondant = account.getRespondantByPayrollId(twiDigits);
-			respondant.refreshMe();
+			if (respondant != null) respondant.refreshMe();
 		}
 		return respondant;
 	}
@@ -104,38 +105,49 @@ public class GetVoiceSurvey {
         	Survey survey = resp.getAccountSurvey().getSurvey();
         	// TODO hard coded to assume we have only one section... need to fix!
         	SurveySection section = survey.getSurveySections().get(0);
-    		Say thanks = new Say("Thank you. You are " + resp.getPerson().getPersonFullName()+ " ");
+    		Say thanks = new Say("Thank you. You are " + resp.getPerson().getPersonFullName()+ " .");
         	Say instructions = new Say(section.getSsInstructions());
         	
         	SurveyQuestion question = resp.nextQuestion();
-  
-            Say prompt = new Say("Question " + question.getSqSequence() + ". " +
-					question.getQuestion().getQuestionText());
-        	Record record = new Record();
-        	record.setMethod("GET");
-        	record.setAction("/survey/capturerecording?" + 
-        						"&respondant_id=" + resp.getRespondantId() + 
-        						"&question_id=" + question.getQuestion().getQuestionId());
-        	record.setMaxLength(90);
-
-        	Say tryagain = new Say("Sorry - we did not recieve a response. Please try again.");
-        	Redirect redirect = new Redirect("/survey/capturerecording?" +
-        										"respondant_id=" + resp.getRespondantId());
-        	redirect.setMethod("GET");
-        	redirect.set("respondant_id",resp.getRespondantId().toString());
-    	    try {
-    	        response.append(thanks);
-    	        response.append(instructions);
-    	        response.append(prompt);
-    	        response.append(record);
-    	        response.append(tryagain);
-    	        response.append(redirect);
-    	    } catch (TwiMLException e) {
-    	        e.printStackTrace();
-    	    }
-    	
+ 
+	        if (question == null) {
+	        	Say goodbye = new Say("Thank You. You have completed the questionairre. Goodbye.");
+		    	try {
+	    	        response.append(goodbye);
+		    	} catch (TwiMLException e) {
+	    	        e.printStackTrace();
+		    	}
+	        } else {
+        	
+	            Say prompt = new Say("Question " + question.getSqSequence() + ". " +
+						question.getQuestion().getQuestionText());
+	        	Record record = new Record();
+	        	record.setMethod("GET");
+		        record.setAction(ExternalLinksUtil.BASE_SURVEY_URL + 
+		        					"/survey/capturerecording?" + 
+	        						"&amp;respondant_id=" + resp.getRespondantId() + 
+	        						"&amp;question_id=" + question.getQuestion().getQuestionId());
+	        	record.setMaxLength(90);
+	
+	        	Say tryagain = new Say("Sorry - we did not recieve a response. Please try again.");
+		        Redirect redirect = new Redirect(ExternalLinksUtil.BASE_SURVEY_URL + 
+						"/survey/capturerecording?" + 
+						"&amp;respondant_id=" + resp.getRespondantId());
+	        	redirect.setMethod("GET");
+	        	redirect.set("respondant_id",resp.getRespondantId().toString());
+	    	    try {
+	    	        response.append(thanks);
+	    	        response.append(instructions);
+	    	        response.append(prompt);
+	    	        response.append(record);
+	    	        response.append(tryagain);
+	    	        response.append(redirect);
+	    	    } catch (TwiMLException e) {
+	    	        e.printStackTrace();
+	    	    }
+	        }
     	} else {
-    		Say sorry = new Say("Can't find you. Goodbye!");
+    		Say sorry = new Say("Sorry. We are unable to match your ID. Goodbye!");
     	    try {
     	        response.append(sorry);
     	    } catch (TwiMLException e) {
