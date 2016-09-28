@@ -140,8 +140,8 @@ public class GetVoiceSurvey {
 	    	        response.append(instructions);
 	    	        response.append(prompt);
 	    	        response.append(record);
-	    	        response.append(tryagain);
-	    	        response.append(redirect);
+	    	        // response.append(tryagain);
+	    	        // response.append(redirect);
 	    	    } catch (TwiMLException e) {
 	    	        e.printStackTrace();
 	    	    }
