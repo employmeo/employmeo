@@ -55,12 +55,12 @@ public class Survey extends PersistantObject implements Serializable {
 	private String surveyForeignId;
 
 	// bi-directional many-to-one association to SurveyQuestion
-	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	private List<SurveyQuestion> surveyQuestions;
+	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<SurveyQuestion> surveyQuestions = new ArrayList<SurveyQuestion>();
 
 	// bi-directional many-to-one association to SurveyQuestion
-	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER)
-	private List<SurveySection> surveySections;
+	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<SurveySection> surveySections = new ArrayList<SurveySection>();
 
 	public Survey() {
 	}
@@ -212,6 +212,7 @@ public class Survey extends PersistantObject implements Serializable {
 		JSONArray jsonQuestions = json.getJSONArray("questions");
 		for(int i=0; i < jsonQuestions.length(); i++) {		
 			SurveyQuestion surveyQuestion = SurveyQuestion.fromJSON(jsonQuestions.getJSONObject(i));
+			surveyQuestion.setSurvey(survey);
 			surveyQuestions.add(surveyQuestion);
 		}
 		survey.setSurveyQuestions(surveyQuestions);

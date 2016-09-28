@@ -55,16 +55,16 @@ public class Question extends PersistantObject implements Serializable {
 	private String questionForeignSource;
 
 	// bi-directional many-to-one association to Answer
-	@OneToMany(mappedBy = "question", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	private List<Answer> answers;
+	@OneToMany(mappedBy = "question", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<Answer> answers = new ArrayList<Answer>();
 
 	// bi-directional many-to-one association to Response
 	@OneToMany(mappedBy = "question")
-	private List<Response> responses;
+	private List<Response> responses = new ArrayList<Response>();
 
 	// bi-directional many-to-one association to SurveyQuestion
-	@OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
-	private List<SurveyQuestion> surveyQuestions;
+	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+	private List<SurveyQuestion> surveyQuestions = new ArrayList<SurveyQuestion>();
 
 	public Question() {
 	}
@@ -97,8 +97,8 @@ public class Question extends PersistantObject implements Serializable {
 		return this.questionDisplayId;
 	}
 
-	public void setQuestionDisplayId(int foreignId) {
-		this.questionForeignId = foreignId;
+	public void setQuestionDisplayId(Long questionDisplayId) {
+		this.questionDisplayId = questionDisplayId;
 	}
 
 	public String getQuestionForeignSource() {
@@ -137,9 +137,6 @@ public class Question extends PersistantObject implements Serializable {
 		return this.questionForeignId;
 	}
 
-	public void setQuestionDisplayId(Long questionDisplayId) {
-		this.questionDisplayId = questionDisplayId;
-	}
 
 	public String getQuestionText() {
 		return this.questionText;
@@ -257,17 +254,23 @@ public class Question extends PersistantObject implements Serializable {
 		
 		question.setQuestionId(json.getLong("question_id"));
 		question.setQuestionDescription(json.getString("question_description"));
-		question.setQuestionDisplayId(json.getInt("question_display_id"));
+		question.setQuestionDisplayId(json.getLong("question_display_id"));
 		question.setQuestionText(json.getString("question_text"));
 		question.setQuestionType(json.getInt("question_type"));
 		question.setQuestionCorefactorId(json.getInt("question_corefactor_id"));
 		question.setQuestionDirection(json.getInt("question_direction"));
-
+/*		
+		//TODO: Remove bad data fix
+		if(question.getQuestionDisplayId() == null) {
+			question.setQuestionDisplayId(-1);
+		}
+*/
 		List<Answer> answers = new ArrayList<Answer>();
 		if (json.has("answers")) {
 			JSONArray jsonAnswers = json.getJSONArray("answers");			
 			for(int i=0; i < jsonAnswers.length(); i++) {		
 				Answer answer = Answer.fromJSON(jsonAnswers.getJSONObject(i));
+				answer.setQuestion(question);
 				answers.add(answer);
 			}
 		}
