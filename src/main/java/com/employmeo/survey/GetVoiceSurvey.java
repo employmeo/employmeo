@@ -1,5 +1,6 @@
 package com.employmeo.survey;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
@@ -9,7 +10,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.employmeo.objects.Account;
+import com.employmeo.objects.AccountSurvey;
+import com.employmeo.objects.Question;
 import com.employmeo.objects.Respondant;
+import com.employmeo.objects.Survey;
+import com.employmeo.objects.SurveyQuestion;
+import com.employmeo.objects.SurveySection;
+import com.twilio.sdk.verbs.Record;
+import com.twilio.sdk.verbs.Redirect;
 import com.twilio.sdk.verbs.Say;
 import com.twilio.sdk.verbs.TwiMLException;
 import com.twilio.sdk.verbs.TwiMLResponse;
@@ -47,6 +55,7 @@ public class GetVoiceSurvey {
 			@QueryParam("respondant_id") Long respondantId,
 			@QueryParam("as_id") Long asId) {
 		
+		Respondant respondant = null;
 		StringBuffer msg = new StringBuffer();
 		msg.append("Voice call from: ");
 		msg.append(twiFrom);
@@ -55,67 +64,84 @@ public class GetVoiceSurvey {
 			msg.append(" {respondant_id = ");
 			msg.append(respondantId);
 			msg.append("}");
-		}
-		if (asId != null) {
-			msg.append(" {as_id = ");
-			msg.append(asId);
-			msg.append("}");
-		}
-		if (twiDigits != null) {
-			msg.append(" {Digits = ");
-			msg.append(twiDigits);
-			msg.append("}");
+			respondant = Respondant.getRespondantById(respondantId);
+		} else {
+			if (asId != null) {
+				msg.append(" {as_id = ");
+				msg.append(asId);
+				msg.append("}");
+			}
+			if (twiDigits != null) {
+				msg.append(" {Digits = ");
+				msg.append(twiDigits);
+				msg.append("}");
+			}
+			respondant = getRespondantFrom(twiDigits, asId);
 		}
 		logger.info(msg.toString());
-		
-		return produceTwiML(twiDigits, asId);
+
+		return produceTwiML(respondant);
 		
 	}
 
-	public String produceTwiML(String payrollId, Long accountId) {
+	public Respondant getRespondantFrom(String twiDigits, Long asId) {
+
+		AccountSurvey survey = AccountSurvey.getAccountSurveyByASID(asId);
+		Respondant respondant = null;
+		if (survey != null) {
+			Account account = Account.getAccountById(survey.getAsAccountId());
+			respondant = account.getRespondantByPayrollId(twiDigits);
+			respondant.refreshMe();
+		}
+		return respondant;
+	}
+
+	public String produceTwiML(Respondant resp) {
 	    TwiMLResponse response = new TwiMLResponse();
  
-	    // Account ID?
-	    Say message;
-	    if (accountId != null) {
-	    	Account account = Account.getAccountById(accountId);
-	    	if (account != null) {
-		    	Respondant resp = account.getRespondantByPayrollId(payrollId);
-		    	if (resp != null) {
-		    		message = new Say("You are " + resp.getPerson().getPersonFullName()+ " ?");
-		    	} else {
-		    		message = new Say("Can't find you");
-		    	}
-	    	} else {
-	    		message = new Say("Can't find your account");	    		
-	    	}
-	    } else {
-	    	message = new Say("We didn't get your account ID");
-	    }
+	    // Found Respondant
+    	if (resp != null) {
+        	Survey survey = resp.getAccountSurvey().getSurvey();
+        	// TODO hard coded to assume we have only one section... need to fix!
+        	SurveySection section = survey.getSurveySections().get(0);
+    		Say thanks = new Say("Thank you. You are " + resp.getPerson().getPersonFullName()+ " ");
+        	Say instructions = new Say(section.getSsInstructions());
+        	
+        	SurveyQuestion question = resp.nextQuestion();
+  
+            Say prompt = new Say("Question " + question.getSqSequence() + ". " +
+					question.getQuestion().getQuestionText());
+        	Record record = new Record();
+        	record.setMethod("GET");
+        	record.setAction("/survey/capturerecording?" + 
+        						"&respondant_id=" + resp.getRespondantId() + 
+        						"&question_id=" + question.getQuestion().getQuestionId());
+        	record.setMaxLength(90);
 
-	    
-	    // Gather
-	    //Gather gather = new Gather();
-	    //gather.setNumDigits(10);
-	    //say = new Say("Press 1");
-
-	    // Redirect
-	    //Redirect redirect = new Redirect();
-        
-        //redirect = new Redirect();
-        //redirect.set("crazy", "delicious");
-        
-	    try {
-//	        response.append(thanks);
-	        response.append(message);
-//	        gather.append(say);
-//	        response.append(gather);
-//	        response.append(redirect);
-	    } catch (TwiMLException e) {
-	        e.printStackTrace();
-	    }
-	
-	    System.out.println(response.toXML());
+        	Say tryagain = new Say("Sorry - we did not recieve a response. Please try again.");
+        	Redirect redirect = new Redirect("/survey/capturerecording?" +
+        										"respondant_id=" + resp.getRespondantId());
+        	redirect.setMethod("GET");
+        	redirect.set("respondant_id",resp.getRespondantId().toString());
+    	    try {
+    	        response.append(thanks);
+    	        response.append(instructions);
+    	        response.append(prompt);
+    	        response.append(record);
+    	        response.append(tryagain);
+    	        response.append(redirect);
+    	    } catch (TwiMLException e) {
+    	        e.printStackTrace();
+    	    }
+    	
+    	} else {
+    		Say sorry = new Say("Can't find you. Goodbye!");
+    	    try {
+    	        response.append(sorry);
+    	    } catch (TwiMLException e) {
+    	        e.printStackTrace();
+    	    }   	
+    	}
 	    
 	    return response.toEscapedXML();
 	}

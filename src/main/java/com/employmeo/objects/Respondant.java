@@ -3,6 +3,7 @@ package com.employmeo.objects;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -486,7 +487,33 @@ public class Respondant extends PersistantObject implements Serializable {
 	public Timestamp getRespondantFinishTime() {
 		return this.respondantFinishTime;
 	}
+	
+	public SurveyQuestion nextQuestion() {
+		List<SurveyQuestion> questions = getSurvey().getSurveyQuestions();
+		questions.sort(new Comparator<SurveyQuestion>() {
+	        public int compare(SurveyQuestion sq1, SurveyQuestion sq2) {
+	        	int result = sq1.getSqPage() - sq2.getSqPage();
+	        	if (result == 0) {
+	        		result = sq1.getSqSequence() - sq2.getSqSequence();
+	        	}
+	        	return result;
+	        }
+	    });
+	
+		for (int i=0;i<questions.size();i++) {
+			if (!isAnswered(questions.get(i))) return questions.get(i);
+		}
+		
+		return null;
+	}
 
+	public boolean isAnswered(SurveyQuestion question) {
+		for (int i=0; i<responses.size();i++) {
+			if (question.getQuestion().getQuestionId().equals(responses.get(i).getResponseQuestionId())) return true;
+		}
+		return false;
+	}
+	
 	public static Respondant getRespondantById(String lookupId) {
 		return getRespondantById(new Long(lookupId));
 	}
