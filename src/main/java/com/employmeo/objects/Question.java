@@ -263,15 +263,15 @@ public class Question extends PersistantObject implements Serializable {
 		question.setQuestionCorefactorId(json.getInt("question_corefactor_id"));
 		question.setQuestionDirection(json.getInt("question_direction"));
 
+		List<Answer> answers = new ArrayList<Answer>();
 		if (json.has("answers")) {
-			JSONArray jsonAnswers = json.getJSONArray("answers");
-			List<Answer> answers = new ArrayList<Answer>();
+			JSONArray jsonAnswers = json.getJSONArray("answers");			
 			for(int i=0; i < jsonAnswers.length(); i++) {		
 				Answer answer = Answer.fromJSON(jsonAnswers.getJSONObject(i));
 				answers.add(answer);
 			}
-			question.setAnswers(answers);
 		}
+		question.setAnswers(answers);
 		
 		return question;
 	}
