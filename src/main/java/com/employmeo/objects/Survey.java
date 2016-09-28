@@ -55,7 +55,7 @@ public class Survey extends PersistantObject implements Serializable {
 	private String surveyForeignId;
 
 	// bi-directional many-to-one association to SurveyQuestion
-	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "survey", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	private List<SurveyQuestion> surveyQuestions;
 
 	// bi-directional many-to-one association to SurveyQuestion

@@ -55,7 +55,7 @@ public class Question extends PersistantObject implements Serializable {
 	private String questionForeignSource;
 
 	// bi-directional many-to-one association to Answer
-	@OneToMany(mappedBy = "question", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "question", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	private List<Answer> answers;
 
 	// bi-directional many-to-one association to Response
@@ -63,7 +63,7 @@ public class Question extends PersistantObject implements Serializable {
 	private List<Response> responses;
 
 	// bi-directional many-to-one association to SurveyQuestion
-	@OneToMany(mappedBy = "question")
+	@OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
 	private List<SurveyQuestion> surveyQuestions;
 
 	public Question() {
