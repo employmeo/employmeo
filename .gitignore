@@ -58,5 +58,8 @@ src/main/java/com/employmeo/testing/
 target/
 /bin/
 *.bat
+<<<<<<< HEAD
 *.log
+=======
+>>>>>>> feature/persist-survey-bug
 *.jar
