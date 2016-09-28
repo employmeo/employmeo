@@ -3,6 +3,7 @@ package com.employmeo.survey;
 import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -14,8 +15,8 @@ import com.twilio.sdk.verbs.Say;
 import com.twilio.sdk.verbs.TwiMLException;
 import com.twilio.sdk.verbs.TwiMLResponse;
 
-@Path("getvoicesurvey")
-public class GetVoiceSurvey {
+@Path("capturerecording")
+public class CaptureRecording {
 	
 	private static Logger logger = Logger.getLogger("com.employmeo.survey");
 	
@@ -43,12 +44,14 @@ public class GetVoiceSurvey {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String doGet(
 			@QueryParam ("From") String twiFrom,
-			@QueryParam("Digits") String twiDigits,
+			@QueryParam ("RecordingUrl") String recUrl,
+			@QueryParam ("RecordingDuration") Integer recDuration,
 			@QueryParam("respondant_id") Long respondantId,
-			@QueryParam("as_id") Long asId) {
+			@QueryParam("question_id") Long questionId,
+			@QueryParam("account_id") Long accountId) {
 		
 		StringBuffer msg = new StringBuffer();
-		msg.append("Voice call from: ");
+		msg.append("Recording received from: ");
 		msg.append(twiFrom);
 		msg.append(", with parameters:");	
 		if (respondantId != null) {
@@ -56,19 +59,24 @@ public class GetVoiceSurvey {
 			msg.append(respondantId);
 			msg.append("}");
 		}
-		if (asId != null) {
-			msg.append(" {as_id = ");
-			msg.append(asId);
+		if (questionId != null) {
+			msg.append(" {question_id = ");
+			msg.append(questionId);
 			msg.append("}");
 		}
-		if (twiDigits != null) {
-			msg.append(" {Digits = ");
-			msg.append(twiDigits);
+		if (accountId != null) {
+			msg.append(" {account_id = ");
+			msg.append(accountId);
+			msg.append("}");
+		}
+		if (recUrl != null) {
+			msg.append(" {RecordingUrl = ");
+			msg.append(recUrl);
 			msg.append("}");
 		}
 		logger.info(msg.toString());
 		
-		return produceTwiML(twiDigits, asId);
+		return produceTwiML(recUrl, respondantId);
 		
 	}
 
