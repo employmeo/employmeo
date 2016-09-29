@@ -2,7 +2,8 @@ package com.employmeo.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -20,7 +21,7 @@ import com.employmeo.objects.CorefactorDescription;
  *
  */
 public class CorefactorUtil {
-	private static Logger logger = Logger.getLogger(CorefactorUtil.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(CorefactorUtil.class);
 	
 	public static void persistCorefactors(String corefactorDefinitions) throws IllegalStateException {
 		EntityManager em = DBUtil.getEntityManager();
@@ -35,7 +36,7 @@ public class CorefactorUtil {
 			txn.commit();
 			
 		} catch (Exception e) {
-			logger.info("Failed to persist corefactors, rolling back." + e);
+			log.debug("Failed to persist corefactors, rolling back." + e);
 			txn.rollback();
 			throw new IllegalStateException("Failed to persist corefactors", e);
 		}		
@@ -45,12 +46,12 @@ public class CorefactorUtil {
 		corefactors.forEach(corefactor -> {
 			corefactor.getCorefactorDescriptions().forEach(description -> {
 				em.merge(description);
-				logger.info("Merged corefactor description with id: " + description.getCfdescId());
+				log.debug("Merged corefactor description with id: " + description.getCfdescId());
 			});
 			em.merge(corefactor);
-			logger.info("Merged corefactor with id: " + corefactor.getCorefactorId());
+			log.debug("Merged corefactor with id: " + corefactor.getCorefactorId());
 		});
-		logger.info("Corefactors persisted successfully");		
+		log.debug("Corefactors persisted successfully");		
 	}
 		
 	public static JSONArray getJsonCorefactors() {
@@ -72,7 +73,7 @@ public class CorefactorUtil {
 	
 	private static List<Corefactor> getCorefactorsFromJson(String corefactorDefinitions) {
 		JSONArray jsonArray = new JSONArray(corefactorDefinitions);
-		// logger.info("Hydrated JSONObject: " + jsonArray);
+		// log.debug("Hydrated JSONObject: " + jsonArray);
 		
 		List<Corefactor> corefactors = new ArrayList<Corefactor>();
 		for(int i=0; i < jsonArray.length(); i++) {

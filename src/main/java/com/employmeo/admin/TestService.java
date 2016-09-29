@@ -1,7 +1,8 @@
 package com.employmeo.admin;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ import com.employmeo.objects.User;
 @PermitAll
 public class TestService {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(TestService.class);
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

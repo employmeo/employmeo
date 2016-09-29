@@ -15,19 +15,20 @@ import org.json.JSONObject;
 import com.employmeo.objects.User;
 import com.employmeo.util.SecurityUtil;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("changepass")
 public class ChangePassword {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(ChangePassword.class);
 	
 	@POST
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public String doMethod(@Context final HttpServletRequest reqt, String json) {
-		logger.info("Change Password Requested");
+		log.debug("Change Password Requested");
 		try {
 			JSONObject jUser = new JSONObject(json);
 			User user = null;
@@ -46,7 +47,7 @@ public class ChangePassword {
 				json = user.getJSONString();
 			}
 		} catch (Exception e) {
-			logger.severe("Failed to reset password: " + e.getMessage());
+			log.warn("Failed to reset password: " + e.getMessage());
 		}
 		return json;
 	}

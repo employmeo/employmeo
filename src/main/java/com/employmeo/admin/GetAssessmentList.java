@@ -18,13 +18,14 @@ import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.User;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("getassessments")
 @PermitAll
 public class GetAssessmentList {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(GetAssessmentList.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
