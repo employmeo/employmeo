@@ -1,6 +1,7 @@
 package com.employmeo.integration;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -22,14 +23,14 @@ public class Echo {
 	@Context
 	private Response resp;
 
-	private static Logger logger = Logger.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(Echo.class);
 
 	@POST
 	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost(JSONObject json) {
-		logger.info("Echo Called with: \n" + json.toString());
+		log.debug("Echo Called with: \n" + json.toString());
 		return json.toString();
 	}
 

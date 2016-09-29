@@ -1,7 +1,8 @@
 package com.employmeo.integration;
 
 import java.net.URI;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -24,12 +25,12 @@ public class ICIMSApplicationComplete {
 
 	@Context
 	private SecurityContext sc;
-	private static Logger logger = Logger.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(ICIMSApplicationComplete.class);
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response doPost(JSONObject json) {
-		logger.info("ICIMS Application Complete with: " +json);
+		log.debug("ICIMS Application Complete with: " +json);
 	
 		PartnerUtil pu = PartnerUtil.getUtilFor((Partner) sc.getUserPrincipal());
 		Account account = pu.getAccountFrom(json);
@@ -40,7 +41,7 @@ public class ICIMSApplicationComplete {
 		try {
 			link = new URI(ExternalLinksUtil.getAssessmentLink(applicant));
 		} catch (Exception e) {
-			logger.severe("Failed to URI-ify link: " + ExternalLinksUtil.getAssessmentLink(applicant));			
+			log.warn("Failed to URI-ify link: " + ExternalLinksUtil.getAssessmentLink(applicant));			
 		}
 		
 		return Response.seeOther(link).build();

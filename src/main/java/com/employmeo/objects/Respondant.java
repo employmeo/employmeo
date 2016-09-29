@@ -7,10 +7,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,9 +25,14 @@ import javax.persistence.TypedQuery;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.employmeo.util.DBUtil;
 import com.employmeo.util.ScoringUtil;
+import com.employmeo.util.SurveyUtil;
+
+import lombok.ToString;
 
 /**
  * The persistent class for the respondants database table.
@@ -34,7 +41,9 @@ import com.employmeo.util.ScoringUtil;
 @Entity
 @Table(name = "respondants")
 @NamedQuery(name = "Respondant.findAll", query = "SELECT r FROM Respondant r")
+@ToString(of = {"respondantId", "respondantUuid", "respondantAccountId", "respondantAsid", "respondantStatus", "respondantPartnerId","person","respondantScores"})
 public class Respondant extends PersistantObject implements Serializable {
+	private static final Logger log = LoggerFactory.getLogger(Respondant.class);
 	private static final long serialVersionUID = 1L;
 
 	public static final int STATUS_INVITED = 1;
@@ -110,7 +119,7 @@ public class Respondant extends PersistantObject implements Serializable {
 	private List<Response> responses;
 
 	// bi-directional many-to-one association to Responses
-	@OneToMany(mappedBy = "respondant")
+	@OneToMany(mappedBy = "respondant", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	private List<RespondantScore> respondantScores;
 
 	// Scoring info
@@ -589,6 +598,7 @@ public class Respondant extends PersistantObject implements Serializable {
 	 */
 
 	public JSONObject getAssessmentScore() {
+		//log.trace("Getting assessment score for respondant {}", this);
 		if (getRespondantStatus() <= Respondant.STATUS_COMPLETED)
 			this.refreshMe();
 
@@ -613,6 +623,7 @@ public class Respondant extends PersistantObject implements Serializable {
 	}
 
 	public JSONArray getAssessmentDetailedScore() {
+		//log.trace("Getting assessment detailed score for respondant {}", this);
 		if (getRespondantStatus() <= Respondant.STATUS_COMPLETED)
 			this.refreshMe();
 

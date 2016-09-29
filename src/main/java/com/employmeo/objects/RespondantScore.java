@@ -5,6 +5,8 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import lombok.ToString;
+
 /**
  * The persistent class for the respondant_scores database table.
  * 
@@ -12,6 +14,7 @@ import org.json.JSONObject;
 @Entity
 @Table(name = "respondant_scores")
 @NamedQuery(name = "RespondantScore.findAll", query = "SELECT r FROM RespondantScore r")
+@ToString(exclude = "respondant")
 public class RespondantScore extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 

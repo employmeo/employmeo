@@ -58,3 +58,5 @@ src/main/java/com/employmeo/testing/
 target/
 /bin/
 *.bat
+*.log
+*.jar

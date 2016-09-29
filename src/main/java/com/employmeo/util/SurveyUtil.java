@@ -1,6 +1,7 @@
 package com.employmeo.util;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -19,10 +20,10 @@ import com.employmeo.objects.SurveySection;
  */
 public class SurveyUtil {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.util.SurveyUtil");
+	private static final Logger log = LoggerFactory.getLogger(SurveyUtil.class);
 
 	public static void persistSurvey(Survey survey) throws IllegalStateException {
-		logger.info("Proceeding to persist survey with id: " + survey.getSurveyId());
+		log.debug("Proceeding to persist survey with id: " + survey.getSurveyId());
 		
 		validateSurvey(survey);
 
@@ -33,14 +34,15 @@ public class SurveyUtil {
 		
 		try {		
 			persistSurvey(survey, em);
-			persistSurveySections(survey, em);
-			persistSurveyQuestions(survey, em);
 
 			txn.commit();
-			logger.info("Survey with id " + survey.getSurveyId() + " persisted");
+			log.debug("Survey with id " + survey.getSurveyId() + " persisted");
 		} catch (Exception e) {
-			logger.info("Failed to persist survey, rolling back." + e);
-			txn.rollback();
+			log.warn("Failed to persist survey, rolling back." + e);
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+
 			throw new IllegalStateException("Failed to persist survey", e);
 		}
 	}
@@ -51,61 +53,13 @@ public class SurveyUtil {
 			throw new IllegalStateException("Survey with survey id " + survey.getSurveyId() + " already exists");
 		}
 		
-		logger.info("Validated that survey with id " + survey.getSurveyId() + " does not exist, proceeding further");
+		log.debug("Validated that survey with id " + survey.getSurveyId() + " does not exist, proceeding further");
 	}
 
 	private static void persistSurvey(Survey survey, EntityManager em) {
 		em.persist(survey);
-		logger.info("Survey entity persisted");
+		log.debug("Survey entity persisted");
 	}
 
-	private static void persistSurveyQuestions(Survey survey, EntityManager em) {
-		survey.getSurveyQuestions().forEach(surveyQuestion -> {
-			Question question = surveyQuestion.getQuestion();
-			persistQuestion(question, em);
 
-			surveyQuestion.setSurvey(survey);
-			em.persist(surveyQuestion);
-			logger.info("SurveyQuestion entity persisted with id: " + surveyQuestion.getSqId());
-		});
-	}
-
-	private static void persistQuestion(Question question, EntityManager em) {
-		Question existingQuestion = Question.getQuestionById(question.getQuestionId());
-		if (null != existingQuestion) {
-			logger.info("Question already exists, so skipping. Id = " + question.getQuestionId());
-		} else {
-			em.persist(question);
-			logger.info("Question entity persisted with id: " + question.getQuestionId());
-
-			question.getAnswers().forEach(answer -> {
-				persistAnswer(answer, em);
-			});
-		}
-	}
-
-	private static void persistAnswer(Answer answer, EntityManager em) {
-		Answer existingAnswer = Answer.findById(answer.getAnswerId());
-		if (null != existingAnswer) {
-			logger.info("Answer already exists, so skipping. Id = " + answer.getAnswerId());
-		} else {
-			em.persist(answer);
-			logger.info("Answer entity persisted with id: " + answer.getAnswerId());
-		}
-	}
-
-	private static void persistSurveySections(Survey survey, EntityManager em) {
-		survey.getSurveySections().forEach(surveySection -> {
-			SurveySection existingSurveySection = SurveySection.findById(surveySection.getId().getSsSurveyId(),
-					surveySection.getId().getSsSurveySection());
-			if (null != existingSurveySection) {
-				logger.info("Survey Section already exists, so skipping. surveyId = "
-						+ surveySection.getId().getSsSurveyId() + " with section : "
-						+ surveySection.getId().getSsSurveySection());
-			} else {
-				em.persist(surveySection);
-				logger.info("Survey Section persisted with id: " + surveySection.getId());
-			}
-		});
-	}
 }

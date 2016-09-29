@@ -118,6 +118,7 @@ public class SurveyQuestion extends PersistantObject implements Serializable {
 		
 		Question question = Question.fromJSON(json);
 		surveyQuestion.setQuestion(question);
+		question.addSurveyQuestion(surveyQuestion);
 		
 		surveyQuestion.setSqSeqence(json.getInt("question_sequence"));
 		surveyQuestion.setSqPage(json.getInt("question_page"));

@@ -1,7 +1,8 @@
 package com.employmeo.survey;
 
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -21,12 +22,12 @@ import com.employmeo.util.SurveyUtil;
 @Path("definition")
 public class SurveyDefinition {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger(SurveyDefinition.class);
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSurveyDefinition(@QueryParam("survey_id") Long surveyId) {
-		logger.info("processing with survey_id: " + surveyId);
+		log.debug("processing with survey_id: " + surveyId);
 		
 		// initialize as Not Found
 		ResponseBuilder responseBuilder = Response.status(Response.Status.NOT_FOUND);
@@ -46,24 +47,24 @@ public class SurveyDefinition {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createSurveyDefinition(String surveyDefinition) {
-		logger.info("Creating new survey definition");
+		log.debug("Creating new survey definition");
 		JSONObject resultEntity = new JSONObject();
 		ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST)
 				.entity(resultEntity.put("message", "Bad Request - Incorrect Survey Definition").toString());
 		
 		if(null != surveyDefinition && !surveyDefinition.isEmpty()) {
 			JSONObject json = new JSONObject(surveyDefinition);
-			//logger.info("Hydrated JSONObject: " + json);
+			//log.debug("Hydrated JSONObject: " + json);
 			
 			Survey survey = Survey.fromJSON(json);
-			logger.info("processing new survey definition with id: " + survey.getSurveyId());
+			log.debug("processing new survey definition with id: " + survey.getSurveyId());
 			
 			try {
 				SurveyUtil.persistSurvey(survey);
 				responseBuilder = Response.status(Response.Status.OK)
 						.entity(resultEntity.put("message", "Survey definition persisted successfully").toString());;
 			} catch (Exception e) {
-				logger.info("Failed to persist survey. " + e);
+				log.debug("Failed to persist survey. " + e);
 				responseBuilder = Response.status(Response.Status.OK)
 						.entity(resultEntity.put("message", e.getMessage()).toString());
 			}			

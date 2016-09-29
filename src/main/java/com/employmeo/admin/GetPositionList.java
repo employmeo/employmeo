@@ -16,12 +16,13 @@ import com.employmeo.objects.Position;
 import com.employmeo.objects.User;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("getpositions")
 public class GetPositionList {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(GetPositionList.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
