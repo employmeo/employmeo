@@ -49,7 +49,7 @@ public class GetVoiceSurvey {
 	
 	
 	@GET
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_XML)
 	public String doGet(
 			@QueryParam ("From") String twiFrom,
 			@QueryParam("Digits") String twiDigits,
@@ -140,8 +140,8 @@ public class GetVoiceSurvey {
 	    	        response.append(instructions);
 	    	        response.append(prompt);
 	    	        response.append(record);
-	    	        // response.append(tryagain);
-	    	        // response.append(redirect);
+	    	        response.append(tryagain);
+	    	        response.append(redirect);
 	    	    } catch (TwiMLException e) {
 	    	        e.printStackTrace();
 	    	    }
