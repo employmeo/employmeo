@@ -34,14 +34,15 @@ public class SurveyUtil {
 		
 		try {		
 			persistSurvey(survey, em);
-			persistSurveySections(survey, em);
-			persistSurveyQuestions(survey, em);
 
 			txn.commit();
 			log.debug("Survey with id " + survey.getSurveyId() + " persisted");
 		} catch (Exception e) {
-			log.debug("Failed to persist survey, rolling back." + e);
-			txn.rollback();
+			log.warn("Failed to persist survey, rolling back." + e);
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+
 			throw new IllegalStateException("Failed to persist survey", e);
 		}
 	}
@@ -60,53 +61,5 @@ public class SurveyUtil {
 		log.debug("Survey entity persisted");
 	}
 
-	private static void persistSurveyQuestions(Survey survey, EntityManager em) {
-		survey.getSurveyQuestions().forEach(surveyQuestion -> {
-			Question question = surveyQuestion.getQuestion();
-			persistQuestion(question, em);
 
-			surveyQuestion.setSurvey(survey);
-			em.persist(surveyQuestion);
-			log.debug("SurveyQuestion entity persisted with id: " + surveyQuestion.getSqId());
-		});
-	}
-
-	private static void persistQuestion(Question question, EntityManager em) {
-		Question existingQuestion = Question.getQuestionById(question.getQuestionId());
-		if (null != existingQuestion) {
-			log.debug("Question already exists, so skipping. Id = " + question.getQuestionId());
-		} else {
-			em.persist(question);
-			log.debug("Question entity persisted with id: " + question.getQuestionId());
-
-			question.getAnswers().forEach(answer -> {
-				persistAnswer(answer, em);
-			});
-		}
-	}
-
-	private static void persistAnswer(Answer answer, EntityManager em) {
-		Answer existingAnswer = Answer.findById(answer.getAnswerId());
-		if (null != existingAnswer) {
-			log.debug("Answer already exists, so skipping. Id = " + answer.getAnswerId());
-		} else {
-			em.persist(answer);
-			log.debug("Answer entity persisted with id: " + answer.getAnswerId());
-		}
-	}
-
-	private static void persistSurveySections(Survey survey, EntityManager em) {
-		survey.getSurveySections().forEach(surveySection -> {
-			SurveySection existingSurveySection = SurveySection.findById(surveySection.getId().getSsSurveyId(),
-					surveySection.getId().getSsSurveySection());
-			if (null != existingSurveySection) {
-				log.debug("Survey Section already exists, so skipping. surveyId = "
-						+ surveySection.getId().getSsSurveyId() + " with section : "
-						+ surveySection.getId().getSsSurveySection());
-			} else {
-				em.persist(surveySection);
-				log.debug("Survey Section persisted with id: " + surveySection.getId());
-			}
-		});
-	}
 }
