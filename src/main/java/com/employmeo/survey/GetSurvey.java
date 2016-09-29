@@ -24,7 +24,7 @@ import com.employmeo.objects.Response;
 @Path("getsurvey")
 public class GetSurvey {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger(GetSurvey.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

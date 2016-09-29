@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 @Path("changepass")
 public class ChangePassword {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(ChangePassword.class);
 	
 	@POST
 	@PermitAll

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 @Path("getpositions")
 public class GetPositionList {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(GetPositionList.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

@@ -21,7 +21,7 @@ import com.employmeo.objects.CorefactorDescription;
  *
  */
 public class CorefactorUtil {
-	private static final Logger log = LoggerFactory.getLogger(CorefactorUtil.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(CorefactorUtil.class);
 	
 	public static void persistCorefactors(String corefactorDefinitions) throws IllegalStateException {
 		EntityManager em = DBUtil.getEntityManager();

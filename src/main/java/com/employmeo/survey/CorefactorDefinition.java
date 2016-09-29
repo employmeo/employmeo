@@ -20,7 +20,7 @@ import com.employmeo.util.CorefactorUtil;
 @Path("corefactor")
 public class CorefactorDefinition {
 
-	private static final Logger log = LoggerFactory.getLogger(CorefactorDefinition.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(CorefactorDefinition.class);
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

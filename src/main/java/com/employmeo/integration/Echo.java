@@ -23,7 +23,7 @@ public class Echo {
 	@Context
 	private Response resp;
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(Echo.class);
 
 	@POST
 	@PermitAll

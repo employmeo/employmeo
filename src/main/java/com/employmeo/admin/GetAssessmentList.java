@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @PermitAll
 public class GetAssessmentList {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(GetAssessmentList.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

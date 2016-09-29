@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 @Path("forgotpassword")
 public class FortgotPassword {
 
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(FortgotPassword.class);
 	
 	@POST
 	@PermitAll

@@ -29,7 +29,7 @@ public class GetScore {
 			.entity("{ message: 'Missing Required Parameters' }").build();
 	private final Response ACCOUNT_MATCH = Response.status(Response.Status.CONFLICT)
 			.entity("{ message: 'Applicant ID not found for Account ID' }").build();
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(GetScore.class);
 	@Context
 	private SecurityContext sc;
 

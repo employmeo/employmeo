@@ -40,7 +40,7 @@ import com.employmeo.objects.Respondant;
 
 
 public class ICIMSPartnerUtil implements PartnerUtil {
-	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.integration");
+	private static final Logger log = LoggerFactory.getLogger(ICIMSPartnerUtil.class);
 	private static final String ICIMS_USER = "employmeoapiuser";
 	private static final String ICIMS_PASS = "YN9rEQnU";
 	private static final String ICIMS_API = "https://api.icims.com/customers/";
