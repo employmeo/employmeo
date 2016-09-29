@@ -1,6 +1,7 @@
 package com.employmeo.survey;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,12 +20,12 @@ import com.employmeo.util.CorefactorUtil;
 @Path("corefactor")
 public class CorefactorDefinition {
 
-	private static Logger logger = Logger.getLogger(CorefactorDefinition.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(CorefactorDefinition.class.getName());
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getCorefactors() {
-		logger.info("Fetching corefactor definitions");
+		log.debug("Fetching corefactor definitions");
 
 		JSONArray jsonCorefactors = CorefactorUtil.getJsonCorefactors();
 
@@ -37,19 +38,19 @@ public class CorefactorDefinition {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response upsertCoreFactors(String corefactorDefinitions) {
-		logger.info("Received request for corefactor definitions upsert");
+		log.debug("Received request for corefactor definitions upsert");
 		JSONObject resultEntity = new JSONObject();
 		ResponseBuilder responseBuilder = Response.status(Response.Status.BAD_REQUEST)
 				.entity(resultEntity.put("message", "Bad Request - Incorrect Corefactors Definition").toString());
 		
 		if(null != corefactorDefinitions && !corefactorDefinitions.isEmpty()) {
 			try {
-				logger.info("Proceeding with corefactor upserts");
+				log.debug("Proceeding with corefactor upserts");
 				CorefactorUtil.persistCorefactors(corefactorDefinitions);
 				responseBuilder = Response.status(Response.Status.OK)
 						.entity(resultEntity.put("message", "Corefactor definitions updated successfully").toString());;
 			} catch (Exception e) {
-				logger.info("Failed to persist corefactor definitions. " + e);
+				log.debug("Failed to persist corefactor definitions. " + e);
 				responseBuilder = Response.status(Response.Status.OK)
 						.entity(resultEntity.put("message", e.getMessage()).toString());
 			}			

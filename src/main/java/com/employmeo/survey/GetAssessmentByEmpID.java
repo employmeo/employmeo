@@ -3,7 +3,8 @@ package com.employmeo.survey;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
@@ -22,7 +23,7 @@ import com.employmeo.objects.Response;
 
 @Path("getbypayrollid")
 public class GetAssessmentByEmpID {
-	private static Logger logger = Logger.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -30,7 +31,7 @@ public class GetAssessmentByEmpID {
 			@FormParam("payroll_id") String payrollId,
 			@FormParam("account_id") Long accountId) {
 
-		logger.info("processing with: " + payrollId);
+		log.debug("processing with: " + payrollId);
 		
 		JSONObject json = new JSONObject();
 		Account account = Account.getAccountById(accountId);

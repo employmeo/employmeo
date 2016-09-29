@@ -5,7 +5,8 @@ import java.util.Iterator;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -39,7 +40,7 @@ import com.employmeo.objects.Respondant;
 
 
 public class ICIMSPartnerUtil implements PartnerUtil {
-	private static Logger logger = Logger.getLogger("com.employmeo.util.integration");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.util.integration");
 	private static final String ICIMS_USER = "employmeoapiuser";
 	private static final String ICIMS_PASS = "YN9rEQnU";
 	private static final String ICIMS_API = "https://api.icims.com/customers/";
@@ -79,7 +80,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		try {
 			account = q.getSingleResult();
 		} catch (NoResultException nre) {
-			logger.warning("Can't find account with atsId: " + json.getString("customerId"));
+			log.warn("Can't find account with atsId: " + json.getString("customerId"));
 			throw new WebApplicationException(
 					Response.status(Status.PRECONDITION_FAILED).entity(json.toString()).build());
 		}
@@ -112,7 +113,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 				location.setLocationName(locationName);
 				location.persistMe();
 			} catch (Exception e) {
-				logger.severe("Failed to lookup or create new location");
+				log.warn("Failed to lookup or create new location");
 			}
 		}
 
@@ -122,7 +123,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	@Override
 	public Position getPositionFrom(JSONObject job, Account account) {
 		// TODO - Get job title / type data, and figure out how to map it to Positions
-		logger.info("Using Account default position and Ignoring job object: " + job);
+		log.debug("Using Account default position and Ignoring job object: " + job);
 		Position pos = account.getDefaultPosition();
 		return pos;
 	}
@@ -131,7 +132,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	public AccountSurvey getSurveyFrom(JSONObject job, Account account) {
 
 		JSONArray assessmenttypes = job.getJSONArray("assessmenttype");
-		if (assessmenttypes.length() > 1) logger.warning("More than 1 Assessment in: " + assessmenttypes);
+		if (assessmenttypes.length() > 1) log.warn("More than 1 Assessment in: " + assessmenttypes);
 
 		String assessmentName = assessmenttypes.getJSONObject(0).getString("value");
 		job.put("assessment", assessmenttypes.getJSONObject(0));
@@ -143,7 +144,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		if (aSurvey == null) {
 			StringBuffer sb = new StringBuffer();
 			for (AccountSurvey as : assessments) sb.append(as.getSurveyName() + " ");
-			logger.warning("Could Not Match: " + assessmentName + " to any of" + sb.toString());
+			log.warn("Could Not Match: " + assessmentName + " to any of" + sb.toString());
 			aSurvey = account.getDefaultAccountSurvey();
 		}
 		
@@ -164,7 +165,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 		try {
 			respondant = q.getSingleResult();
 		} catch (NoResultException nre) {
-			logger.info("No Respondant Found for: " + workflowLink);
+			log.debug("No Respondant Found for: " + workflowLink);
 		}		
 		return respondant;
 	}
@@ -197,7 +198,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 				// Dont use this one.
 				break;
 			default:
-				logger.warning("Unexpected Link: " + link);
+				log.warn("Unexpected Link: " + link);
 				break;
 			}
 		}
@@ -277,8 +278,8 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	public void postScoresToPartner(Respondant respondant, JSONObject message) {
 		String method = respondant.getRespondantAtsId();
 		Response response = icimsPatch(method, message);
-		logger.info("Posted Scores to ICIMS: " + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
-		if (response.hasEntity()) logger.info("Response Message: " + response.readEntity(String.class));
+		log.debug("Posted Scores to ICIMS: " + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
+		if (response.hasEntity()) log.debug("Response Message: " + response.readEntity(String.class));
 	}	
 	
 	public Person getPerson(JSONObject applicant, Account account) {
@@ -311,7 +312,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 			person.setPersonLat(address.optDouble("lat"));
 			person.setPersonLong(address.optDouble("lng"));
 		} catch (Exception e) {
-			logger.severe("Failed to handle address:" + e.getMessage());
+			log.warn("Failed to handle address:" + e.getMessage());
 		}
 		person.persistMe();
 		return person;
@@ -331,7 +332,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 			cc.property(ClientProperties.PROXY_USERNAME, pUser);
 			cc.property(ClientProperties.PROXY_PASSWORD, pPass);
 		} catch (Exception e) {
-			logger.severe("Failed to set proxy uname pass: " + PROXY_URL);
+			log.warn("Failed to set proxy uname pass: " + PROXY_URL);
 		}
 		cc.property(ClientProperties.REQUEST_ENTITY_PROCESSING, "BUFFERED");
 		cc.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);

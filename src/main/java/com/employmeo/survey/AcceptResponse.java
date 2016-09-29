@@ -1,6 +1,7 @@
 package com.employmeo.survey;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -17,7 +18,7 @@ import com.employmeo.objects.Response;
 @Path("response")
 public class AcceptResponse {
 	
-	private static Logger logger = Logger.getLogger("com.employmeo.survey");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.survey");
 	
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -40,7 +41,7 @@ public class AcceptResponse {
 
 	private String saveResponse(Long responseId, Long respondantId, Long questionId, int responseVal,
 			String responseText) {
-		logger.finest("Processing Respondant: " + respondantId + " Question: " + questionId);
+		log.trace("Processing Respondant: " + respondantId + " Question: " + questionId);
 		
 		Response response = new Response();
 		response.setResponseRespondantId(respondantId);

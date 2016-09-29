@@ -2,7 +2,8 @@ package com.employmeo.admin;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class Login {
 
 	private final Response LOGIN_FAILED = Response.status(Response.Status.UNAUTHORIZED)
 			.entity("{ message: 'Login failed' }").build();
-	private Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
 
 	@POST
 	@PermitAll
@@ -50,7 +51,7 @@ public class Login {
 					encodedEmail = URLEncoder.encode(user.getUserEmail(), "UTF-8");
 					encodedHash = URLEncoder.encode(hashword, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
-					logger.severe("UTF-8 unsupported");
+					log.warn("UTF-8 unsupported");
 				}
 				Cookie uCookie = new Cookie("email", encodedEmail, "/", reqt.getServerName());
 				Cookie pCookie = new Cookie("hashword", encodedHash, "/", reqt.getServerName());
@@ -65,7 +66,7 @@ public class Login {
 
 			Cookie nCookie = new Cookie("user_fname", user.getUserFname(), "/", reqt.getServerName());
 			rb.cookie(new NewCookie(nCookie, "user_fname", 60 * 60 * 24 * 90, false));
-logger.info("Put Cookies under: " + reqt.getServerName());
+log.debug("Put Cookies under: " + reqt.getServerName());
 			return rb.build();
 		}
 

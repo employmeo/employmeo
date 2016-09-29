@@ -2,7 +2,8 @@ package com.employmeo.admin;
 
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -18,7 +19,7 @@ import com.employmeo.objects.User;
 @Path("updateaccount")
 public class UpdateAccount {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.admin");
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

@@ -1,6 +1,7 @@
 package com.employmeo.integration;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
 
@@ -28,7 +29,7 @@ public class GetScore {
 			.entity("{ message: 'Missing Required Parameters' }").build();
 	private final Response ACCOUNT_MATCH = Response.status(Response.Status.CONFLICT)
 			.entity("{ message: 'Applicant ID not found for Account ID' }").build();
-	private static Logger logger = Logger.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger("com.employmeo.integration");
 	@Context
 	private SecurityContext sc;
 
@@ -39,19 +40,19 @@ public class GetScore {
 		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
 		Account account = null;
 		Respondant respondant = null;
-		logger.info("processing with: " + json.toString());
+		log.debug("processing with: " + json.toString());
 		try { // the required parameters
 			account = pu.getAccountFrom(json.getJSONObject("account"));
 			respondant = pu.getRespondantFrom(json.getJSONObject("applicant"));
 			if ((account == null) || (respondant == null)) throw new Exception ("Not Found: " + json);
 			
 		} catch (Exception e) {
-			logger.warning(e.getMessage());
+			log.warn(e.getMessage());
 			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
 		}
 
 		if (account.getAccountId() != respondant.getRespondantAccountId()) {
-			logger.warning("Account does not match Applicant");
+			log.warn("Account does not match Applicant");
 			throw new WebApplicationException(ACCOUNT_MATCH);
 		}
 
