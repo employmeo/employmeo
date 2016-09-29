@@ -311,6 +311,22 @@ public class Account extends PersistantObject implements Serializable {
 		return em.find(Account.class, lookupId);
 	}
 
+	public Respondant getRespondantByPayrollId(String payrollId) {
+		EntityManager em = DBUtil.getEntityManager();
+		TypedQuery<Respondant> q = em.createQuery("SELECT r FROM Respondant r " + 
+				"WHERE r.respondantPayrollId = :payrollId AND r.respondantAccountId = :accountId",
+				Respondant.class);
+		q.setParameter("payrollId", payrollId);
+		q.setParameter("accountId", this.accountId);
+		Respondant respondant = null;
+		try {
+			respondant = q.getSingleResult();
+		} catch (Exception e) {
+			// Return null.
+		}
+		return respondant;
+	}
+
 	@Override
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
@@ -329,4 +345,5 @@ public class Account extends PersistantObject implements Serializable {
 		
 		return json;
 	}
+
 }

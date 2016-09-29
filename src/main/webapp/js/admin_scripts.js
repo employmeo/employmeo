@@ -176,6 +176,25 @@ function updateSurveysSelect(detail) {
 	});
 }
 
+function listSurveysSelect(detail) {
+	$.ajax({
+		type: "GET",
+		async: true,
+		url: "/survey/list",
+		success: function(data)
+		{
+			surveyList = data;
+			$.each(data, function (index, value) {
+				$('#survey_id').append($('<option />', { 
+					value: this.survey_id,
+					text : this.survey_name
+				}));
+			});
+			if (detail) changeSurveyTo($('#survey_id').val());
+		}
+	});
+}
+
 function initializeDatePicker(callback) {
 
 	var cb = function(start, end, label) {
@@ -260,6 +279,150 @@ function inviteApplicant() {
 function resetInvitation() {
 	$('#invitationsent').addClass('hidden');
 	$('#invitationform').removeClass('hidden');	
+}
+
+function exportSurvey() {
+	$.ajax({
+		type: "GET",
+		async: true,
+		url: "/survey/definition",
+		data: $('#exportsurvey').serialize(),
+		beforeSend: function(data) {
+			$("#exportsurvey :input").prop('readonly', true);
+			$("#spinner").removeClass('hidden');
+		},
+		success: function(data)
+		{
+			$('#exportsurvey').trigger('reset');
+			$('#exportsurveyform').addClass('hidden');
+			$('#surveyexported').removeClass('hidden');
+			
+			$('#surveydefinition').text(JSON.stringify(data));		
+		},
+		complete: function(data) {
+			$("#exportsurvey :input").prop('readonly', false);
+			$("#spinner").addClass('hidden');
+		}
+	});
+	return false; // so as not to trigger actual action.
+}
+
+function resetExport() {
+	$('#surveyexported').addClass('hidden');
+	$('#exportsurveyform').removeClass('hidden');
+	$('#surveydefinition').text('');
+}
+
+function resetPersistence() {
+	$('#surveypersisted').addClass('hidden');
+	$('#persistsurveyform').removeClass('hidden');
+	$('#persistenceresults').text('');
+}
+
+function persistSurvey() {
+	$.ajax({
+		type: "POST",
+		async: true,
+		headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+	    dataType: 'json',		
+		url: "/survey/definition",
+		data: $('#inputsurveydefinition').val(),
+		beforeSend: function(data) {
+			$("#persistsurvey :input").prop('readonly', true);
+			$("#spinner").removeClass('hidden');
+		},
+		success: function(data)
+		{
+			$('#persistsurvey').trigger('reset');
+			$('#persistsurveyform').addClass('hidden');
+			$('#surveypersisted').removeClass('hidden');
+			console.log(data);
+			if(data.message != null) {
+				$('#persistenceresults').text(data.message);
+			}
+		},	
+		complete: function(data) {
+			$("#persistsurvey :input").prop('readonly', false);
+			$("#spinner").addClass('hidden');
+		}
+	});
+	return false; // so as not to trigger actual action.
+}
+
+// Corefactor migrations
+
+function exportCorefactors() {
+	$.ajax({
+		type: "GET",
+		async: true,
+		url: "/survey/corefactor",
+		//data: $('#exportsurvey').serialize(),
+		beforeSend: function(data) {
+			$("#exportcf :input").prop('readonly', true);
+			$("#spinner").removeClass('hidden');
+		},
+		success: function(data)
+		{
+			//$('#exportcf').trigger('reset');
+			$('#exportcfform').addClass('hidden');
+			$('#cfexported').removeClass('hidden');
+			
+			$('#cfdefinition').text(JSON.stringify(data));		
+		},
+		complete: function(data) {
+			$("#exportcf :input").prop('readonly', false);
+			$("#spinner").addClass('hidden');
+		}
+	});
+	return false; // so as not to trigger actual action.
+}
+
+function resetCfExport() {
+	$('#cfexported').addClass('hidden');
+	$('#exportcfform').removeClass('hidden');
+	$('#cfdefinition').text('');
+}
+
+function resetCfPersistence() {
+	$('#cfpersisted').addClass('hidden');
+	$('#persistcfform').removeClass('hidden');
+	$('#cfpersistenceresults').text('');
+}
+
+function persistCorefactors() {
+	$.ajax({
+		type: "POST",
+		async: true,
+		headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+	    dataType: 'json',		
+		url: "/survey/corefactor",
+		data: $('#inputcfdefinition').val(),
+		beforeSend: function(data) {
+			$("#persistcf :input").prop('readonly', true);
+			$("#spinner").removeClass('hidden');
+		},
+		success: function(data)
+		{
+			$('#persistcf').trigger('reset');
+			$('#persistcfform').addClass('hidden');
+			$('#cfpersisted').removeClass('hidden');
+			console.log(data);
+			if(data.message != null) {
+				$('#cfpersistenceresults').text(data.message);
+			}
+		},	
+		complete: function(data) {
+			$("#persistcf :input").prop('readonly', false);
+			$("#spinner").addClass('hidden');
+		}
+	});
+	return false; // so as not to trigger actual action.
 }
 
 //Section for search respondants / build respondants table
@@ -635,6 +798,14 @@ function getScoreUuid(respondantUuid) {
 			presentRespondantScores(data);
 		}
 	});    
+}
+
+function copyToClipboard(element) {
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val($(element).text()).select();
+    document.execCommand("copy");
+    $temp.remove();
 }
 
 function presentRespondantScores(dataScores) {

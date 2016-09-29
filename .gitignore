@@ -31,6 +31,9 @@ $RECYCLE.BIN/
 # Thumbnails
 ._*
 
+# DB backups
+*.backup
+
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
@@ -39,6 +42,7 @@ $RECYCLE.BIN/
 .Trashes
 .VolumeIcon.icns
 .classpath
+.gitignore
 .project
 .tomcatplugin
 startserver.bat
@@ -53,3 +57,6 @@ Temporary Items
 src/main/java/com/employmeo/testing/
 target/
 /bin/
+*.bat
+*.log
+*.jar

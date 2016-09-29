@@ -72,6 +72,29 @@ function buildPlainSurveyWithRespondantId(uuId) {
       });
 }
 
+function getSurveyByPayrollId(form) {
+    $.ajax({
+        type: "POST",
+        async: true,
+        url: "/survey/getbypayrollid",
+        data: $(form).serialize(),
+        beforeSend: function() {
+        	$('#wait').removeClass('hidden');
+        },
+        success: function(data)
+        {
+        	if (data.message != null) {
+        		showIdNotFound(data);
+        	} else {
+                assemblePlainSurvey(data);        		
+        	}
+        },
+        complete: function() {
+        	$('#wait').addClass('hidden');
+        }
+      });	
+}
+
 function getPlainSurveyForNewRespondant(form) {
     $.ajax({
         type: "POST",
@@ -178,6 +201,32 @@ function showAssessmentNotAvailable(data) {
 		card.append($('<div />', {
 			'class' : 'col-xs-12 col-sm-12 col-md-12',
 			}).append($('<h3 />', { 'class' : 'text-center', 'text' : data.message})));
+		card.append(getHrDiv());
+		card.appendTo(deck);
+}
+
+//Error Handling Functions
+function showIdNotFound(data) {
+	  // code to create a form to fill out for a new survey respondant	
+		var deck = document.getElementById('wrapper');
+		$(deck).empty();
+		totalpages = 1;
+		var card = $('<div />', {
+			'class' : 'item active'
+		});		
+		card.append(getHrDiv());
+		card.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12',
+			}).append($('<h3 />', { 'class' : 'text-center', 'text' : data.message})));
+
+		card.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+		}).append($('<button />',{
+					'type' : 'button',
+					'class' : 'btn btn-primary',
+					'onClick' : 'buildLookupSurvey(urlParams.account_id);',
+					'text' : 'Try Again'
+				})));								
 		card.append(getHrDiv());
 		card.appendTo(deck);
 }
@@ -322,8 +371,64 @@ function createPlainNewRespondant(surveyId, accountId) {
 	$('#address').geocomplete({details:'form'});
 }
 
+// 
+function buildLookupSurvey(accountId) {
+	  // code to create a form to fill out for a new survey respondant	
+		var deck = document.getElementById('wrapper');
+		$(deck).empty();
+		var infopage = $('<div />', {});
+		infopage.append(getHrDiv());
+		infopage.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+			}).html("<h3>Enter Employee ID</h3>"));
+		infopage.append(getHrDiv());
+
+		var form = $('<form />',{
+			'class' : 'form'
+		});
+		form.append($('<input />', {
+			'type' : 'hidden',
+			'name' : 'account_id',
+			'value' : accountId
+		}));
+		form.append($('<label />', {
+			'for' : 'fname',
+			'text' : 'Employee ID:'
+		}));
+		
+		var row = $('<div />', {
+			'class' : 'input-group has-feedback'
+		});
+		row.append($('<span />', {
+			'class' : 'input-group-addon'}).html("<i class='fa fa-user fa-fw'></i>"));
+		row.append($('<input />', {
+			'class' : 'form-control',
+			'type' : 'text',
+			'name' : 'payroll_id',
+			'placeholder' : 'ID#',
+			'required' : true			
+		}));
+		form.append(row);
+		form.append(getHrDiv());
+		form.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12 text-center',
+			}).append($('<button />', {
+			'type' : 'button',
+			'class' : 'btn btn-primary',
+			'onClick' : 'getSurveyByPayrollId(this.form);',
+			'text' : 'Submit'
+		})));
+
+		infopage.append($('<div />', {
+			'class' : 'col-xs-12 col-sm-12 col-md-12',
+			}).append(form));
+		infopage.append(getHrDiv());
+		infopage.appendTo(deck);
+}
+
+
 //
-// Survey page buidling functions
+// Survey page building functions
 //
 
 function assemblePlainSurvey(data) {
@@ -591,33 +696,38 @@ function getPlainResponseForm(question, respondant, qcount, pagecount) {
 	case 3: // Schedule (not used)
 	case 4: // Likert (Stars)
 		break;
-	case 5: // Likert (Smileys)
-		var ansdiv = $('<div />', {
-			'class' : 'stars text-center',
-			'style' : 'font-size: 18px;',
-			'text' : 'Strongly Agree - Neutral - Strongly Disagree'
+	case 5: // Likert (Boxes)
+		var ansdiv  = $('<div />', {
+			'class' : 'likertboxes'
 		});
-		var stars = $('<div />', {
-			'class' : 'stars'
-		});
-
+		var list = $('<ul />');
+		var labels = $('<ul />');
 		for (var ans=0;ans<question.answers.length;ans++) {
 			var answer = question.answers[ans];
 			var i = ans +1;
-			stars.append($('<input/>',{
-				'class' : 'star star-' + i,
-				'id' : 'star-' + i + '-' + question.question_id,
+			var scale = $('<li />');
+			scale.append($('<input/>',{
+				'class' : 'likertbox likertbox-' + i,
+				'id' : 'likertbox-' + i + '-' + question.question_id,
 				'type': 'radio',
 				'name': "response_value",
 				'onChange' : 'submitPlainAnswer(this.form,'+pagecount+')',
 				'value': answer.answer_value
 			}));
-			stars.append($('<label/>',{
-				'class' : 'star star-' + i,
-				'for' : 'star-' + i + '-' + question.question_id				
+			scale.append($('<label/>',{
+				'class' : 'likertbox likertbox-' + i,
+				'for' : 'likertbox-' + i + '-' + question.question_id				
 			}));
+			list.append(scale);
 		}
-		ansdiv.append(stars);
+		labels.append($('<li />', { text : 'Strongly Disagree' }));
+		labels.append($('<li />', { text : 'Disagree' }));
+		labels.append($('<li />', { text : 'Neutral' }));
+		labels.append($('<li />', { text : 'Agree' }));
+		labels.append($('<li />', { text : 'Strongly Agree' }));
+
+		ansdiv.append(list);
+		ansdiv.append(labels);
 		form.append(ansdiv);
 		break;
 	case 14: // Rank

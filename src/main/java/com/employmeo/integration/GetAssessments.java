@@ -19,14 +19,15 @@ import com.employmeo.objects.Partner;
 import com.employmeo.util.PartnerUtil;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("getassessments")
 public class GetAssessments {
 
 	private final Response MISSING_REQUIRED_PARAMS = Response.status(Response.Status.BAD_REQUEST)
 			.entity("{ message: 'Missing Required Parameters' }").build();
-	private static Logger logger = Logger.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(GetAssessments.class);
 	@Context
 	private SecurityContext sc;
 	
@@ -34,7 +35,7 @@ public class GetAssessments {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost(JSONObject json) {
-		logger.info("processing with: " + json.toString());
+		log.debug("processing with: " + json.toString());
 		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
 		Account account = null;
 

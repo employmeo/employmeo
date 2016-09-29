@@ -1,7 +1,8 @@
 package com.employmeo.integration;
 
 import java.sql.Date;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
 
@@ -31,7 +32,7 @@ public class HireNotice {
 			.entity("{ message: 'Unknown Applicant Status' }").build();
 	private final static Response ACCOUNT_MATCH = Response.status(Response.Status.CONFLICT)
 			.entity("{ message: 'Applicant ID not found for Account ID' }").build();
-	private static Logger logger = Logger.getLogger("com.employmeo.integration");
+	private static final Logger log = LoggerFactory.getLogger(HireNotice.class);
 	@Context
 	private SecurityContext sc;
 
@@ -39,7 +40,7 @@ public class HireNotice {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String doPost(JSONObject json) {
-		logger.info("processing with:" + json.toString());
+		log.debug("processing with:" + json.toString());
 		PartnerUtil pu = ((Partner) sc.getUserPrincipal()).getPartnerUtil();
 		Account account = null;
 		Respondant respondant = null;
@@ -56,12 +57,12 @@ public class HireNotice {
 				throw new Exception("Can't find applicant or account.");
 			}
 		} catch (Exception e) {
-			logger.warning("Missing Parameters: " + e.getMessage());
+			log.warn("Missing Parameters: " + e.getMessage());
 			throw new WebApplicationException(e, MISSING_REQUIRED_PARAMS);
 		}
 
 		if (account.getAccountId() != respondant.getRespondantAccountId()) {
-			logger.warning("Account does not match applicant");
+			log.warn("Account does not match applicant");
 			throw new WebApplicationException(ACCOUNT_MATCH);
 		}
 

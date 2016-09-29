@@ -3,7 +3,6 @@ package com.employmeo.survey;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,26 +16,26 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
 
+import com.employmeo.objects.Account;
 import com.employmeo.objects.AccountSurvey;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.Response;
 
-@Path("getsurvey")
-public class GetSurvey {
-
-	private static final Logger log = LoggerFactory.getLogger(GetSurvey.class);
+@Path("getbypayrollid")
+public class GetAssessmentByEmpID {
+	private static final Logger log = LoggerFactory.getLogger(GetAssessmentByEmpID.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public String doPost(
-			// @FormParam("start_time") TimeStamp startTime,
-			@Context final HttpServletRequest reqt,
-			@FormParam("respondant_uuid") UUID respondantUuid) {
+	public String doPost(@Context final HttpServletRequest reqt,
+			@FormParam("payroll_id") String payrollId,
+			@FormParam("account_id") Long accountId) {
 
-		log.debug("processing with: " + respondantUuid);
+		log.debug("processing with: " + payrollId);
 		
 		JSONObject json = new JSONObject();
-		Respondant respondant = Respondant.getRespondantByUuid(respondantUuid);
+		Account account = Account.getAccountById(accountId);
+		Respondant respondant = account.getRespondantByPayrollId(payrollId);
 
 		if (respondant != null) {
 			respondant.refreshMe(); // make sure to get latest and greatest from
@@ -58,7 +57,7 @@ public class GetSurvey {
 				json.accumulate("responses", responses.get(i).getJSON());
 		} else {
 			// TODO put in better error handling here.
-			json.put("message", "Unable to associate this link with an assessment.");
+			json.put("message", "Unable to associate this ID with an assessment.");
 		}
 
 		return json.toString();

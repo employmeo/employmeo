@@ -1,32 +1,26 @@
 package com.employmeo.admin;
 
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.security.PermitAll;
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.employmeo.objects.CorefactorDescription;
 import com.employmeo.objects.Position;
 import com.employmeo.objects.User;
-import com.employmeo.util.DBUtil;
-
-import java.util.List;
-import java.util.logging.Logger;
 
 @Path("test")
 @PermitAll
 public class TestService {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.admin");
+	private static final Logger log = LoggerFactory.getLogger(TestService.class);
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

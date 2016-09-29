@@ -3,11 +3,14 @@ package com.employmeo.objects;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import lombok.ToString;
+
 /**
  * The primary key class for the respondant_scores database table.
  * 
  */
 @Embeddable
+@ToString
 public class RespondantScorePK implements Serializable {
 	// default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;

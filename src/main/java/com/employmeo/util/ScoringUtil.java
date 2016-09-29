@@ -1,7 +1,8 @@
 package com.employmeo.util;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -19,11 +20,10 @@ import com.employmeo.objects.Question;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.RespondantScore;
 import com.employmeo.objects.Response;
-import com.employmeo.objects.Survey;
 
 public class ScoringUtil {
 
-	private static Logger logger = Logger.getLogger("com.employmeo.util.ScoringUtil");
+	private static final Logger log = LoggerFactory.getLogger(ScoringUtil.class);
 	private static String MERCER_PREFIX = "Mercer";
 	private static String MERCER_SERVICE = System.getenv("MERCER_SERVICE");
 	private static String MERCER_USER = "employmeo";
@@ -32,7 +32,7 @@ public class ScoringUtil {
 
 	
 	public static void scoreAssessment(Respondant respondant) {
-
+		log.debug("Scoring assessment for respondant {}", respondant);
 		List<Response> responses = respondant.getResponses();
 		if ((responses == null) || (responses.size() == 0))	return; // return nothing
 
@@ -73,7 +73,7 @@ public class ScoringUtil {
 	
 	
 	private static void mercerScore(Respondant respondant) {
-		logger.info("Requesting Mercer Score for respondant_id: " + respondant.getRespondantId());
+		log.debug("Requesting Mercer Score for respondant_id: " + respondant.getRespondantId());
 		List<Response> responses = respondant.getResponses();
 		Client client = ClientBuilder.newClient();
 		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(MERCER_USER, MERCER_PASS);
@@ -122,11 +122,11 @@ public class ScoringUtil {
 				output = resp.readEntity(String.class);
 				result = new JSONArray(output);
 			} catch (Exception e) {
-				logger.severe("Failed to get results from mercer: " + e.getMessage());
-				logger.info("Failed to get results from mercer: " + message.toString());
+				log.warn("Failed to get results from mercer: " + e.getMessage());
+				log.debug("Failed to get results from mercer: " + message.toString());
 				if (resp != null) {
-					logger.info("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
-					logger.info("Failed to get results from mercer: " + output);
+					log.debug("Response status: " + resp.getStatus() + " " + resp.getStatusInfo().getReasonPhrase());
+					log.debug("Failed to get results from mercer: " + output);
 				}
 				return;
 			}
@@ -136,14 +136,16 @@ public class ScoringUtil {
 				int score = data.getInt("score");
 				RespondantScore rs = new RespondantScore();
 				try {
-						Corefactor cf = Corefactor.getCorefactorByForeignId(MERCER_PREFIX + data.getString("id"));
+						String foreignId = MERCER_PREFIX + data.getString("id");
+						log.debug("Finding corefactor by foreign id '{}'", foreignId);
+						Corefactor cf = Corefactor.getCorefactorByForeignId(foreignId);
 						rs.setPK(cf.getCorefactorId(), respondant.getRespondantId());
 						rs.setRsQuestionCount(responses.size());
 						rs.setRsValue((double) score);
 						rs.mergeMe();
 						respondant.addRespondantScore(rs);
 				} catch (Exception e) {
-						logger.severe("Failed to record score: " + data + " for repondant " + respondant.getJSONString());
+						log.warn("Failed to record score: " + data + " for repondant " + respondant.getJSONString(), e);
 				}
 			}
 		}
