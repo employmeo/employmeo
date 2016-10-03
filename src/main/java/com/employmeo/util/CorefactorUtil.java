@@ -46,10 +46,10 @@ public class CorefactorUtil {
 		corefactors.forEach(corefactor -> {
 			corefactor.getCorefactorDescriptions().forEach(description -> {
 				em.merge(description);
-				log.debug("Merged corefactor description with id: " + description.getCfdescId());
+				log.trace("Merged corefactor description with id: " + description.getCfdescId());
 			});
 			em.merge(corefactor);
-			log.debug("Merged corefactor with id: " + corefactor.getCorefactorId());
+			log.trace("Merged corefactor with id: " + corefactor.getCorefactorId());
 		});
 		log.debug("Corefactors persisted successfully");		
 	}
@@ -59,6 +59,7 @@ public class CorefactorUtil {
 		List<Corefactor> corefactors = Corefactor.getAllCorefactors();
 		corefactors.forEach(corefactor -> {
 			JSONObject jsonCorefactor = corefactor.getJSON();
+			
 			List<CorefactorDescription> descriptions = corefactor.getCorefactorDescriptions();
 			JSONArray jsonCorefactorDescriptions = new JSONArray();
 			descriptions.forEach(description -> {
@@ -67,6 +68,7 @@ public class CorefactorUtil {
 			});
 			jsonCorefactor.put("descriptions", jsonCorefactorDescriptions);
 			jsonCorefactors.put(jsonCorefactor);
+			log.trace("Corefactor: {}", jsonCorefactor);
 		});
 		return jsonCorefactors;
 	}

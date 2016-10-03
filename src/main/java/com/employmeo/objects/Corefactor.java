@@ -9,6 +9,8 @@ import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
 
+import lombok.Data;
+
 /**
  * The persistent class for the corefactors database table.
  * 
@@ -16,6 +18,7 @@ import com.employmeo.util.DBUtil;
 @Entity
 @Table(name = "corefactors")
 @NamedQuery(name = "Corefactor.findAll", query = "SELECT c FROM Corefactor c")
+@Data
 public class Corefactor extends PersistantObject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -64,123 +67,16 @@ public class Corefactor extends PersistantObject implements Serializable {
 	
 	// bi-directional many-to-one association to Account
 	@OneToMany(mappedBy = "corefactor", fetch = FetchType.EAGER)
-	private List<CorefactorDescription> cfDescriptions;
-
-	public Corefactor() {
-	}
-	
-	public Integer getCorefactorId() {
-		return this.corefactorId;
-	}
-
-	public void setCorefactorId(Integer corefactorId) {
-		this.corefactorId = corefactorId;
-	}
-
-	public double getCfHigh() {
-		return this.cfHigh;
-	}
-
-	public void setCfHigh(double cfHigh) {
-		this.cfHigh = cfHigh;
-	}
-
-	public String getCfDisplayGroup() {
-		return this.cfDisplayGroup;
-	}
-
-	public void setCfDisplayGroup (String cfDisplayGroup) {
-		this.cfDisplayGroup = cfDisplayGroup;
-	}
-	
-	public String getCfHighDescription() {
-		return this.cfHighDescription;
-	}
-
-	public void setCfHighDescription(String cfHighDescription) {
-		this.cfHighDescription = cfHighDescription;
-	}
-
-	public double getCfLow() {
-		return this.cfLow;
-	}
-
-	public void setCfLow(double cfLow) {
-		this.cfLow = cfLow;
-	}
-
-	public String getCfLowDescription() {
-		return this.cfLowDescription;
-	}
-
-	public void setCfLowDescription(String cfLowDescription) {
-		this.cfLowDescription = cfLowDescription;
-	}
+	private List<CorefactorDescription> corefactorDescriptions;
 
 	public String getDescriptionForScore (double score) {
-		for (CorefactorDescription cfd : cfDescriptions) {
+		for (CorefactorDescription cfd : corefactorDescriptions) {
 			if ((score >= cfd.getCfLowEnd()) && (score <= cfd.getCfHighEnd()))
 				return cfd.getCfDescription();
 		}
 		return null;
 	}
 	
-	public double getCfMeanScore() {
-		return this.cfMeanScore;
-	}
-
-	public void setCfMeanScore(double cfMeanScore) {
-		this.cfMeanScore = cfMeanScore;
-	}
-
-	public Long getCfMeasurements() {
-		return this.cfMeasurements;
-	}
-
-	public void setCfMeasurements(Long cfMeasurements) {
-		this.cfMeasurements = cfMeasurements;
-	}
-
-	public double getCfScoreDeviation() {
-		return this.cfScoreDeviation;
-	}
-
-	public void setCfScoreDeviation(double cfScoreDeviation) {
-		this.cfScoreDeviation = cfScoreDeviation;
-	}
-
-	public String getCfSource() {
-		return this.cfSource;
-	}
-
-	public void setCfSource(String cfSource) {
-		this.cfSource = cfSource;
-	}
-
-	public String getCorefactorDescription() {
-		return this.corefactorDescription;
-	}
-
-	public void setCorefactorDescription(String corefactorDescription) {
-		this.corefactorDescription = corefactorDescription;
-	}
-
-	public String getCorefactorName() {
-		return this.corefactorName;
-	}
-
-	public void setCorefactorName(String corefactorName) {
-		this.corefactorName = corefactorName;
-	}
-	
-	public List<CorefactorDescription> getCorefactorDescriptions() {
-		return cfDescriptions;
-	}
-
-	public void setCorefactorDescriptions(List<CorefactorDescription> cfDescriptions) {
-		this.cfDescriptions = cfDescriptions;
-	}
-
 	@Override
 	public JSONObject getJSON() {
 		JSONObject json = new JSONObject();
@@ -196,6 +92,7 @@ public class Corefactor extends PersistantObject implements Serializable {
 		json.put("corefactor_score_deviation", this.cfScoreDeviation);
 		json.put("corefactor_measurements", this.cfMeasurements);
 		json.put("corefactor_source", this.cfSource);
+		json.put("corefactor_foreign_id", this.corefactorForeignId);
 		return json;
 	}
 
@@ -214,6 +111,7 @@ public class Corefactor extends PersistantObject implements Serializable {
 		corefactor.setCfScoreDeviation(json.optDouble("corefactor_score_deviation"));
 		corefactor.setCfMeasurements(json.optLong("corefactor_measurements"));
 		corefactor.setCfSource(json.optString("corefactor_source",null));
+		corefactor.setCorefactorForeignId(json.optString("corefactor_foreign_id",null));
 		
 		return corefactor;
 	}

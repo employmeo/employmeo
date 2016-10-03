@@ -5,6 +5,8 @@ import javax.persistence.*;
 
 import org.json.JSONObject;
 
+import lombok.Data;
+
 
 /**
  * The persistent class for the corefactor_descriptions database table.
@@ -13,6 +15,7 @@ import org.json.JSONObject;
 @Entity
 @Table(name="corefactor_descriptions")
 @NamedQuery(name="CorefactorDescription.findAll", query="SELECT c FROM CorefactorDescription c")
+@Data
 public class CorefactorDescription extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -39,48 +42,7 @@ public class CorefactorDescription extends PersistantObject implements Serializa
 	@Column(name="cf_low_end")
 	private double cfLowEnd;
 
-	public CorefactorDescription() {
-	}
 
-	public Long getCfdescId() {
-		return this.cfdescId;
-	}
-
-	public void setCfdescId(Long cfdescId) {
-		this.cfdescId = cfdescId;
-	}
-
-	public String getCfDescription() {
-		return this.cfDescription;
-	}
-
-	public void setCfDescription(String cfDescription) {
-		this.cfDescription = cfDescription;
-	}
-
-	public double getCfHighEnd() {
-		return this.cfHighEnd;
-	}
-
-	public void setCfHighEnd(double cfHighEnd) {
-		this.cfHighEnd = cfHighEnd;
-	}
-
-	public Long getCfId() {
-		return this.cfId;
-	}
-
-	public void setCfId(Long cfId) {
-		this.cfId = cfId;
-	}
-
-	public double getCfLowEnd() {
-		return this.cfLowEnd;
-	}
-
-	public void setCfLowEnd(double cfLowEnd) {
-		this.cfLowEnd = cfLowEnd;
-	}
 
 	@Override
 	public JSONObject getJSON() {
