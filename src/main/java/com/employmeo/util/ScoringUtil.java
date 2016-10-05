@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.employmeo.objects.Corefactor;
-import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Question;
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.RespondantScore;
@@ -150,51 +149,6 @@ public class ScoringUtil {
 			}
 		}
 		
-		return;
-	}
-
-	
-	public static void predictRespondant(Respondant respondant) {
-		if (respondant.getRespondantStatus() <= Respondant.STATUS_SCORED) respondant.refreshMe();
-		if (respondant.getRespondantStatus() == Respondant.STATUS_SCORED) {
-
-			// TODO - replace random logic with real scoring algorithm
-			// Position position = respondant.getPosition();
-			// Location location = respondant.getLocation();
-
-			double d = Math.random();
-			double c = Math.random() * 2;
-			double b = Math.random() * 1.5;
-			double a = Math.random() / 1.5;
-			double highest = 0;
-
-			respondant.setProfileD(d / (a + b + c + d));
-			highest = d;
-			respondant.setRespondantProfile(PositionProfile.PROFILE_D);
-
-			respondant.setProfileC(c / (a + b + c + d));
-			if (c > highest) {
-				highest = c;
-				respondant.setRespondantProfile(PositionProfile.PROFILE_C);
-			}
-
-			respondant.setProfileB(b / (a + b + c + d));
-			if (b > highest) {
-				highest = b;
-				respondant.setRespondantProfile(PositionProfile.PROFILE_B);
-			}
-
-			respondant.setProfileA(a / (a + b + c + d));
-			if (a > highest) {
-				highest = a;
-				respondant.setRespondantProfile(PositionProfile.PROFILE_A);
-			}
-
-			respondant.setCompositeScore(9.677*(a + b + c + d) + 50.0);
-			respondant.setRespondantStatus(Respondant.STATUS_PREDICTED);
-			respondant.mergeMe();
-		}
-
 		return;
 	}
 

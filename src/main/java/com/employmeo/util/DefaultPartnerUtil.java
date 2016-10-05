@@ -252,7 +252,7 @@ public class DefaultPartnerUtil implements PartnerUtil {
 	public JSONObject getScoresMessage(Respondant respondant) {
 
 		JSONObject scores = respondant.getAssessmentScore();
-		ScoringUtil.predictRespondant(respondant);
+		PredictionUtil.predictRespondant(respondant);
 
 		Account account = respondant.getRespondantAccount();
 		JSONObject jAccount = new JSONObject();

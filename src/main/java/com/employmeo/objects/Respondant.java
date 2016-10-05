@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.employmeo.util.DBUtil;
+import com.employmeo.util.PredictionUtil;
 import com.employmeo.util.ScoringUtil;
 import com.employmeo.util.SurveyUtil;
 
@@ -583,7 +584,7 @@ public class Respondant extends PersistantObject implements Serializable {
 		}
 
 		if (this.getRespondantStatus() == Respondant.STATUS_SCORED)
-			ScoringUtil.predictRespondant(this);
+			PredictionUtil.predictRespondant(this);
 
 		if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
 			for (int i = 0; i < getRespondantScores().size(); i++) {
@@ -608,7 +609,7 @@ public class Respondant extends PersistantObject implements Serializable {
 		}
 
 		if (this.getRespondantStatus() == Respondant.STATUS_SCORED)
-			ScoringUtil.predictRespondant(this);
+			PredictionUtil.predictRespondant(this);
 
 		if (this.getRespondantStatus() >= Respondant.STATUS_SCORED) {
 			for (int i = 0; i < getRespondantScores().size(); i++) {
