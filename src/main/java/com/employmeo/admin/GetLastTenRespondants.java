@@ -15,6 +15,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.employmeo.objects.Respondant;
 import com.employmeo.objects.User;
@@ -24,12 +26,15 @@ import java.util.List;
 
 @Path("getlastten")
 public class GetLastTenRespondants {
+	private static final Logger log = LoggerFactory.getLogger(GetLastTenRespondants.class);
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
 			@DefaultValue("-1") @FormParam("location_id") Long locationId,
 			@DefaultValue("-1") @FormParam("position_id") Long positionId) {
+		log.debug("Fetching last 10 respondants");
+		
 		JSONArray response = new JSONArray();
 
 		HttpSession sess = reqt.getSession();
@@ -62,8 +67,10 @@ public class GetLastTenRespondants {
 
 		List<Respondant> respondants = query.getResultList();
 		for (int j = 0; j < respondants.size(); j++) {
-			JSONObject jresp = respondants.get(j).getJSON();
-			jresp.put("scores", respondants.get(j).getAssessmentScore());
+			Respondant respondant = respondants.get(j);
+			respondant.refreshMe();
+			JSONObject jresp = respondant.getJSON();
+			jresp.put("scores", respondant.getAssessmentScore());
 			response.put(jresp);
 		}
 
