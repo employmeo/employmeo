@@ -1,21 +1,21 @@
 package com.employmeo.util;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.employmeo.objects.PositionProfile;
-import com.employmeo.objects.PredictiveAlgorithm;
+import com.employmeo.objects.PredictionModel;
 import com.employmeo.objects.Respondant;
-import com.google.common.collect.ImmutableMap;
 
 public class PredictionUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(PredictionUtil.class);
-	private static final Map<PredictiveAlgorithm, Predictor> predictorRegistry = ImmutableMap
-			.<PredictiveAlgorithm, Predictor>builder()
-			.put(PredictiveAlgorithm.SIMPLE_LINEAR, new SimpleLinearPredictor()).build();
 
 	/**
 	 * For now, always return the same algorithm/predictor unconditionally. Down
@@ -26,10 +26,23 @@ public class PredictionUtil {
 	 * @return predictor
 	 */
 	private static Predictor findConfiguredPredictor(Respondant respondant) {
-		Predictor assignedPredictor = predictorRegistry.get(PredictiveAlgorithm.SIMPLE_LINEAR);
-		log.debug("Assigning predictor {} for respondant {}", assignedPredictor, respondant.getRespondantId());
+		log.debug("Determining configured predictor for respondant {}", respondant.getRespondantId());
+		EntityManager em = DBUtil.getEntityManager();
+		List<PredictionModel> persistedModels = em.createNamedQuery("PredictionModel.findAll").getResultList();
+		log.debug("All persisted models configured in the system: {}", persistedModels);
+		PredictionModel predictionModel = persistedModels.stream().filter(pm -> "simple_linear".equals(pm.getName())
+				&& 1 == pm.getVersion() && "linear".equals(pm.getModelType()) && true == pm.getActive()).findAny()
+				.orElse(null);
+		log.debug("Configured predictionModel for respondant {} is {}", respondant.getRespondantId(), predictionModel);
 
-		return assignedPredictor;
+		PredictionModelAlgorithm assignedAlgorithm = predictionModel.getAlgorithm();
+		log.debug("Assigned algorithm for respondant {} is {}", respondant.getRespondantId(), assignedAlgorithm);
+
+		Optional<Predictor> registeredPredictor = PredictionModelRegistry.getPredictorFor(assignedAlgorithm);
+		log.debug("Registered predictor {} for respondant {}", registeredPredictor, respondant.getRespondantId());
+
+		return registeredPredictor.orElseThrow(() -> new IllegalStateException(
+				"No predictors registered for respondant configuration: " + respondant.getRespondantId()));
 	}
 
 	public static void predictRespondant(Respondant respondant) {

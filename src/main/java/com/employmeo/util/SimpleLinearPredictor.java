@@ -11,7 +11,13 @@ import com.employmeo.objects.Respondant;
 public class SimpleLinearPredictor implements Predictor {
 
 	private static final Logger log = LoggerFactory.getLogger(SimpleLinearPredictor.class);
-
+/*
+	static {
+		log.info("Registering self with the PredictionModelRegistry");
+		PredictionModelRegistry.register(PredictionModelAlgorithm.builder().modelName("simple_linear")
+				.modelType("linear").modelVersion(1).build(), new SimpleLinearPredictor());
+	}
+*/
 	@Override
 	public PredictionResults runPredictions(@NotNull final Respondant respondant) {
 		// TODO - replace random logic with real scoring algorithm

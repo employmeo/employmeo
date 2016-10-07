@@ -1,0 +1,33 @@
+package com.employmeo.objects;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import com.employmeo.util.DBUtil;
+
+public class PredictionModelTest {
+
+	public void createNew() {
+		PredictionModel model = new PredictionModel();
+
+		model.setName("junit test prediction model");
+		model.setVersion(2);
+		model.setDescription("test model for mapping validation");
+		model.setModelType("test");
+		model.setActive(Boolean.FALSE);
+
+		model.persistMe();
+
+		List<PredictionModel> persistedModels = DBUtil.getEntityManager().createNamedQuery("PredictionModel.findAll")
+				.getResultList();
+
+		assertNotNull(persistedModels);
+		Boolean found = persistedModels.stream()
+				.anyMatch(pm -> "junit test prediction model".equals(pm.getName()) && 2 == (model.getVersion()));
+		assertTrue(found);
+
+	}
+
+}
