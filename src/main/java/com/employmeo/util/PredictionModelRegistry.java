@@ -17,8 +17,14 @@ public class PredictionModelRegistry {
 	// static build-time registry
 	private static final PredictionModelAlgorithm simpleLinearAlgorithm = PredictionModelAlgorithm.builder()
 			.modelName("simple_linear").modelType("linear").modelVersion(1).build();
-	private static final Map<PredictionModelAlgorithm, Predictor> modelRegistry = Maps
-			.newHashMap(ImmutableMap.of(simpleLinearAlgorithm, new SimpleLinearPredictor()));
+	private static final PredictionModelAlgorithm initialTestAlgorithm = PredictionModelAlgorithm.builder()
+			.modelName("initial_test").modelType("linear").modelVersion(1).build();
+	private static final Map<PredictionModelAlgorithm, PredictionModelEngine> modelRegistry = 
+			Maps.newHashMap(ImmutableMap.of(
+							initialTestAlgorithm, new InitialTestPredictionModel(), 
+							simpleLinearAlgorithm,new SimpleLinearPredictionModel()
+							)
+			);
 
 	/*
 	 * public static void register(PredictionModelAlgorithm algorithm, Predictor
@@ -27,9 +33,9 @@ public class PredictionModelRegistry {
 	 * algorithm); }
 	 */
 
-	public static Optional<Predictor> getPredictorFor(@NotNull PredictionModelAlgorithm algorithm) {
+	public static Optional<PredictionModelEngine> getPredictionModelEngineForAlgorithm(@NotNull PredictionModelAlgorithm algorithm) {
 		log.debug("ModelRegistry state: {}", modelRegistry);
-		Optional<Predictor> predictor = Optional.ofNullable(modelRegistry.get(algorithm));
+		Optional<PredictionModelEngine> predictor = Optional.ofNullable(modelRegistry.get(algorithm));
 		log.debug("Algorithm {} has the predictor registered as {}", algorithm, predictor);
 
 		return predictor;

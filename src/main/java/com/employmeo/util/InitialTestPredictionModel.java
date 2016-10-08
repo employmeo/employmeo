@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import com.employmeo.objects.PositionProfile;
 import com.employmeo.objects.Respondant;
 
-public class SimpleLinearPredictor implements Predictor {
+public class InitialTestPredictionModel implements PredictionModelEngine {
 
-	private static final Logger log = LoggerFactory.getLogger(SimpleLinearPredictor.class);
+	private static final Logger log = LoggerFactory.getLogger(InitialTestPredictionModel.class);
 /*
 	static {
 		log.info("Registering self with the PredictionModelRegistry");

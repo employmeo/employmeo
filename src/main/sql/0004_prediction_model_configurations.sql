@@ -26,16 +26,63 @@ CREATE TABLE IF NOT EXISTS  employmeo.model_configuration (
     OIDS = FALSE
 );  
 
+CREATE TABLE employmeo.prediction_targets (
+  prediction_target_id  bigserial NOT NULL,
+  "name"                varchar(50) NOT NULL,
+  label                 varchar(100) NOT NULL,
+  description           varchar(500),
+  active                boolean NOT NULL DEFAULT true,
+  created_date          timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  /* Keys */
+  CONSTRAINT prediction_targets_pkey
+    PRIMARY KEY (prediction_target_id), 
+  CONSTRAINT uc_prediction_targets_name
+    UNIQUE ("name")
+) WITH (
+    OIDS = FALSE
+  );
+  
+CREATE TABLE IF NOT EXISTS  employmeo.position_target_associations (
+  position_target_association_id  bigserial NOT NULL PRIMARY KEY,
+  position_id bigint not null,
+  prediction_target_id bigint not null,
+  target_threshold numeric(10) DEFAULT NULL::numeric,
+  active          boolean NOT NULL DEFAULT TRUE,
+  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+  /* Foreign keys */
+  CONSTRAINT fk_position_target_associations_target_id
+    FOREIGN KEY (prediction_target_id)
+    REFERENCES employmeo.prediction_targets(prediction_target_id),
+  CONSTRAINT fk_position_target_associations_position_id
+    FOREIGN KEY (position_id)
+    REFERENCES employmeo.positions(position_id)
+) WITH (
+    OIDS = FALSE
+);    
 
--- definition data inserts 
-INSERT into employmeo.prediction_models (model_name, version, model_type, description, active) 
-VALUES ('initial_test_model', 1, 'linear', 'Hypothetical model for initial build out', TRUE); 
-INSERT into employmeo.prediction_models (model_name, version, model_type, description, active) 
-VALUES ('simple_linear', 1, 'linear', 'Simple linear model', TRUE); 
-
+CREATE TABLE IF NOT EXISTS  employmeo.model_target_associations (
+  model_target_association_id  bigserial NOT NULL PRIMARY KEY,
+  prediction_target_id bigint not null,
+  model_id bigint not null,
+  active          boolean NOT NULL DEFAULT TRUE,
+  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+  /* Foreign keys */
+  CONSTRAINT fk_model_target_associations_model_id
+    FOREIGN KEY (model_id)
+    REFERENCES employmeo.prediction_models(prediction_model_id),
+  CONSTRAINT fk_model_target_associations_target_id
+    FOREIGN KEY (prediction_target_id)
+    REFERENCES employmeo.prediction_targets(prediction_target_id)
+) WITH (
+    OIDS = FALSE
+);  
+ 
 --//@UNDO
 
-DELETE from employmeo.prediction_models;
-
+DROP table  employmeo.model_target_associations;
+DROP table  employmeo.position_target_associations;
+DROP table  employmeo.prediction_targets;
 DROP table  employmeo.model_configuration;
 DROP table  employmeo.prediction_models;
+
+

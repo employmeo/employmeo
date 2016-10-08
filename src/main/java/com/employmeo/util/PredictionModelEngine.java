@@ -2,7 +2,7 @@ package com.employmeo.util;
 
 import com.employmeo.objects.Respondant;
 
-public interface Predictor {
+public interface PredictionModelEngine {
 
 	/**
 	 * Prediction implementations can do local processing, or make requisite

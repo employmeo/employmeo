@@ -3,6 +3,7 @@ package com.employmeo.util;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -10,8 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.employmeo.objects.PositionProfile;
+import com.employmeo.objects.PositionTarget;
 import com.employmeo.objects.PredictionModel;
+import com.employmeo.objects.PredictionModelTarget;
+import com.employmeo.objects.PredictionTarget;
 import com.employmeo.objects.Respondant;
+
+import lombok.NonNull;
 
 public class PredictionUtil {
 
@@ -25,34 +31,51 @@ public class PredictionUtil {
 	 * @param respondant
 	 * @return predictor
 	 */
-	private static Predictor findConfiguredPredictor(Respondant respondant) {
+	private static List<PredictionTarget> findPredictionTargets(Respondant respondant) {
 		log.debug("Determining configured predictor for respondant {}", respondant.getRespondantId());
-		EntityManager em = DBUtil.getEntityManager();
-		List<PredictionModel> persistedModels = em.createNamedQuery("PredictionModel.findAll").getResultList();
-		log.debug("All persisted models configured in the system: {}", persistedModels);
-		PredictionModel predictionModel = persistedModels.stream().filter(pm -> "simple_linear".equals(pm.getName())
-				&& 1 == pm.getVersion() && "linear".equals(pm.getModelType()) && true == pm.getActive()).findAny()
-				.orElse(null);
-		log.debug("Configured predictionModel for respondant {} is {}", respondant.getRespondantId(), predictionModel);
+		
+		List<PositionTarget> positonTargets = respondant.getPosition().getPositionTargets();
+		List<PredictionTarget> predictionTargets = positonTargets.stream().map(pt -> pt.getPredictionTarget()).collect(Collectors.toList());
 
-		PredictionModelAlgorithm assignedAlgorithm = predictionModel.getAlgorithm();
-		log.debug("Assigned algorithm for respondant {} is {}", respondant.getRespondantId(), assignedAlgorithm);
+		if(predictionTargets.isEmpty()) {
+			throw new IllegalStateException("No prediction targets configured for position " +  respondant.getPosition() + " for respondant " + respondant.getRespondantId());
+		} 
 
-		Optional<Predictor> registeredPredictor = PredictionModelRegistry.getPredictorFor(assignedAlgorithm);
-		log.debug("Registered predictor {} for respondant {}", registeredPredictor, respondant.getRespondantId());
+		log.debug("Prediction Targets for respondant: {}", predictionTargets);
+		return predictionTargets;
+	}
+	
+	private static PredictionModelEngine getPredictionModelEngine(@NonNull PredictionTarget predictionTarget) {
+		PredictionModel predictionModel = getPredictionModelForTarget(predictionTarget);		
+		Optional<PredictionModelEngine> registeredPredictionEngine = PredictionModelRegistry
+				.getPredictionModelEngineForAlgorithm(predictionModel.getAlgorithm());
+		log.debug("For prediction target {}, prediction engine is {}", predictionTarget.getName(), registeredPredictionEngine );
 
-		return registeredPredictor.orElseThrow(() -> new IllegalStateException(
-				"No predictors registered for respondant configuration: " + respondant.getRespondantId()));
+		return registeredPredictionEngine.orElseThrow(() -> new IllegalStateException(
+				"No prediction engines registered for prediction target: " + predictionTarget.getName()));
 	}
 
+	private static PredictionModel getPredictionModelForTarget(PredictionTarget predictionTarget) {
+		EntityManager em = DBUtil.getEntityManager();
+		PredictionModelTarget modelTarget = em.createNamedQuery("PredictionModelTarget.findByTargetName", PredictionModelTarget.class)
+					.setParameter("targetName", predictionTarget.getName())
+					.getSingleResult();
+		PredictionModel predictionModel = modelTarget.getModel();
+		log.debug("Prediction Model algorithm for target {} is {}", predictionTarget.getName(), predictionModel.getAlgorithm());
+		return predictionModel;
+	}
+	
 	public static void predictRespondant(Respondant respondant) {
 		log.debug("Predictions requested for respondant {}", respondant.getRespondantId());
 		if (respondant.getRespondantStatus() <= Respondant.STATUS_SCORED)
 			respondant.refreshMe();
 		if (respondant.getRespondantStatus() == Respondant.STATUS_SCORED) {
-			PredictionResults prediction = findConfiguredPredictor(respondant).runPredictions(respondant);
+			List<PredictionTarget> predictionTargets = findPredictionTargets(respondant);
+			PredictionModelEngine predictionEngine = getPredictionModelEngine(predictionTargets.get(0));
+			PredictionResults prediction = predictionEngine.runPredictions(respondant);
+			
+			// record and reflect the results against the respondant
 			Map<String, Double> positionProfileScores = prediction.getPositionProfileScores();
-
 			respondant.setProfileD(positionProfileScores.get(PositionProfile.PROFILE_D));
 			respondant.setProfileC(positionProfileScores.get(PositionProfile.PROFILE_C));
 			respondant.setProfileB(positionProfileScores.get(PositionProfile.PROFILE_B));
