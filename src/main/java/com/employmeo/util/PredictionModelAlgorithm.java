@@ -8,5 +8,6 @@ import lombok.Data;
 public class PredictionModelAlgorithm {
 	private String modelName;
 	private String modelType;
+	private String predictionTarget;
 	private Integer modelVersion;
 }

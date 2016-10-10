@@ -27,11 +27,10 @@
 		<class>com.employmeo.objects.CorefactorDescription</class>
 		<class>com.employmeo.objects.SurveySection</class>
 		<class>com.employmeo.objects.SurveySectionPK</class>
-		<class>com.employmeo.objects.PredictionModel</class>
-		<class>com.employmeo.objects.ModelConfigurationProperty</class>
-		<class>com.employmeo.objects.PositionTarget</class>
 		<class>com.employmeo.objects.PredictionTarget</class>
-		<class>com.employmeo.objects.PredictionModelTarget</class>
+		<class>com.employmeo.objects.PredictionModel</class>
+		<class>com.employmeo.objects.PositionPredictionConfiguration</class>
+		<class>com.employmeo.objects.Prediction</class>
      	<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
          	<property name="eclipselink.connection-pool.default.initial" value="1"/>

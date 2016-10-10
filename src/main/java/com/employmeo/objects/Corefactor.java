@@ -3,7 +3,18 @@ package com.employmeo.objects;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.NoResultException;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.TypedQuery;
 
 import org.json.JSONObject;
 
@@ -17,7 +28,10 @@ import lombok.Data;
  */
 @Entity
 @Table(name = "corefactors")
-@NamedQuery(name = "Corefactor.findAll", query = "SELECT c FROM Corefactor c")
+@NamedQueries({
+	@NamedQuery(name = "Corefactor.findAll", query = "SELECT c FROM Corefactor c"),
+	@NamedQuery(name = "Corefactor.findById", query = "SELECT c FROM Corefactor c WHERE c.corefactorId = :cfId")
+})
 @Data
 public class Corefactor extends PersistantObject implements Serializable {
 

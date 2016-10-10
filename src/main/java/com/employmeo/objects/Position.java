@@ -60,7 +60,7 @@ public class Position extends PersistantObject implements Serializable {
 	private List<PredictiveModel> pmFactors;
 
 	@OneToMany(mappedBy = "position", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-	private List<PositionTarget> positionTargets;
+	private List<PositionPredictionConfiguration> positionPredictionConfigs;
 
 	public Position() {
 	}
@@ -128,12 +128,12 @@ public class Position extends PersistantObject implements Serializable {
 		return this.pmFactors;
 	}
 
-	public List<PositionTarget> getPositionTargets() {
-		return positionTargets;
+	public List<PositionPredictionConfiguration> getPositionPredictionConfigs() {
+		return positionPredictionConfigs;
 	}
 
-	public void setPositionTargets(List<PositionTarget> positionTargets) {
-		this.positionTargets = positionTargets;
+	public void setPositionPredictionConfigs(List<PositionPredictionConfiguration> positionPredictionConfigs) {
+		this.positionPredictionConfigs = positionPredictionConfigs;
 	}
 
 	public List<Corefactor> getCorefactors() {

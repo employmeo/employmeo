@@ -21,33 +21,34 @@ import lombok.Data;
  * 
  */
 @Entity
-@Table(name = "model_configuration")
+@Table(name = "predictions")
 @Data
-public class ModelConfigurationProperty extends PersistantObject implements Serializable {
+public class Prediction extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "model_configuration_id")
-	private Integer configPropertyId;
-
-	@Column(name = "config_key")
-	private String key;
-
-	@Column(name = "config_value")
-	private String value;
+	@Column(name = "prediction_id")
+	private Integer predictionId;
 
 	@ManyToOne
-	@JoinColumn(name = "model_id", insertable = false, updatable = false)
-	private PredictionModel predictionModel;
+	@JoinColumn(name = "respondant_id")
+	private Respondant respondant;	
+	
+	@ManyToOne
+	@JoinColumn(name = "position_prediction_config_id")
+	private PositionPredictionConfiguration positionPredictionConfig;	
 
+	@Column(name = "prediction_score")
+	private Double predictionScore;
+	
 	@Column(name = "active")
-	private Boolean active;
+	private Boolean active = Boolean.TRUE;
 
 	@Column(name = "created_date", insertable = false, updatable = false)
 	private Date createdDate;
 
-	public ModelConfigurationProperty() {
+	public Prediction() {
 	}
 
 	@Override
@@ -55,5 +56,4 @@ public class ModelConfigurationProperty extends PersistantObject implements Seri
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

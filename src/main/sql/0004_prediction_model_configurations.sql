@@ -1,31 +1,3 @@
-
-CREATE TABLE IF NOT EXISTS  employmeo.prediction_models (
-  prediction_model_id  bigserial NOT NULL PRIMARY KEY,
-  model_name    varchar(50) NOT NULL,
-  version          integer NOT NULL DEFAULT 1,
-  model_type 	varchar(50) NOT NULL,
-  description    varchar(500) NOT NULL,
-  active          boolean NOT NULL DEFAULT TRUE,
-  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-) WITH (
-    OIDS = FALSE
-);
-  
-CREATE TABLE IF NOT EXISTS  employmeo.model_configuration (
-  model_configuration_id  bigserial NOT NULL PRIMARY KEY,
-  model_id bigint not null,
-  config_key    varchar(50) NOT NULL,
-  config_value    varchar(500) NOT NULL,
-  active          boolean NOT NULL DEFAULT TRUE,
-  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,  
-  /* Foreign keys */
-  CONSTRAINT fk_model_configuration_model_id
-    FOREIGN KEY (model_id)
-    REFERENCES employmeo.prediction_models(prediction_model_id)  
-) WITH (
-    OIDS = FALSE
-);  
-
 CREATE TABLE employmeo.prediction_targets (
   prediction_target_id  bigserial NOT NULL,
   "name"                varchar(50) NOT NULL,
@@ -37,52 +9,72 @@ CREATE TABLE employmeo.prediction_targets (
   CONSTRAINT prediction_targets_pkey
     PRIMARY KEY (prediction_target_id), 
   CONSTRAINT uc_prediction_targets_name
-    UNIQUE ("name")
+    UNIQUE ("name")    
 ) WITH (
     OIDS = FALSE
-  );
+);
   
-CREATE TABLE IF NOT EXISTS  employmeo.position_target_associations (
-  position_target_association_id  bigserial NOT NULL PRIMARY KEY,
-  position_id bigint not null,
-  prediction_target_id bigint not null,
-  target_threshold numeric(10) DEFAULT NULL::numeric,
+  
+CREATE TABLE IF NOT EXISTS  employmeo.prediction_models (
+  prediction_model_id  bigserial NOT NULL PRIMARY KEY,
+  model_name    varchar(50) NOT NULL,
+  version          integer NOT NULL DEFAULT 1,
+  model_type 	varchar(50) NOT NULL,
+  prediction_target_id	bigint NOT NULL,
+  description    varchar(500) NOT NULL,
   active          boolean NOT NULL DEFAULT TRUE,
-  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,  
-  /* Foreign keys */
-  CONSTRAINT fk_position_target_associations_target_id
-    FOREIGN KEY (prediction_target_id)
-    REFERENCES employmeo.prediction_targets(prediction_target_id),
-  CONSTRAINT fk_position_target_associations_position_id
-    FOREIGN KEY (position_id)
-    REFERENCES employmeo.positions(position_id)
-) WITH (
-    OIDS = FALSE
-);    
-
-CREATE TABLE IF NOT EXISTS  employmeo.model_target_associations (
-  model_target_association_id  bigserial NOT NULL PRIMARY KEY,
-  prediction_target_id bigint not null,
-  model_id bigint not null,
-  active          boolean NOT NULL DEFAULT TRUE,
-  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,  
-  /* Foreign keys */
-  CONSTRAINT fk_model_target_associations_model_id
-    FOREIGN KEY (model_id)
-    REFERENCES employmeo.prediction_models(prediction_model_id),
-  CONSTRAINT fk_model_target_associations_target_id
+  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_prediction_models_prediction_target_id
     FOREIGN KEY (prediction_target_id)
     REFERENCES employmeo.prediction_targets(prediction_target_id)
 ) WITH (
     OIDS = FALSE
+);
+   
+
+CREATE TABLE IF NOT EXISTS  employmeo.position_prediction_config (
+  position_prediction_config_id  bigserial NOT NULL PRIMARY KEY,
+  position_id bigint not null,
+  prediction_target_id bigint not null,
+  model_id bigint not null,
+  target_threshold numeric(10) DEFAULT NULL::numeric,
+  active          boolean NOT NULL DEFAULT TRUE,
+  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+  CONSTRAINT fk_position_prediction_config_target_id
+    FOREIGN KEY (prediction_target_id)
+    REFERENCES employmeo.prediction_targets(prediction_target_id),
+  CONSTRAINT fk_position_prediction_config_position_id
+    FOREIGN KEY (position_id)
+    REFERENCES employmeo.positions(position_id),
+  CONSTRAINT fk_position_prediction_config_model_id
+    FOREIGN KEY (model_id)
+    REFERENCES employmeo.prediction_models(prediction_model_id)    
+) WITH (
+    OIDS = FALSE
 );  
+
+CREATE TABLE IF NOT EXISTS  employmeo.predictions (
+  prediction_id  bigserial NOT NULL PRIMARY KEY,
+  respondant_id bigint NOT NULL,
+  position_prediction_config_id bigint NOT NULL,
+  prediction_score double precision NOT NULL,
+  active          boolean NOT NULL DEFAULT TRUE,
+  created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+  CONSTRAINT fk_predictions_respondant_id
+    FOREIGN KEY (respondant_id)
+    REFERENCES employmeo.respondants(respondant_id),
+  CONSTRAINT fk_predictions_position_prediction_config_id
+    FOREIGN KEY (position_prediction_config_id)
+    REFERENCES employmeo.position_prediction_config(position_prediction_config_id)  
+) WITH (
+    OIDS = FALSE
+);
  
 --//@UNDO
 
-DROP table  employmeo.model_target_associations;
-DROP table  employmeo.position_target_associations;
-DROP table  employmeo.prediction_targets;
-DROP table  employmeo.model_configuration;
+DROP table employmeo.predictions;
+DROP table  employmeo.position_prediction_config;
 DROP table  employmeo.prediction_models;
+DROP table  employmeo.prediction_targets;
 
 

@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import com.employmeo.util.DBUtil;
 import com.employmeo.util.PredictionUtil;
 import com.employmeo.util.ScoringUtil;
-import com.employmeo.util.SurveyUtil;
 
 import lombok.ToString;
 
@@ -121,6 +120,9 @@ public class Respondant extends PersistantObject implements Serializable {
 	// bi-directional many-to-one association to Responses
 	@OneToMany(mappedBy = "respondant", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	private List<RespondantScore> respondantScores;
+	
+	@OneToMany(mappedBy = "respondant", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+	private List<Prediction> predictions;	
 
 	// Scoring info
 	@Column(name = "respondant_profile")
@@ -496,6 +498,14 @@ public class Respondant extends PersistantObject implements Serializable {
 	public Timestamp getRespondantFinishTime() {
 		return this.respondantFinishTime;
 	}
+	
+	public List<Prediction> getPredictions() {
+		return predictions;
+	}
+
+	public void setPredictions(List<Prediction> predictions) {
+		this.predictions = predictions;
+	}	
 
 	public static Respondant getRespondantById(String lookupId) {
 		return getRespondantById(new Long(lookupId));
@@ -624,5 +634,7 @@ public class Respondant extends PersistantObject implements Serializable {
 
 		return scores;
 	}
+
+
 
 }

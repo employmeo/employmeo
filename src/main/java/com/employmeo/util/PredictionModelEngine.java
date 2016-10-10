@@ -1,5 +1,10 @@
 package com.employmeo.util;
 
+import java.util.List;
+
+import com.employmeo.objects.CorefactorScore;
+import com.employmeo.objects.Location;
+import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
 
 public interface PredictionModelEngine {
@@ -11,5 +16,7 @@ public interface PredictionModelEngine {
 	 * @param respondant
 	 * @return
 	 */
-	public abstract PredictionResults runPredictions(Respondant respondant);
+	public abstract PredictionResult runPredictions(Respondant respondant, Position position, Location location, List<CorefactorScore> corefactorScores);
+	public abstract String getModelName();
+	
 }

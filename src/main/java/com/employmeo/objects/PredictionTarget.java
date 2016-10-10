@@ -49,7 +49,10 @@ public class PredictionTarget extends PersistantObject implements Serializable {
 	private Date createdDate;
 
 	@OneToMany(mappedBy = "predictionTarget", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	private List<PositionTarget> positionTargets;
+	private List<PositionPredictionConfiguration> positionTargets;
+	
+	@OneToMany(mappedBy = "predictionTarget", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	private List<PredictionModel> predictionModels;	
 
 	public PredictionTarget() {
 	}
