@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -29,7 +30,10 @@ import lombok.Data;
  */
 @Entity
 @Table(name = "prediction_models")
-@NamedQuery(name = "PredictionModel.findAll", query = "SELECT p FROM PredictionModel p")
+@NamedQueries({
+	@NamedQuery(name = "PredictionModel.findAll", query = "SELECT p FROM PredictionModel p"),
+	@NamedQuery(name = "PredictionModel.findByName", query = "SELECT p FROM PredictionModel p where p.name = :name")
+})
 @Data
 public class PredictionModel extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
