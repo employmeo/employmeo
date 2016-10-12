@@ -11,7 +11,7 @@ public class CorefactorScore {
 	
 	@Override
 	public String toString() {
-		return "CorefactorScore [cfId=" + corefactor.getCorefactorId() + ", cfName=" + corefactor.getCorefactorName() + ", score=" + score + "]";
+		return "[cfId=" + corefactor.getCorefactorId() + ", cfName=" + corefactor.getCorefactorName() + ", score=" + score + "]";
 	}
 	
 	
