@@ -55,9 +55,13 @@ public class PredictionUtil {
 		List<CorefactorScore> corefactorScores = getCorefactorScores(respondant);
 		
 		List<PositionPredictionConfiguration> positionPredictionConfigs = respondant.getPosition().getPositionPredictionConfigs();
-		positionPredictionConfigs.forEach(predictionConfig -> {			
-			PredictionResult predictionResult = predictForTarget(respondant, corefactorScores, predictionConfig);
-			predictions.add(predictionResult);
+		positionPredictionConfigs.forEach(predictionConfig -> {	
+			try {
+				PredictionResult predictionResult = predictForTarget(respondant, corefactorScores, predictionConfig);
+				predictions.add(predictionResult);
+			} catch(Exception e) {
+				log.warn("Failed to run predictions for respondant " + respondant.getRespondantId() + " for target " + predictionConfig.getPredictionTarget() + ". Continuing with run.", e);
+			}
 		});
 		
 		return predictions;

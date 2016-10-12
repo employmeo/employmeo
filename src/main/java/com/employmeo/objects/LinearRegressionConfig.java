@@ -1,13 +1,13 @@
 package com.employmeo.objects;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
@@ -21,13 +21,7 @@ import lombok.Data;
  */
 @Entity
 @Table(name = "linear_regression_config")
-@NamedQueries({
-	@NamedQuery(name = "LinearRegressionConfig.findByModelIdAndPositionId", 
-				query = "SELECT lrc FROM LinearRegressionConfig lrc WHERE lrc.modelId = :modelId AND lrc.positionId = :positionId"),
-	@NamedQuery(name = "LinearRegressionConfig.findDefaultByModelId", 
-				query = "SELECT lrc FROM LinearRegressionConfig lrc WHERE lrc.modelId = :modelId AND lrc.positionId IS NULL")
-})
-
+@NamedQuery(name = "LinearRegressionConfig.findByModelId", query = "SELECT lrc FROM LinearRegressionConfig lrc WHERE lrc.modelId = :modelId")
 @Data
 public class LinearRegressionConfig extends PersistantObject implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -43,22 +37,75 @@ public class LinearRegressionConfig extends PersistantObject implements Serializ
 	@Column(name = "corefactor_id")
 	private Integer corefactorId;
 
-	@Column(name = "position_id")
-	private Long positionId;
-
 	@Column(name = "coefficient")
 	private Double coefficient;
 	
 	@Column(name = "significance")
 	private Double significance;
+	
+	@Column(name = "exponent")
+	private Double exponent;	
+	
+	@Column(name = "config_type")
+	private Integer configTypeId;	
 
+	@Column(name = "required")
+	private Boolean required = Boolean.TRUE;
+	
+	@Column(name = "active")
+	private Boolean active = Boolean.TRUE;
+
+	@Column(name = "created_date")
+	private Date createdDate;
+	
 	public LinearRegressionConfig() {
 	}
 
+    public ConfigType getConfigType() {
+        return ConfigType.getConfigType(this.configTypeId);
+    }
+ 
+    public void setConfigType(ConfigType configType) {
+        if (configType == null) {
+            this.configTypeId = null;
+        } else {
+            this.configTypeId = configType.getTypeId();
+        }
+    }
+    
 	@Override
 	public JSONObject getJSON() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public static enum ConfigType {
+		INTERCEPT(1),
+		COEFFICIENT(2);
+		
+		private Integer typeId;
+		
+		private ConfigType(Integer typeId) {
+			this.typeId = typeId;
+		}
+		
+		public static ConfigType getConfigType(Integer typeId) {
+		       
+	        if (typeId == null) {
+	            return null;
+	        }
+	 
+	        for (ConfigType configType : ConfigType.values()) {
+	            if (typeId.equals(configType.getTypeId())) {
+	                return configType;
+	            }
+	        }
+	        throw new IllegalArgumentException("No such ConfigType configured for id " + typeId);
+	    }
+	 
+	    public int getTypeId() {
+	        return typeId;
+	    }		
 	}
 
 }
