@@ -23,6 +23,8 @@ import org.json.JSONObject;
 import com.employmeo.util.PredictionModelAlgorithm;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * The persistent class for the predictive_model database table.
@@ -47,7 +49,7 @@ public class PredictionModel extends PersistantObject implements Serializable {
 	private String name;
 
 	@Column(name = "model_type")
-	private String modelType;
+	private String modelTypeValue;
 
 	@Column(name = "version")
 	private Integer version;
@@ -70,6 +72,14 @@ public class PredictionModel extends PersistantObject implements Serializable {
 
 	public PredictionModel() {
 	}
+	
+	public ModelType getModelType() {
+		return ModelType.getByValue(this.modelTypeValue);
+	}
+	
+	public void setModelType(ModelType modelType) {
+		this.modelTypeValue = modelType.getValue();
+	}
 
 	@Override
 	public JSONObject getJSON() {
@@ -85,4 +95,25 @@ public class PredictionModel extends PersistantObject implements Serializable {
 				.modelVersion(this.getVersion())
 				.build();
 	}
+	
+
+	public static enum ModelType {
+		LINEAR_REGRESSION("linear_regression");
+		
+		@Getter
+		private String value;
+		
+		private ModelType(String value) {
+			this.value = value;
+		}
+		
+		public static ModelType getByValue(@NonNull String value) {
+	        for (ModelType modelType : ModelType.values()) {
+	            if (value.equals(modelType.getValue())) {
+	                return modelType;
+	            }
+	        }
+	        throw new IllegalArgumentException("No such ModelType configured: " + value);			
+		}
+	}	
 }

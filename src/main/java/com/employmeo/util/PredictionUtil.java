@@ -72,7 +72,7 @@ public class PredictionUtil {
 			PositionPredictionConfiguration predictionConfig) {
 		PredictionTarget predictionTarget = predictionConfig.getPredictionTarget();
 		PredictionModel predictionModel = predictionConfig.getPredictionModel();			
-		PredictionModelEngine predictionEngine = getPredictionModelEngine(predictionModel);
+		PredictionModelEngine<?> predictionEngine = getPredictionModelEngine(predictionModel);
 		
 		log.debug("Initiating predictions run for respondant {} and target {} with predictionEngine {} for position {} at location {} with corefactorScores as {}",
 				respondant.getRespondantId(), predictionTarget.getName(), predictionEngine, respondant.getPosition().getPositionName(), respondant.getLocation().getLocationName(), corefactorScores);
@@ -102,8 +102,8 @@ public class PredictionUtil {
 		log.debug("Prediction persisted: {}", prediction);
 	}
 
-	private static PredictionModelEngine getPredictionModelEngine(@NonNull PredictionModel predictionModel) {	
-		Optional<PredictionModelEngine> registeredPredictionEngine = PredictionModelRegistry.getPredictionModelEngineByName(predictionModel.getName());
+	private static PredictionModelEngine<?> getPredictionModelEngine(@NonNull PredictionModel predictionModel) {	
+		Optional<PredictionModelEngine<?>> registeredPredictionEngine = PredictionModelRegistry.getPredictionModelEngineByName(predictionModel.getName());
 		
 		log.debug("Retrieved {} as prediction engine for {}", registeredPredictionEngine, predictionModel.getName() );
 		return registeredPredictionEngine.orElseThrow(() -> new IllegalStateException(

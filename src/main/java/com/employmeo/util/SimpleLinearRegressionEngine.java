@@ -13,9 +13,7 @@ import com.employmeo.objects.Location;
 import com.employmeo.objects.Position;
 import com.employmeo.objects.Respondant;
 
-import jersey.repackaged.com.google.common.collect.Lists;
-
-public class SimpleLinearRegressionEngine implements PredictionModelEngine {
+public class SimpleLinearRegressionEngine implements PredictionModelEngine<LinearRegressionModelConfiguration> {
 
 	private static final Logger log = LoggerFactory.getLogger(SimpleLinearRegressionEngine.class);
 	
@@ -24,13 +22,19 @@ public class SimpleLinearRegressionEngine implements PredictionModelEngine {
 	private static final Double DEFAULT_INTERCEPT = 0.0D;
 	
 	private String modelName;
-	private List<LinearRegressionConfig> configs = Lists.newArrayList();
+	private LinearRegressionModelConfiguration modelConfig;
 	
-	public SimpleLinearRegressionEngine(String modelName, List<LinearRegressionConfig> configs) {
+	public SimpleLinearRegressionEngine(String modelName) {
 		this.modelName = modelName;
-		this.configs.addAll(configs);
 		
-		log.info("New linear regression prediction model instantiated for " + modelName + " with configs: " + configs);
+		log.info("New linear regression prediction model instantiated for " + modelName);
+	}
+	
+	public void initialize() {
+		log.info("Initializing ..");
+		
+		modelConfig = ModelUtil.getLinearRegressionConfiguration(getModelName());;
+		log.info("Initialization complete.");
 	}
 
 	@Override
@@ -48,7 +52,7 @@ public class SimpleLinearRegressionEngine implements PredictionModelEngine {
 	
 	public Double evaluate(List<CorefactorScore> corefactorScores) {
 			Double scoreSigma = 0.0D;
-			for(LinearRegressionConfig config : configs) {
+			for(LinearRegressionConfig config : modelConfig.getConfigEntries()) {
 				if(config.getConfigType() == ConfigType.INTERCEPT) {
 					scoreSigma +=  getInterceptScore(config);
 				} else if(config.getConfigType() == ConfigType.COEFFICIENT) {
@@ -105,5 +109,10 @@ public class SimpleLinearRegressionEngine implements PredictionModelEngine {
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + "::" + getModelName();
+	}
+
+	@Override
+	public LinearRegressionModelConfiguration getModelConfiguration() {
+		return this.modelConfig;
 	}
 }
