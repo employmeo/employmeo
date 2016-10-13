@@ -27,6 +27,8 @@ public abstract class PersistantObject {
 
 	public void refreshMe() {
 		EntityManager em = DBUtil.getEntityManager();
+		EntityTransaction txn = em.getTransaction();
+		if (!txn.isActive()) txn.begin();
 		em.refresh(this);
 	}
 

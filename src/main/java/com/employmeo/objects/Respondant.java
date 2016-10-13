@@ -17,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -39,7 +40,10 @@ import lombok.ToString;
  */
 @Entity
 @Table(name = "respondants")
-@NamedQuery(name = "Respondant.findAll", query = "SELECT r FROM Respondant r")
+@NamedQueries({
+	@NamedQuery(name = "Respondant.findAll", query = "SELECT r FROM Respondant r"),
+	@NamedQuery(name = "Respondant.findById", query = "SELECT r FROM Respondant r WHERE r.respondantId = :respondantId")
+})
 @ToString(of = {"respondantId", "respondantUuid", "respondantAccountId", "respondantAsid", "respondantStatus", "respondantPartnerId","person","respondantScores"})
 public class Respondant extends PersistantObject implements Serializable {
 	private static final Logger log = LoggerFactory.getLogger(Respondant.class);
@@ -531,6 +535,7 @@ public class Respondant extends PersistantObject implements Serializable {
 	}
 
 	public JSONObject getJSON() {
+		//log.trace("Getting JSON for respondant: {}", this.respondantId);
 		JSONObject json = new JSONObject();
 		json.put("respondant_id", this.respondantId);
 		json.put("respondant_uuid", this.respondantUuid.toString());

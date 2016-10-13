@@ -57,15 +57,21 @@ public class DBUtil {
     }
 
     public static void beginTransaction() {
-        getEntityManager().getTransaction().begin();
+    	if(!isTxnActive()) {
+    		getEntityManager().getTransaction().begin();
+    	}
     }
 
     public static void rollback() {
-        getEntityManager().getTransaction().rollback();
+    	if(isTxnActive()) {
+    		getEntityManager().getTransaction().rollback();
+    	}
     }
 
     public static void commit() {
-        getEntityManager().getTransaction().commit();
+    	if(isTxnActive()) {
+    		getEntityManager().getTransaction().commit();
+    	}
     }
 	
 	public static boolean isTxnActive() {

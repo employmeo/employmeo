@@ -27,27 +27,57 @@ public class PredictionUtil {
 	
 	public static void predictRespondant(Respondant respondant) {
 		log.debug("Predictions requested for respondant {}", respondant.getRespondantId());
-		if (respondant.getRespondantStatus() <= Respondant.STATUS_SCORED)
-			respondant.refreshMe();
-		if (respondant.getRespondantStatus() == Respondant.STATUS_SCORED) {
-
-			// Stage 1
-			List<PredictionResult> predictions = runPredictionsStageForAllTargets(respondant);
+		
+		if (respondant.getRespondantStatus() <= Respondant.STATUS_SCORED) {
+			respondant = refresh(respondant);
+			log.debug("Respondant {} has status = {}, no predictions have been run yet.", respondant.getRespondantId(), respondant.getRespondantStatusText());
+		}
 			
-			// Stage 2
-			GradingResult gradingResult = GradingUtil.gradeRespondantByPredictions(respondant, predictions);
-
-			// Assimilate results, Update respondant lifecycle, and persist state
-			respondant.setRespondantProfile(gradingResult.getRecommendedProfile());
-			respondant.setCompositeScore(gradingResult.getCompositeScore());
-			respondant.setRespondantStatus(Respondant.STATUS_PREDICTED);
-			respondant.mergeMe();
+		if (respondant.getRespondantStatus() == Respondant.STATUS_SCORED) {
+			DBUtil.beginTransaction();
+			
+			try {
+				// Stage 1
+				List<PredictionResult> predictions = runPredictionsStageForAllTargets(respondant);
+				
+				// Stage 2
+				GradingResult gradingResult = GradingUtil.gradeRespondantByPredictions(respondant, predictions);
+	
+				// Assimilate results, Update respondant lifecycle, and persist state
+				respondant.setRespondantProfile(gradingResult.getRecommendedProfile());
+				respondant.setCompositeScore(gradingResult.getCompositeScore());
+				respondant.setRespondantStatus(Respondant.STATUS_PREDICTED);
+				respondant.mergeMe();
+				
+				DBUtil.commit();			
+			} catch(Exception e) {
+				log.warn("Failed to run predictions/grading for respondant " + respondant.getRespondantId(), e);
+				
+				DBUtil.rollback();
+				log.warn("Rolled back transaction");
+			}
 			
 			log.debug("Predictions for respondant {} complete", respondant.getRespondantId());
 		}
 
 		return;
 	}	
+	
+	private static Respondant refresh(Respondant respondant) {
+		// the application tends to get in a state where a rollback leads to entity manager state being inconsistent
+		// given multiple respondants get run for predictions in the same call/thread.
+		
+		EntityManager em = DBUtil.getEntityManager();
+		if(em.contains(respondant)) {
+			respondant.refreshMe();
+		} else {
+			respondant = em.createNamedQuery("Respondant.findById",Respondant.class)
+						.setParameter("respondantId", respondant.getRespondantId())
+						.getSingleResult();
+		}
+		
+		return respondant;
+	}
 	
 
 	private static List<PredictionResult> runPredictionsStageForAllTargets(Respondant respondant) {
@@ -56,12 +86,8 @@ public class PredictionUtil {
 		
 		List<PositionPredictionConfiguration> positionPredictionConfigs = respondant.getPosition().getPositionPredictionConfigs();
 		positionPredictionConfigs.forEach(predictionConfig -> {	
-			try {
 				PredictionResult predictionResult = predictForTarget(respondant, corefactorScores, predictionConfig);
 				predictions.add(predictionResult);
-			} catch(Exception e) {
-				log.warn("Failed to run predictions for respondant " + respondant.getRespondantId() + " for target " + predictionConfig.getPredictionTarget() + ". Continuing with run.", e);
-			}
 		});
 		
 		return predictions;
