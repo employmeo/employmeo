@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.employmeo.objects.PredictionModel;
-import com.employmeo.objects.PredictionModel.ModelType;
+import com.employmeo.objects.PredictionModel.PredictionModelType;
 import com.google.common.collect.ImmutableMap;
 
 import jersey.repackaged.com.google.common.collect.Maps;
@@ -27,9 +27,9 @@ public class PredictionModelRegistry {
 	
 
 	
-	private static final Map<ModelType, Class<? extends PredictionModelEngine<?>>> modelRegistry = 
-			Maps.newHashMap(new ImmutableMap.Builder<ModelType, Class<? extends PredictionModelEngine<?>>>()
-	                   .put(ModelType.LINEAR_REGRESSION, SimpleLinearRegressionEngine.class) 
+	private static final Map<PredictionModelType, Class<? extends PredictionModelEngine<?>>> modelRegistry = 
+			Maps.newHashMap(new ImmutableMap.Builder<PredictionModelType, Class<? extends PredictionModelEngine<?>>>()
+	                   .put(PredictionModelType.LINEAR_REGRESSION, SimpleLinearRegressionEngine.class) 
 	                   .build()
 			);	
 	

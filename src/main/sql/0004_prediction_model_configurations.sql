@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS  employmeo.predictions (
   respondant_id bigint NOT NULL,
   position_prediction_config_id bigint NOT NULL,
   prediction_score double precision NOT NULL,
+  score_percentile double precision,
   active          boolean NOT NULL DEFAULT TRUE,
   created_date    timestamp WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,  
   CONSTRAINT fk_predictions_respondant_id

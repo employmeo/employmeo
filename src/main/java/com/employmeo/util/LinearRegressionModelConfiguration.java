@@ -4,13 +4,16 @@ import java.util.List;
 
 import com.employmeo.objects.LinearRegressionConfig;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
+@Builder
 public class LinearRegressionModelConfiguration {
 
 	private List<LinearRegressionConfig> configEntries;
+	private Double mean = 0.0D;
+	private Double stdDev = 0.0D;
+	private Double population = 0.0D;
 	
 }

@@ -42,6 +42,10 @@ public class Prediction extends PersistantObject implements Serializable {
 	@Column(name = "prediction_score")
 	private Double predictionScore;
 	
+	@Column(name = "score_percentile")
+	private Double scorePercentile;
+	
+	
 	@Column(name = "active")
 	private Boolean active = Boolean.TRUE;
 

@@ -81,7 +81,10 @@ public class LinearRegressionConfig extends PersistantObject implements Serializ
 	
 	public static enum ConfigType {
 		INTERCEPT(1),
-		COEFFICIENT(2);
+		COEFFICIENT(2),
+		MEAN(3),
+		STD_DEV(4),
+		POPULATION(5);
 		
 		private Integer typeId;
 		

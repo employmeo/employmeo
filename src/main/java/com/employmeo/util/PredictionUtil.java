@@ -123,6 +123,7 @@ public class PredictionUtil {
 		prediction.setRespondant(respondant);
 		prediction.setPositionPredictionConfig(predictionConfig);
 		prediction.setPredictionScore(predictionResult.getScore());
+		prediction.setScorePercentile(predictionResult.getPercentile());
 		prediction.persistMe();
 		
 		log.debug("Prediction persisted: {}", prediction);

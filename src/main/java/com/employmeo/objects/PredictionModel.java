@@ -34,7 +34,8 @@ import lombok.NonNull;
 @Table(name = "prediction_models")
 @NamedQueries({
 	@NamedQuery(name = "PredictionModel.findAll", query = "SELECT p FROM PredictionModel p"),
-	@NamedQuery(name = "PredictionModel.findByName", query = "SELECT p FROM PredictionModel p where p.name = :name")
+	@NamedQuery(name = "PredictionModel.findByName", query = "SELECT p FROM PredictionModel p where p.name = :name"),
+	@NamedQuery(name = "PredictionModel.findById", query = "SELECT p FROM PredictionModel p where p.modelId = :modelId")
 })
 @Data
 public class PredictionModel extends PersistantObject implements Serializable {
@@ -73,11 +74,11 @@ public class PredictionModel extends PersistantObject implements Serializable {
 	public PredictionModel() {
 	}
 	
-	public ModelType getModelType() {
-		return ModelType.getByValue(this.modelTypeValue);
+	public PredictionModelType getModelType() {
+		return PredictionModelType.getByValue(this.modelTypeValue);
 	}
 	
-	public void setModelType(ModelType modelType) {
+	public void setModelType(PredictionModelType modelType) {
 		this.modelTypeValue = modelType.getValue();
 	}
 
@@ -97,18 +98,18 @@ public class PredictionModel extends PersistantObject implements Serializable {
 	}
 	
 
-	public static enum ModelType {
+	public static enum PredictionModelType {
 		LINEAR_REGRESSION("linear_regression");
 		
 		@Getter
 		private String value;
 		
-		private ModelType(String value) {
+		private PredictionModelType(String value) {
 			this.value = value;
 		}
 		
-		public static ModelType getByValue(@NonNull String value) {
-	        for (ModelType modelType : ModelType.values()) {
+		public static PredictionModelType getByValue(@NonNull String value) {
+	        for (PredictionModelType modelType : PredictionModelType.values()) {
 	            if (value.equals(modelType.getValue())) {
 	                return modelType;
 	            }

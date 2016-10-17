@@ -1,6 +1,6 @@
 package com.employmeo.util;
 
-import com.employmeo.objects.PredictionModel.ModelType;
+import com.employmeo.objects.PredictionModel.PredictionModelType;
 
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.Data;
 @Builder
 public class PredictionModelAlgorithm {
 	private String modelName;
-	private ModelType modelType;
+	private PredictionModelType modelType;
 	private String predictionTarget;
 	private Integer modelVersion;
 }

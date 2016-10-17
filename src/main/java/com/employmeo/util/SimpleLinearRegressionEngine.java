@@ -3,6 +3,8 @@ package com.employmeo.util;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +25,7 @@ public class SimpleLinearRegressionEngine implements PredictionModelEngine<Linea
 	
 	private String modelName;
 	private LinearRegressionModelConfiguration modelConfig;
+	NormalDistribution normalDistribution;
 	
 	public SimpleLinearRegressionEngine(String modelName) {
 		this.modelName = modelName;
@@ -33,7 +36,18 @@ public class SimpleLinearRegressionEngine implements PredictionModelEngine<Linea
 	public void initialize() {
 		log.info("Initializing ..");
 		
-		modelConfig = ModelUtil.getLinearRegressionConfiguration(getModelName());;
+		modelConfig = ModelUtil.getLinearRegressionConfiguration(getModelName());
+		
+		if(Double.compare(modelConfig.getMean(), 0.0D) <= 0) {
+			throw new IllegalStateException("Mean value of linear regression model not specified, invalid model configuration for model " + getModelName());
+		}
+		if(Double.compare(modelConfig.getStdDev(), 0.0D) <= 0) {
+			throw new IllegalStateException("Std Dev value of linear regression model not specified, invalid model configuration for model " + getModelName());
+		}	
+		
+		RandomGenerator rndGen = null; // we don't need sample results
+		normalDistribution = new NormalDistribution(rndGen, modelConfig.getMean(), modelConfig.getStdDev());
+		
 		log.info("Initialization complete.");
 	}
 
@@ -44,7 +58,9 @@ public class SimpleLinearRegressionEngine implements PredictionModelEngine<Linea
 
 		PredictionResult prediction = new PredictionResult();
 		Double targetOutcomeScore = evaluate(corefactorScores);
+		Double percentile = getPercentile(targetOutcomeScore);
 		prediction.setScore(targetOutcomeScore);
+		prediction.setPercentile(percentile);
 		
 		log.info("Prediction outcome for respondant {} is {}", respondant.getRespondantId(), targetOutcomeScore);
 		return prediction;
@@ -61,6 +77,14 @@ public class SimpleLinearRegressionEngine implements PredictionModelEngine<Linea
 				log.debug("Revised score sigma {}", scoreSigma);
 			}
 			return scoreSigma;
+	}
+	
+	private Double getPercentile(Double score) {
+		// score value should be between 0 and 1		
+		Double normsInvCumulativeProbability = normalDistribution.inverseCumulativeProbability(score);
+
+		log.debug("NormsInv with mean {} and stdDev {} for score {}  is {}", normalDistribution.getMean(), normalDistribution.getStandardDeviation(), score, normsInvCumulativeProbability);
+		return normsInvCumulativeProbability;
 	}
 	
 	private Double getInterceptScore(LinearRegressionConfig config) {

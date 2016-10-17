@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import com.employmeo.objects.PredictionModel.ModelType;
+import com.employmeo.objects.PredictionModel.PredictionModelType;
 import com.employmeo.util.DBUtil;
 
 public class PredictionModelTest {
@@ -16,7 +16,7 @@ public class PredictionModelTest {
 		model.setName("junit test prediction model");
 		model.setVersion(2);
 		model.setDescription("test model for mapping validation");
-		model.setModelType(ModelType.LINEAR_REGRESSION);
+		model.setModelType(PredictionModelType.LINEAR_REGRESSION);
 		model.setActive(Boolean.FALSE);
 
 		model.persistMe();
