@@ -886,7 +886,7 @@ function renderDetailedAssessmentScore() {
 		namediv.append(expander);
 		var scorediv = $('<div />', {
 			'class' : 'col-xs-2 col-sm-4 col-md-6 col-lg-6 text-right', 
-			html : '<h5><strong>' + score.cf_score + "/" + score.corefactor_high + '</strong></h5>'});
+			html : '<h5><strong>' + score.cf_score.toFixed(1) + " of " + score.corefactor_high + '</strong></h5>'});
 		var lowdesc = $('<div />', {
 			'class' : 'hidden-xs col-sm-3 col-md-2 col-lg-2 text-left', 
 			html : '<h6><em>' +score.corefactor_low_desc + '</em></h6>'});
@@ -928,18 +928,19 @@ function renderDetailedAssessmentScore() {
 
 function prepPersonalMessage (message) {
 	var pm = message;
-	pm = pm.replace(new RegExp("\\[FNAME\\]","g"),respondant.respondant_person_fname);
-	pm = pm.replace(new RegExp("\\[LNAME\\]","g"),respondant.respondant_person_lname);
-
-	pm = pm.replace(new RegExp("\\[CHESHE\\]","g"),"This candidate");
-	pm = pm.replace(new RegExp("\\[LHESHE\\]","g"),"this candidate");
-	pm = pm.replace(new RegExp("\\[CHIMHER\\]","g"),"Him or her");
-	pm = pm.replace(new RegExp("\\[LHIMHER\\]","g"),"him or her");
-	pm = pm.replace(new RegExp("\\[HIMHER\\]","g"),"him or her");
-	pm = pm.replace(new RegExp("\\[CHISHER\\]","g"),"His or her");
-	pm = pm.replace(new RegExp("\\[LHISHER\\]","g"),"his or her");
-	pm = pm.replace(new RegExp("\\[HIMSELFHERSELF\\]","g"),"him or herself");
-
+	if (pm != null) {
+		pm = pm.replace(new RegExp("\\[FNAME\\]","g"),respondant.respondant_person_fname);
+		pm = pm.replace(new RegExp("\\[LNAME\\]","g"),respondant.respondant_person_lname);
+	
+		pm = pm.replace(new RegExp("\\[CHESHE\\]","g"),"This candidate");
+		pm = pm.replace(new RegExp("\\[LHESHE\\]","g"),"this candidate");
+		pm = pm.replace(new RegExp("\\[CHIMHER\\]","g"),"Him or her");
+		pm = pm.replace(new RegExp("\\[LHIMHER\\]","g"),"him or her");
+		pm = pm.replace(new RegExp("\\[HIMHER\\]","g"),"him or her");
+		pm = pm.replace(new RegExp("\\[CHISHER\\]","g"),"His or her");
+		pm = pm.replace(new RegExp("\\[LHISHER\\]","g"),"his or her");
+		pm = pm.replace(new RegExp("\\[HIMSELFHERSELF\\]","g"),"him or herself");
+	}
 	return pm;
 }
 
