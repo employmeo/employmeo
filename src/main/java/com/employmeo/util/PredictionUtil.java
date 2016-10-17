@@ -47,7 +47,8 @@ public class PredictionUtil {
 				respondant.setRespondantProfile(gradingResult.getRecommendedProfile());
 				respondant.setCompositeScore(gradingResult.getCompositeScore());
 				respondant.setRespondantStatus(Respondant.STATUS_PREDICTED);
-				respondant.mergeMe();
+				DBUtil.getEntityManager().merge(respondant);
+				//respondant.mergeMe();
 				
 				DBUtil.commit();			
 			} catch(Exception e) {
@@ -107,8 +108,8 @@ public class PredictionUtil {
 		predictionResult.setModelName(predictionModel.getName());
 		predictionResult.setPredictionTarget(predictionTarget);
 		
-		log.info("Prediction for respondant {} for position {} : {}",
-				respondant.getRespondantId(), respondant.getPosition().getPositionName(), predictionResult);
+		log.info("Prediction for respondant {} for position {} and target {} : {}",
+				respondant.getRespondantId(), respondant.getPosition().getPositionName(), predictionTarget.getName(), predictionResult);
 
 		savePrediction(respondant, predictionConfig, predictionResult);
 		return predictionResult;
@@ -124,7 +125,9 @@ public class PredictionUtil {
 		prediction.setPositionPredictionConfig(predictionConfig);
 		prediction.setPredictionScore(predictionResult.getScore());
 		prediction.setScorePercentile(predictionResult.getPercentile());
-		prediction.persistMe();
+		
+		DBUtil.getEntityManager().persist(prediction);
+		//prediction.persistMe();
 		
 		log.debug("Prediction persisted: {}", prediction);
 	}

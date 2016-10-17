@@ -79,12 +79,11 @@ public class SimpleLinearRegressionEngine implements PredictionModelEngine<Linea
 			return scoreSigma;
 	}
 	
-	private Double getPercentile(Double score) {
-		// score value should be between 0 and 1		
-		Double normsInvCumulativeProbability = normalDistribution.inverseCumulativeProbability(score);
+	private Double getPercentile(Double score) {	
+		Double cumulativeProbability = normalDistribution.cumulativeProbability(score);
 
-		log.debug("NormsInv with mean {} and stdDev {} for score {}  is {}", normalDistribution.getMean(), normalDistribution.getStandardDeviation(), score, normsInvCumulativeProbability);
-		return normsInvCumulativeProbability;
+		log.debug("Normal distribution cumulative probability with mean {} and stdDev {} for score {}  is {}", normalDistribution.getMean(), normalDistribution.getStandardDeviation(), score, cumulativeProbability);
+		return cumulativeProbability;
 	}
 	
 	private Double getInterceptScore(LinearRegressionConfig config) {
