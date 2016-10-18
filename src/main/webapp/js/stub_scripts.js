@@ -255,6 +255,47 @@ function getPositionDetails(scores) {
 	
 }
 
+
+// Stub Code:
+	function dData () {
+	  return Math.round(Math.random() * 10) + 1
+	};
+
+function getStubDataForRoleBenchmark() {
+	
+	var person = {
+		first_name : 'John',
+		cf : {
+			0:{"cf_name":"Work Ethic","value":15},
+			1:{"cf_name":"Perseverence","value":20},
+			2:{"cf_name":"Prior Experience","value":30},
+			3:{"cf_name":"Referral","value":40},
+			4:{"cf_name":"Commute","value":45},
+			5:{"cf_name":"Job History","value":45},
+			6:{"cf_name":"Personal Relationship","value":45}
+		}
+	};
+	var role_benchmark = {
+		role_name : 'Crew',
+		role_description : 'Crew is an entry level position. Required basic work skills and ability to read / speak English.',
+		applicant_count : '1300',
+		hire_count : '300',
+		role_grade : {
+			0:{"grade":"A","n0":"tenure","v0":"9.3","n1":"wage_increase","v1":".034"},
+			1:{"grade":"B","n0":"tenure","v0":"8.2","n1":"wage_increase","v1":".021"},
+			2:{"grade":"C","n0":"tenure","v0":"5.7","n1":"wage_increase","v1":".014"},
+			3:{"grade":"D","n0":"tenure","v0":"2.4","n1":"wage_increase","v1":".020"}
+		},
+		cf : {0:{"cf_name":"Work Ethic","value":15},1:{"cf_name":"Perseverence","value":20},2:{"cf_name":"Prior Experience","value":30},3:{"cf_name":"Referral","value":40},4:{"cf_name":"Commute","value":45},5:{"cf_name":"Job History","value":45},6:{"cf_name":"Personal Relationship","value":45}},
+		date : 'Oct 14, 2016'
+	};
+	return {'person' : person, 'role_benchmark' : role_benchmark };
+}
+
+
+
+
+
 //Payroll tools section
 function uploadCSV() {
 	$('#csvFile').parse({

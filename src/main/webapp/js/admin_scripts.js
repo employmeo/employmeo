@@ -799,6 +799,39 @@ function getScoreUuid(respondantUuid) {
 		}
 	});    
 }
+//Respondant scoring section
+function getPredictions(respondantId) {
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/admin/getscore",
+		data: {
+			"respondant_id" : respondantId   	
+		},
+		success: function(data)
+		{
+			respondant = data.respondant;
+			presentPredictions(data);
+		}
+	});    
+}
+
+//Respondant scoring section
+function getPredictionsUuid(respondantUuid) {
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/admin/getscore",
+		data: {
+			"respondant_uuid" : respondantUuid   	
+		},
+		success: function(data)
+		{
+			respondant = data.respondant;
+			presentPredictions(data);
+		}
+	});    
+}
 
 function copyToClipboard(element) {
     var $temp = $("<input>");
@@ -1004,6 +1037,177 @@ function renderPredictionChart(scores) {
 
 	refreshPositionTenure(getPositionTenureData()); // use stub code
 }
+
+
+
+function updatePositionModelDetails(role_benchmark) {
+	document.querySelector('#div_applicant_count').innerHTML = role_benchmark.applicant_count;
+	document.querySelector('#div_hire_count').innerHTML = role_benchmark.hire_count;
+	document.querySelector('#div_hire_rate').innerHTML = Math.round((role_benchmark.hire_count/role_benchmark.applicant_count)*100)+'%';		
+}
+
+function updateGradesTable(arr1) {
+	$('#gradetable').empty();
+	$('#gradefooter').empty();
+	
+	var frag = document.createDocumentFragment();
+	// measure variables
+	var avg0 = 0;
+	var avg1 = 0;
+			
+	for (var i = 0, len = Object.keys(arr1).length; i < len; i++) {
+		//summary variables
+		avg0 += parseFloat(arr1[i].v0);
+		avg1 += parseFloat(arr1[i].v1);
+		
+		var tr0 = document.createElement("tr");
+		var td0 = document.createElement("td");
+		var divClass;
+		var iconClass;
+		
+		switch (arr1[i].grade){
+			case "A":
+				divClass='btn-success';
+				iconClass='fa-rocket';
+				break;
+			case "B":
+				divClass='btn-info';
+				iconClass='fa-user-plus';
+				break;
+			case "C":
+				divClass='btn-warning';
+				iconClass='fa-warning';
+				break;
+			case "D":
+				divClass='btn-danger';
+				iconClass='fa-hand-stop-o';
+				break;
+		}	
+		$(td0).append(getProfileBadge(divClass, iconClass));
+		tr0.appendChild(td0);		
+		
+		var td1 = document.createElement("td");
+		td1.className="text-right";
+		td1.innerHTML = arr1[i].v0;
+		
+		var td2 = document.createElement("td");
+		td2.className="text-right";
+		td2.innerHTML = (arr1[i].v1*100).toPrecision(2)+'%';
+		
+		tr0.appendChild(td1);
+		tr0.appendChild(td2);
+		frag.appendChild(tr0);	
+		
+		var el = document.querySelector('#gradetable');
+		el.appendChild(frag);
+	}
+	
+	var tr0 = document.createElement("tr");
+	var td0 = document.createElement("th");
+	td0.innerHTML = "Average";
+	var td1 = document.createElement("th");
+	td1.className="text-right";
+	td1.innerHTML = (avg0/Object.keys(arr1).length).toFixed(1);
+	var td2 = document.createElement("th");
+	td2.className="text-right";
+	td2.innerHTML = (avg1*100/Object.keys(arr1).length).toFixed(1)+'%';
+	
+	tr0.appendChild(td0);
+	tr0.appendChild(td1);
+	tr0.appendChild(td2);	
+	
+	var el = document.querySelector('#gradefooter');
+	el.appendChild(tr0);
+}
+
+
+function getProfileBadge(divClass,iconClass) {
+	var div = $('<div />', {'class':'profilesquare'}).addClass(divClass);
+	var icon = $('<i />', {'class':'fa'}).addClass(iconClass);
+	$(div).append(icon);
+	return div;
+}	
+
+function initCriticalFactorsChart() {
+    var ctx = document.querySelector("#criticalfactorschart").getContext("2d");
+	var barChartConfig = {
+		    type: "bar",
+	  	    data: {
+	  	  	  labels: ["loading..."],
+  	  	  	  
+  	  	  	  datasets: [{
+  	  	  		label: "Applicant",
+  	  	        backgroundColor: 'rgba(150, 150, 150, 0.8)',
+  	  	  	    data: []
+  	  	  	  },
+  	  	  	{
+  	  	  		label: "Employee",
+  	  	  		backgroundColor: 'rgba(0, 150, 0, 0.8)',
+  	  	    	data: []
+  	  	    	  }
+  	  	  	  ]
+  	  	  	},
+  	  	    options: {
+  	  	        scales: {
+  	  	            xAxes: [{
+  	  	                stacked: false
+  	  	                ,gridLines: {display:false}
+  	  	            	,display: true
+  	  	            }],
+  	  	            yAxes: [{
+  	  	                stacked: false
+  	  	                ,gridLines: {display:false}
+  	  	            	,display: false
+  	  	            }]
+  	  	        ,showScale: false
+  	  	        },
+  	  	    animation: {
+  	    	  	duration: 500,
+  	    	  	onComplete: function () {
+  	    	  	    // render the value of the chart above the bar
+  	    	  	    var ctx = this.chart.ctx;
+  	    	  	    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'normal', Chart.defaults.global.defaultFontFamily);
+  	    	  	    ctx.fillStyle = this.chart.config.options.defaultFontColor;
+  	    	  	    ctx.textAlign = 'center';
+  	    	  	    ctx.textBaseline = 'bottom';
+  	    	  	    this.data.datasets.forEach(function (dataset) {
+  	    	  	        for (var i = 0; i < dataset.data.length; i++) {
+  	    	  	            var model = dataset.metaData[i]._model;
+  	    	  	            ctx.fillText(dataset.data[i], model.x, model.y - 0);
+  	    	  	        }
+  	    	  	    });
+  	    	  	}}    
+  	  	    }
+  	  	};
+	return new Chart(ctx, barChartConfig);
+
+}
+	
+function updateCriticalFactorsChart(data) {
+
+	var arr1 = data.role_benchmark.cf;
+	var arr2 = data.person.cf;
+	var chartLabels = [];
+	var chartData0 = []; 
+	var chartData1 = [];
+	
+	for (var i = 0, len = Object.keys(arr1).length; i < len; i++) {
+		chartLabels.push(arr1[i].cf_name);
+		chartData0.push(arr1[i].value);
+	}
+	for (var i = 0, len = Object.keys(arr2).length; i < len; i++) {
+		chartData1.push(arr2[i].value);
+	}
+	
+	cfBarChart.config.data.labels = chartLabels;
+//	barChartConfig.data.datasets[0].data = chartData0;
+//	barChartConfig.data.datasets[1].data = chartData1;
+	
+	cfBarChart.config.data.datasets[0].data = [dData(), dData(), dData(), dData(), dData(), dData(), dData()];
+	cfBarChart.config.data.datasets[1].data = [dData(), dData(), dData(), dData(), dData(), dData(), dData()];
+	cfBarChart.update();
+}
+
 
 
 function lookupLastTenCandidates() {
