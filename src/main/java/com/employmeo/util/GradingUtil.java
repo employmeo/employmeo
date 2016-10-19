@@ -20,10 +20,10 @@ import com.google.common.collect.Range;
 public class GradingUtil {
 	private static final Logger log = LoggerFactory.getLogger(GradingUtil.class);
 	
-	private static final Range<Double> gradeCurveProfileD = Range.closed(0.0D, 0.40D);
-	private static final Range<Double> gradeCurveProfileC = Range.closed(0.4001D, 0.55D);
-	private static final Range<Double> gradeCurveProfileB = Range.closed(0.551D, 0.70D);
-	private static final Range<Double> gradeCurveProfileA = Range.closed(0.71D, 1.0D);
+	private static final Range<Double> gradeCurveProfileD = Range.closed(0.0D, 40.0D);
+	private static final Range<Double> gradeCurveProfileC = Range.closed(40.001D, 55.00D);
+	private static final Range<Double> gradeCurveProfileB = Range.closed(55.001D, 70.00D);
+	private static final Range<Double> gradeCurveProfileA = Range.closed(70.001D, 1.0D);
 	
 
 	/**
