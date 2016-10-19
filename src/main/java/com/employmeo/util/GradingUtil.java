@@ -1,5 +1,7 @@
 package com.employmeo.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,11 +19,16 @@ import com.google.common.collect.Range;
  */
 public class GradingUtil {
 	private static final Logger log = LoggerFactory.getLogger(GradingUtil.class);
-		
+	
+	private static final Range<Double> gradeCurveProfileD = Range.closed(0.0D, 0.40D);
+	private static final Range<Double> gradeCurveProfileC = Range.closed(0.4001D, 0.55D);
+	private static final Range<Double> gradeCurveProfileB = Range.closed(0.551D, 0.70D);
+	private static final Range<Double> gradeCurveProfileA = Range.closed(0.71D, 1.0D);
+	
 
 	/**
 	 * TODO: Implement grading logic
-	 * For now, using the average percentile of all predictions.
+	 * For now, doing a simple mean score from all prediction scores and looking at a hypothetical static grade curve.
 	 * 
 	 * @param respondant
 	 * @param predictions
@@ -31,29 +38,25 @@ public class GradingUtil {
 		log.debug("Initiating grading for respondant {}", respondant.getRespondantId());
 		
 		GradingResult result = new GradingResult();
-
-		Double sum = 0d;
-	    for (PredictionResult pred : predictions) {sum += pred.getPercentile();}	    
-	    result.setCompositeScore(100d*sum/predictions.size());
 		
-		Double compositePercentile = sum/predictions.size();
-		switch ((int)Math.floor(4d*compositePercentile)) {
-		case 0:
-			result.setRecommendedProfile(PositionProfile.PROFILE_D);
-			break;
-		case 1:
+		// compute grade composite score as average of the percentiles * 100
+		Double averagePercentile = predictions.stream()
+				.mapToDouble(p -> (null != p.getPercentile()) ? p.getPercentile() * 100 : 0.0D)
+				.average()
+				.orElse(0.0D);
+		Double compositeScore = new BigDecimal(averagePercentile).setScale(2, RoundingMode.HALF_UP).doubleValue();
+		
+		if(gradeCurveProfileD.contains(compositeScore)) {
+			result.setRecommendedProfile(PositionProfile.PROFILE_D);	
+		} else if (gradeCurveProfileC.contains(compositeScore)) {
 			result.setRecommendedProfile(PositionProfile.PROFILE_C);
-			break;
-		case 2:
-			result.setRecommendedProfile(PositionProfile.PROFILE_B);
-			break;
-		case 3:
-			result.setRecommendedProfile(PositionProfile.PROFILE_A);
-			break;
-		default:
-			break;		
+		} else if (gradeCurveProfileB.contains(compositeScore)) {
+			result.setRecommendedProfile(PositionProfile.PROFILE_B);	
+		} else {
+			result.setRecommendedProfile(PositionProfile.PROFILE_A);			
 		}
-		result.setCompositeScore(100*compositePercentile);
+		
+		result.setCompositeScore(compositeScore);
 		
 		log.debug("Grade results for respondant {} determined as {}", respondant.getRespondantId(), result);
 		return result;
