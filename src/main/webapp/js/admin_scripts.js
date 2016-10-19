@@ -645,6 +645,175 @@ function showApplicantScoring(applicantData) {
 	refreshPositionTenure(getPositionTenureData()); // use stub code
 }
 
+function presentPredictions(dataScores) {
+	$('#candidateicon').html('<i class="fa ' + respondant.respondant_profile_icon +'"></i>');
+	$('#candidateicon').addClass(respondant.respondant_profile_class);
+	$('#compositescore').text(Math.round(respondant.respondant_composite_score));
+	$('#candidatename').text(respondant.respondant_person_fname + ' ' + respondant.respondant_person_lname);
+	$('#candidateemail').text(respondant.respondant_person_email);
+	$('#candidateaddress').text(respondant.respondant_person_address);
+	$('#candidateposition').text(respondant.respondant_position_name);
+	$('#candidatelocation').text(respondant.respondant_location_name);
+	$('#assessmentname').text(respondant.respondant_survey_name);
+	$('#assessmentdate').text(respondant.respondant_created_date);
+	
+	var fulltext = respondant.respondant_person_fname +
+	               "'s application is in the top " +
+	               Math.round(respondant.respondant_composite_score) +
+	               " percentile of applicants to " + 
+	               respondant.respondant_location_name + ".";
+	$('#fulltextdesc').text(fulltext);
+	
+	renderAssessmentScore(dataScores.scores);
+	var header = $('<h4 />',{'text': 'Probability that ' + respondant.respondant_person_fname + ' ...'});
+	$('#predictions').empty();
+	$('#predictions').append($('<div />',{'class':'row text-center'}).append(header));
+	for (var i in respondant.predictions) {
+		addPrediction(respondant.predictions[i]);
+		produceHistogram(respondant.predictions[i]);
+	}	
+}
+
+function addPrediction(prediction) {
+	var preddiv = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+    preddiv.append($('<h5 />',{'text' : prediction.label} ));
+    
+    var spanid = 'prediction_' + prediction.prediction_id;
+    var spanChart = $('<span />', {
+    	'class' : 'chart',
+    	'id' : spanid,
+    	'data-percent' : 0
+    }).append($('<span />', {
+    	'class' : 'percent',
+    	'style' : 'line-height:100px;font-size:30px;'
+    }));
+
+	preddiv.append(spanChart);
+	$('#predictions').append(preddiv);
+	
+	var color;
+	switch (Math.floor(4*prediction.prediction_percentile)) {
+		case 0:
+			color = '#d9534f';
+			break;
+		case 1:
+			color = '#F39C12';
+			break;
+		case 2:
+			color = '#3498DB';
+			break;
+		case 3:
+			color = '#26B99A';
+			break;
+		default:
+			color = 'gray';
+			break;		
+	}
+	
+	$('#'+spanid).easyPieChart({
+    	easing: 'easeOutBounce',
+    	lineWidth: '10',
+    	barColor: color,
+    	scaleColor: false,
+    	size: $('#'+spanid).width(),
+    	onStep: function(from, to, percent) { $(this.el).find('.percent').text(Math.round(percent));}
+  	});
+	$('#'+spanid).data('easyPieChart').update(100*prediction.prediction_score);	
+}
+
+function produceHistogram(prediction) {
+	var histdiv = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+    histdiv.append($('<h5 />',{'text' : prediction.label} ));
+    
+    var canvasid = 'histogram_' + prediction.prediction_id;
+    var histCanvas = $('<canvas />', {
+    	'class' : 'chart',
+    	'id' : canvasid,
+    	'style' : 'height:auto;width:100%;'
+    });
+
+	histdiv.append(histCanvas);
+	$('#histograms').append(histdiv);
+	var ctx = document.getElementById(canvasid);
+
+	var color;
+	switch (Math.floor(4*prediction.prediction_percentile)) {
+		case 0:
+			color = '#d9534f';
+			break;
+		case 1:
+			color = '#F39C12';
+			break;
+		case 2:
+			color = '#3498DB';
+			break;
+		case 3:
+			color = '#26B99A';
+			break;
+		default:
+			color = 'gray';
+			break;		
+	}
+	
+	var mean= .25;
+	var stdev =.10;
+	
+	var labels = new Array();
+	var bgColors = new Array();
+	var borderColors = new Array();
+	var datapoints = new Array();
+	
+	// Generate labels and data, and highlight joe
+	for (var i = 0; i<20; i++) {
+		var label = i*5 + "-" + 5*(i+1) + '%';
+		labels[i] = label;
+		var datapoint = cdf((i+1)/20,mean,stdev) - cdf(i/20,mean,stdev);
+		datapoints[i] = datapoint;
+		if ((prediction.prediction_percentile > i/20) && (prediction.prediction_percentile < (i+1)/20)) {
+			bgColors[i] = color;
+		} else {
+			bgColors[i] = 'gray';
+		}
+	}
+	
+	var data = {
+		    labels: labels,
+		    datasets: [
+		        {
+		            label: "frequency",
+		            borderWidth: 1,
+		            backgroundColor: bgColors,
+		            borderColor: borderColors,
+		            data: datapoints
+		        }
+		    ]
+		};
+    var options = {
+    		    legend: { display : false},
+  	  	        scales: {
+  	  	            xAxes: [{
+  	  	                stacked: false,
+  	  	                gridLines: {display:false},
+  	  	            	display: true
+  	  	            }],
+  	  	            yAxes: [{
+  	  	                stacked: false,
+  	  	                gridLines: {display:false},
+  	  	            	display: false
+  	  	            }],
+  	  	            showScale: false
+  	  	        }
+    		};
+    
+	var myBarChart = new Chart(ctx, {
+	    type: 'bar',
+	    data: data,
+	    options: options
+	});
+
+}
+
+
 function changePositionTo(pos_id) {
 	$(positionList).each(function() {
 		if (pos_id == this.position_id) {
@@ -1120,7 +1289,6 @@ function updateGradesTable(arr1) {
 	el.appendChild(tr0);
 }
 
-
 function getProfileBadge(divClass,iconClass) {
 	var div = $('<div />', {'class':'profilesquare'}).addClass(divClass);
 	var icon = $('<i />', {'class':'fa'}).addClass(iconClass);
@@ -1248,4 +1416,27 @@ function lookupLastTenCandidates() {
 				li.append(badge);
 				$('#recentcandidates').append(li);
 			}}});
+}
+
+function cdf(x, mean, variance) {
+	  return 0.5 * (1 + erf((x - mean) / (Math.sqrt(2 * variance))));
+}
+
+function erf(x) {
+	  // save the sign of x
+	  var sign = (x >= 0) ? 1 : -1;
+	  x = Math.abs(x);
+
+	  // constants
+	  var a1 =  0.254829592;
+	  var a2 = -0.284496736;
+	  var a3 =  1.421413741;
+	  var a4 = -1.453152027;
+	  var a5 =  1.061405429;
+	  var p  =  0.3275911;
+
+	  // A&S formula 7.1.26
+	  var t = 1.0/(1.0 + p*x);
+	  var y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+	  return sign * y; // erf(-x) = -erf(x);
 }

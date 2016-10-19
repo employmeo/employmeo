@@ -579,6 +579,13 @@ public class Respondant extends PersistantObject implements Serializable {
 			json.put("respondant_profile_class", profile.get("profile_class"));
 		}
 
+		if (!this.predictions.isEmpty()) {
+			JSONArray jPredictions = new JSONArray();
+			for (Prediction prediction : this.predictions) {
+				jPredictions.put(prediction.getJSON());
+			}
+			json.put("predictions", jPredictions);		
+		}
 		return json;
 	}
 

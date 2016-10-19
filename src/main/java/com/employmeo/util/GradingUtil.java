@@ -17,16 +17,11 @@ import com.google.common.collect.Range;
  */
 public class GradingUtil {
 	private static final Logger log = LoggerFactory.getLogger(GradingUtil.class);
-	
-	private static final Range<Double> gradeCurveProfileD = Range.closed(0.0D, 0.40D);
-	private static final Range<Double> gradeCurveProfileC = Range.closed(0.4001D, 0.55D);
-	private static final Range<Double> gradeCurveProfileB = Range.closed(0.551D, 0.70D);
-	private static final Range<Double> gradeCurveProfileA = Range.closed(0.71D, 1.0D);
-	
+		
 
 	/**
 	 * TODO: Implement grading logic
-	 * For now, doing a simple mean score from all prediction scores and looking at a hypothetical static grade curve.
+	 * For now, using the average percentile of all predictions.
 	 * 
 	 * @param respondant
 	 * @param predictions
@@ -36,24 +31,29 @@ public class GradingUtil {
 		log.debug("Initiating grading for respondant {}", respondant.getRespondantId());
 		
 		GradingResult result = new GradingResult();
-		PredictionResult hirabilityPrediction = predictions.stream()
-						.filter(p -> "hirability".equals(p.getPredictionTarget().getName()))
-						.findFirst()
-						.orElseThrow(() -> new IllegalStateException("Grading is setup only to review prediction results for hirability. No hirability prediction results found !"));
+
+		Double sum = 0d;
+	    for (PredictionResult pred : predictions) {sum += pred.getPercentile();}	    
+	    result.setCompositeScore(100d*sum/predictions.size());
 		
-		Double hirabilityPercentile = hirabilityPrediction.getPercentile();
-		
-		if(gradeCurveProfileD.contains(hirabilityPercentile)) {
-			result.setRecommendedProfile(PositionProfile.PROFILE_D);	
-		} else if (gradeCurveProfileC.contains(hirabilityPercentile)) {
+		Double compositePercentile = sum/predictions.size();
+		switch ((int)Math.floor(4d*compositePercentile)) {
+		case 0:
+			result.setRecommendedProfile(PositionProfile.PROFILE_D);
+			break;
+		case 1:
 			result.setRecommendedProfile(PositionProfile.PROFILE_C);
-		} else if (gradeCurveProfileB.contains(hirabilityPercentile)) {
-			result.setRecommendedProfile(PositionProfile.PROFILE_B);	
-		} else {
-			result.setRecommendedProfile(PositionProfile.PROFILE_A);			
+			break;
+		case 2:
+			result.setRecommendedProfile(PositionProfile.PROFILE_B);
+			break;
+		case 3:
+			result.setRecommendedProfile(PositionProfile.PROFILE_A);
+			break;
+		default:
+			break;		
 		}
-		
-		result.setCompositeScore(hirabilityPrediction.getScore());
+		result.setCompositeScore(100*compositePercentile);
 		
 		log.debug("Grade results for respondant {} determined as {}", respondant.getRespondantId(), result);
 		return result;

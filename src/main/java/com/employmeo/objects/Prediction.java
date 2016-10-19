@@ -57,7 +57,11 @@ public class Prediction extends PersistantObject implements Serializable {
 
 	@Override
 	public JSONObject getJSON() {
-		// TODO Auto-generated method stub
-		return null;
+		JSONObject json = new JSONObject();
+		json.put("prediction_id", this.predictionId);
+		json.put("prediction_score", this.predictionScore);
+		json.put("prediction_percentile", this.scorePercentile);
+		json.put("label", positionPredictionConfig.getPredictionTarget().getLabel());
+		return json;
 	}
 }

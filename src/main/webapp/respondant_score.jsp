@@ -72,32 +72,12 @@
 					<div class="clearfix"></div>
 				</div>
 				<div class="x_content">
-					<div id='fulltextdesc'>
-					</div>
+					<h4 id='fulltextdesc'></h4>
 					<hr>
 					<div class='container fluid text-center' id='predictions'>
-					    <div class='row text-center'><h4 id='probheader'></h4></div>
-						<div id='pred1' class="col-md-4 col-sm-4 col-xs-12">
-						  <h5 id='prob1header'></h5>
-			            	<span class="chart" id="pred1guage" data-percent="0">
-			                	<span style="line-height:100px;font-size:30px;" class="percent"></span>
-							</span>
-						</div>
-						<div id='pred2' class="col-md-4 col-sm-4 col-xs-12">
-						  <h5 id='prob2header'></h5>
-			            	<span class="chart" id="pred2guage" data-percent="0">
-			                	<span style="line-height:100px;font-size:30px;" class="percent"></span>
-							</span>
-						</div>
-						<div id='pred3' class="col-md-4 col-sm-4 col-xs-12">
-						  <h5 id='prob3header'></h5>
-			            	<span class="chart" id="pred3guage" data-percent="0">
-			                	<span style="line-height:100px;font-size:30px;" class="percent"></span>
-							</span>
-						</div>
 					</div>
-					<div class='hidden'>
-						<canvas id="respondantProfile"></canvas>
+					<hr>
+					<div class='container fluid text-center' id='histograms'>
 					</div>
 				</div>
 			</div>
@@ -124,79 +104,7 @@
 	}
 	if (respondantUuid != null) {
 		getPredictionsUuid(respondantUuid);
-	}		
-	function presentPredictions(dataScores) {
-		$('#candidatename').text(respondant.respondant_person_fname + ' ' + respondant.respondant_person_lname);
-		$('#candidateemail').text(respondant.respondant_person_email);
-		$('#candidateaddress').text(respondant.respondant_person_address);
-		$('#candidateposition').text(respondant.respondant_position_name);
-		$('#candidatelocation').text(respondant.respondant_location_name);
-		$('#assessmentname').text(respondant.respondant_survey_name);
-		$('#assessmentdate').text(respondant.respondant_created_date);
-		$('#fulltextdesc').text('Lots and lots of text goes here, until typing is done');
-		renderAssessmentScore(dataScores.scores);
-		$('#candidateicon').html('<i class="fa ' + respondant.respondant_profile_icon +'"></i>');
-		$('#candidateicon').addClass(respondant.respondant_profile_class);
-		$('#compositescore').text(Math.round(respondant.respondant_composite_score));
-
-		var header = $('<h4 />',{'text': 'Probability that ' + respondant.respondant_person_fname + ' ...'});
-		$('#predictions').empty();
-		$('#predictions').append($('<div />',{'class':'row text-center'}).append(header));
-	    var pred1 = {
-	    		'prediction_id' : 1,
-	    		'header' : 'Gets Hired',
-	    		'probability' : .72,
-	    		'barcolor' : '#75BCDD'
-	    };
-	    var pred2 = {
-	    		'prediction_id' : 2,
-	    		'header' : 'Gets Hired',
-	    		'probability' : .72,
-	    		'barcolor' : '#75BCDD'
-	    };
-	    var pred3 = {
-	    		'prediction_id' : 3,
-	    		'header' : 'Gets Hired',
-	    		'probability' : .72,
-	    		'barcolor' : '#75BCDD'
-	    };
-	    
-	    addPrediction(pred1);
-	    addPrediction(pred2);
-	    addPrediction(pred3);
-	    
-	}
-	
-	function addPrediction(prediction) {
-
-		var preddiv = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
-        preddiv.append($('<h5 />',{'text' : prediction.header} ));
-        
-        var spanid = 'prediction_' + prediction.prediction_id;
-        var spanChart = $('<span />', {
-        	'class' : 'chart',
-        	'id' : spanid,
-        	'data-percent' : 0
-        }).append($('<span />', {
-        	'class' : 'percent',
-        	'style' : 'line-height:100px;font-size:30px;'
-        }));
-
-		preddiv.append(spanChart);
-		$('#predictions').append(preddiv);
-				
-		$('#'+spanid).easyPieChart({
-	    	easing: 'easeOutBounce',
-	    	lineWidth: '10',
-	    	barColor: prediction.barcolor,
-	    	scaleColor: false,
-	    	size: $('#'+spanid).width(),
-	    	onStep: function(from, to, percent) { $(this.el).find('.percent').text(Math.round(percent));}
-	  	});
-		$('#'+spanid).data('easyPieChart').update(100*prediction.probability);
-		
-	}
-	
+	}	
 </script>
 
 </html>
