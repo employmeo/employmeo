@@ -1,5 +1,7 @@
 package com.employmeo.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,24 +38,25 @@ public class GradingUtil {
 		log.debug("Initiating grading for respondant {}", respondant.getRespondantId());
 		
 		GradingResult result = new GradingResult();
-		PredictionResult hirabilityPrediction = predictions.stream()
-						.filter(p -> "hirability".equals(p.getPredictionTarget().getName()))
-						.findFirst()
-						.orElseThrow(() -> new IllegalStateException("Grading is setup only to review prediction results for hirability. No hirability prediction results found !"));
 		
-		Double hirabilityPercentile = hirabilityPrediction.getPercentile();
+		// compute grade composite score as average of the percentiles * 100
+		Double averagePercentile = predictions.stream()
+				.mapToDouble(p -> (null != p.getPercentile()) ? p.getPercentile() * 100 : 0.0D)
+				.average()
+				.orElse(0.0D);
+		Double compositeScore = new BigDecimal(averagePercentile).setScale(2, RoundingMode.HALF_UP).doubleValue();
 		
-		if(gradeCurveProfileD.contains(hirabilityPercentile)) {
+		if(gradeCurveProfileD.contains(compositeScore)) {
 			result.setRecommendedProfile(PositionProfile.PROFILE_D);	
-		} else if (gradeCurveProfileC.contains(hirabilityPercentile)) {
+		} else if (gradeCurveProfileC.contains(compositeScore)) {
 			result.setRecommendedProfile(PositionProfile.PROFILE_C);
-		} else if (gradeCurveProfileB.contains(hirabilityPercentile)) {
+		} else if (gradeCurveProfileB.contains(compositeScore)) {
 			result.setRecommendedProfile(PositionProfile.PROFILE_B);	
 		} else {
 			result.setRecommendedProfile(PositionProfile.PROFILE_A);			
 		}
 		
-		result.setCompositeScore(hirabilityPrediction.getScore());
+		result.setCompositeScore(compositeScore);
 		
 		log.debug("Grade results for respondant {} determined as {}", respondant.getRespondantId(), result);
 		return result;
