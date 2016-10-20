@@ -62,6 +62,7 @@ public class Prediction extends PersistantObject implements Serializable {
 		json.put("prediction_score", this.predictionScore);
 		json.put("prediction_percentile", this.scorePercentile);
 		json.put("label", positionPredictionConfig.getPredictionTarget().getLabel());
+		json.put("model_id", positionPredictionConfig.getPredictionModel().getModelId());
 		return json;
 	}
 }

@@ -14,6 +14,8 @@ var locationList;
 var qTable;
 var detailedScores;
 
+Chart.defaults.global.defaultFontColor = '#000';
+
 //basic user / account functions (login/logout/etc)
 function login() {
 	$.ajax({
@@ -755,24 +757,23 @@ function produceHistogram(prediction) {
 			break;		
 	}
 	
-	var mean= .25;
-	var stdev =.10;
-	
+	var mean= getPredictionMean(prediction);
+	var stdev = getPredictionStDev(prediction);	
 	var labels = new Array();
 	var bgColors = new Array();
 	var borderColors = new Array();
 	var datapoints = new Array();
 	
-	// Generate labels and data, and highlight joe
+	// Generate labels and data, and highlight person
 	for (var i = 0; i<20; i++) {
 		var label = i*5 + "-" + 5*(i+1) + '%';
 		labels[i] = label;
 		var datapoint = cdf((i+1)/20,mean,stdev) - cdf(i/20,mean,stdev);
 		datapoints[i] = datapoint;
-		if ((prediction.prediction_percentile > i/20) && (prediction.prediction_percentile < (i+1)/20)) {
+		if ((prediction.prediction_score > i/20) && (prediction.prediction_score < (i+1)/20)) {
 			bgColors[i] = color;
 		} else {
-			bgColors[i] = 'gray';
+			bgColors[i] = '#ccc';
 		}
 	}
 	
@@ -813,13 +814,16 @@ function produceHistogram(prediction) {
 
 }
 
-
 function changePositionTo(pos_id) {
 	$(positionList).each(function() {
 		if (pos_id == this.position_id) {
+			this.data = getStubDataForRoleBenchmark(); /// replace with REST call or pull from other var
+
 			updatePositionDetails(this);
-			updatePositionTenure(this);
-			updatePositionProfile(this);
+			updatePositionModelDetails(this.data.role_benchmark);
+			updateGradesTable(this.data.role_benchmark.role_grade);
+			updateCriticalFactorsChart(this);
+
 		}		
 	});
 }
@@ -827,82 +831,7 @@ function changePositionTo(pos_id) {
 function updatePositionDetails(position) {
 	$('#positionname').text(position.position_name);
 	$('#positiondesc').text(position.position_description);
-	position.position_corefactors.sort(function(a,b) {
-		return a.corefactor_display_group.localeCompare(b.corefactor_display_group);
-	});
-	
-	$('#corefactorlist').empty();
-	$(position.position_corefactors).each(function () {
-		var row = $('<tr/>');
-		row.append($('<td />',{ text : this.corefactor_name }));
-		row.append($('<td />',{ text : this.corefactor_description }));
-		row.append($('<td />',{ text : this.corefactor_display_group }));		
-		$('#corefactorlist').append(row);
-	});
 }
-
-function updatePositionTenure(position) {
-	refreshPositionTenure(getPositionTenureData()); // use stub code
-}
-
-function refreshPositionTenure(dataPositionTenure) {
-	var positionTenure = $("#positionTenure").get(0).getContext("2d");
-	if (tenureChart != null) tenureChart.destroy();
-	tenureChart = new Chart(positionTenure, {type: 'bar', data: dataPositionTenure, options: { 
-		showScale: true,
-		scaleShowGridLines: false,
-		responsive : true,
-		legend: { display: false }
-	}});	
-}
-
-function updatePositionProfile(position) {
-	var dataPositionProfile = getApplicantProfileData(); // use stub code
-	positionProfile = $("#positionProfile").get(0).getContext("2d");
-	if (profileChart != null) profileChart.destroy();
-	var dataPosProfile = {
-			datasets : [{
-				backgroundColor : position.position_profiles[0].profile_overlay,
-				borderColor : position.position_profiles[0].profile_color,
-				label : position.position_profiles[0].profile_name,
-				pointBackgroundColor : position.position_profiles[0].profile_color,
-				pointBorderColor : position.position_profiles[0].profile_color,
-				pointHoverBackgroundColor : position.position_profiles[0].profile_highlight,
-				pointHoverBorderColor : position.position_profiles[0].profile_highlight,
-				data : []
-			}],
-			labels : []};
-		
-	$(position.position_corefactors).each(function (i) {
-		dataPosProfile.labels[i] = this.corefactor_name;
-		dataPosProfile.datasets[0].data[i] = this.pm_score_a;
-	});
-	
-
-	profileChart = new Chart(positionProfile, {type: 'radar', data: dataPosProfile, options: { 
-		scale: {
-                ticks: {
-                    beginAtZero: true
-                },
-                pointLabels : {
-                	fontSize : 16
-                }
-        },
-		legend: { display: false }
-	}});	
-}
-
-function refreshPositionProfile(dataPositionProfile) {
-	positionProfile = $("#positionProfile").get(0).getContext("2d");
-	if (profileChart != null) profileChart.destroy();
-	profileChart = new Chart(positionProfile, {type: 'radar', data: dataPositionProfile, options: { 
-		showScale: true,
-		responsive : true,
-		defaultFontSize: 16,
-		legend: { display: false }
-	}});	
-}
-
 
 //Payroll tools section
 function uploadPayroll(e) {
@@ -968,6 +897,7 @@ function getScoreUuid(respondantUuid) {
 		}
 	});    
 }
+
 //Respondant scoring section
 function getPredictions(respondantId) {
 	$.ajax({
@@ -1256,11 +1186,11 @@ function updateGradesTable(arr1) {
 		tr0.appendChild(td0);		
 		
 		var td1 = document.createElement("td");
-		td1.className="text-right";
+		td1.className="text-center";
 		td1.innerHTML = arr1[i].v0;
 		
 		var td2 = document.createElement("td");
-		td2.className="text-right";
+		td2.className="text-center";
 		td2.innerHTML = (arr1[i].v1*100).toPrecision(2)+'%';
 		
 		tr0.appendChild(td1);
@@ -1275,10 +1205,10 @@ function updateGradesTable(arr1) {
 	var td0 = document.createElement("th");
 	td0.innerHTML = "Average";
 	var td1 = document.createElement("th");
-	td1.className="text-right";
+	td1.className="text-center";
 	td1.innerHTML = (avg0/Object.keys(arr1).length).toFixed(1);
 	var td2 = document.createElement("th");
-	td2.className="text-right";
+	td2.className="text-center";
 	td2.innerHTML = (avg1*100/Object.keys(arr1).length).toFixed(1)+'%';
 	
 	tr0.appendChild(td0);
@@ -1304,12 +1234,12 @@ function initCriticalFactorsChart() {
 	  	  	  labels: ["loading..."],
   	  	  	  
   	  	  	  datasets: [{
-  	  	  		label: "Applicant",
+  	  	  		label: "Applicants",
   	  	        backgroundColor: 'rgba(150, 150, 150, 0.8)',
   	  	  	    data: []
   	  	  	  },
   	  	  	{
-  	  	  		label: "Employee",
+  	  	  		label: "Employees",
   	  	  		backgroundColor: 'rgba(0, 150, 0, 0.8)',
   	  	    	data: []
   	  	    	  }
@@ -1323,6 +1253,11 @@ function initCriticalFactorsChart() {
   	  	            	,display: true
   	  	            }],
   	  	            yAxes: [{
+  	                    ticks: {
+  	                    	min: 0,
+  	                    	max: 12,
+  	                    	beginAtZero : true
+  	                    },
   	  	                stacked: false
   	  	                ,gridLines: {display:false}
   	  	            	,display: false
@@ -1340,8 +1275,10 @@ function initCriticalFactorsChart() {
   	    	  	    ctx.textBaseline = 'bottom';
   	    	  	    this.data.datasets.forEach(function (dataset) {
   	    	  	        for (var i = 0; i < dataset.data.length; i++) {
-  	    	  	            var model = dataset.metaData[i]._model;
-  	    	  	            ctx.fillText(dataset.data[i], model.x, model.y - 0);
+  	    	  	        	if (! dataset._meta[0].hidden) {
+  	    	  	                var model = dataset._meta[0].data[i]._model;
+  	    	  	                ctx.fillText(dataset.data[i].toFixed(1), model.x, model.y - 0);
+  	    	  	        	}
   	    	  	        }
   	    	  	    });
   	    	  	}}    
@@ -1351,28 +1288,35 @@ function initCriticalFactorsChart() {
 
 }
 	
-function updateCriticalFactorsChart(data) {
+function updateCriticalFactorsChart(position) {
 
-	var arr1 = data.role_benchmark.cf;
-	var arr2 = data.person.cf;
+	position.position_corefactors.sort(function(a,b) {
+		return a.corefactor_display_group.localeCompare(b.corefactor_display_group);
+	});
+	
+	$('#corefactorlist').empty();
+	$(position.position_corefactors).each(function () {
+		var row = $('<tr/>');
+		row.append($('<td />',{ text : this.corefactor_name }));
+		row.append($('<td />',{ text : this.corefactor_description }));
+		row.append($('<td />',{ text : this.corefactor_display_group }));		
+		$('#corefactorlist').append(row);
+	});
+	
 	var chartLabels = [];
 	var chartData0 = []; 
 	var chartData1 = [];
 	
-	for (var i = 0, len = Object.keys(arr1).length; i < len; i++) {
-		chartLabels.push(arr1[i].cf_name);
-		chartData0.push(arr1[i].value);
-	}
-	for (var i = 0, len = Object.keys(arr2).length; i < len; i++) {
-		chartData1.push(arr2[i].value);
+	for (var i = 0; i < position.position_corefactors.length;i++) {
+		chartLabels.push(position.position_corefactors[i].corefactor_name);
+		chartData0.push(position.position_corefactors[i].pm_score_a-2*Math.random());
+		chartData1.push(position.position_corefactors[i].pm_score_a+1*Math.random());
 	}
 	
-	cfBarChart.config.data.labels = chartLabels;
-//	barChartConfig.data.datasets[0].data = chartData0;
-//	barChartConfig.data.datasets[1].data = chartData1;
+	cfBarChart.config.data.labels = chartLabels;	
+	cfBarChart.config.data.datasets[0].data = chartData0;
+	cfBarChart.config.data.datasets[1].data = chartData1;
 	
-	cfBarChart.config.data.datasets[0].data = [dData(), dData(), dData(), dData(), dData(), dData(), dData()];
-	cfBarChart.config.data.datasets[1].data = [dData(), dData(), dData(), dData(), dData(), dData(), dData()];
 	cfBarChart.update();
 }
 

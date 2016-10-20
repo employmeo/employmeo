@@ -368,3 +368,35 @@ function postToService(data, url, callback) {
 		success: callback
 	});
 }
+
+
+function getPredictionMean(prediction) {
+	switch (prediction.model_id) {
+		case 1:
+			return .72;
+			break;
+		case 2:
+			return .31
+			break;
+		case 3:
+		default:
+			return .19;
+			break;
+		
+	}
+}
+function getPredictionStDev(prediction) {
+	switch (prediction.model_id) {
+	case 1:
+		return .05;
+		break;
+	case 2:
+		return .045
+		break;
+	case 3:
+	default:
+		return .04;
+		break;	
+}
+	
+}

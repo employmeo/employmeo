@@ -1,9 +1,9 @@
 <%@ include file="/WEB-INF/includes/inc_head.jsp"%>
 <div class="row">
-	<div class="col-xs-12 col-sm-3 col-md-3">
-		<h3>Positions</h3>
+	<div class="col-xs-12 col-sm-6 col-md-6">
+		<h3>Position Benchmarking</h3>
 	</div>
-	<div class="col-md-9 col-sm-9 col-xs-12 pull-right">
+	<div class="col-md-6 col-sm-6 col-xs-12 pull-right">
 		<form class="form-inline pull-right" id='refinequery'>
 			<div class="form-group">
 				<select class="form-control" id="position_id" name="positionid"
@@ -63,47 +63,14 @@
 							<table class="table table-condensed table-hover">
 								<thead id="gradeheader">
 									<tr>
-										<th>Grade</th>
-										<th>Hire Rate</th>
-										<th>Tenure</th>
+										<th class="text-left">Grade</th>
+										<th class="text-center">Tenure (months)</th>
+										<th class="text-center">Annual Wage Inc %</th>
 									</tr>
 								</thead>
 								<tbody id="gradetable">
-									<tr>
-										<td><div class="btn-success text-center" style="height: 30px; width: 30px;vertical-align:middle;">
-						   					<i class="fa fa-rocket" style="margin: auto; float: none;font-size:17px;line-height:28px;"></i>
-						   				</div></td>
-						   				<td>15</td>
-						   				<td>15</td>
-						   			</tr>
-									<tr>
-										<td><div class="btn-info text-center" style="height: 30px; width: 30px;vertical-align:middle;">
-						   					<i class="fa fa-user-plus" style="margin: auto; float: none;font-size:17px;line-height:28px;"></i>
-						   				</div></td>
-						   				<td>15</td>
-						   				<td>15</td>
-						   			</tr>
-									<tr style="vertical-align:middle;">
-										<td><div class="btn-warning text-center" style="height: 30px; width: 30px;vertical-align:middle;">
-						   					<i class="fa fa-warning" style="margin: auto; float: none;font-size:17px;line-height:28px;"></i></div>
-						   				</td>
-						   				<td>15</td>
-						   				<td>15</td>
-						   			</tr>
-									<tr>
-										<td><div class="btn-danger text-center" style="height: 30px; width: 30px;vertical-align:middle;">
-						   					<i class="fa fa-hand-stop-o" style="margin: auto; float: none;font-size:17px;line-height:28px;"></i>
-						   				</div></td>
-						   				<td>15</td>
-						   				<td>15</td>
-						   			</tr>
 								</tbody>
 								<tfoot id="gradefooter">
-									<tr>
-										<th>Totals</th>
-										<th>##</th>
-										<th>##</th>
-									</tr>
 								</tfoot>
 							</table>
 							</div>
@@ -119,12 +86,11 @@
 								Critical Factors<i class="fa fa-bar-chart pull-right"></i>
 							</h4>
 						</div>
-						<div class="x_content">
-							<div>
-		<div class="col-xs-12 text-center"><h5>Scoring Average For Critical Factors</h5></div>
-		<div id="factors_barchart" class="col-xs-12"><canvas id="criticalfactorschart"></canvas></div>
-		<div class="col-xs-6 scaleleft">least important</div>
-		<div class="col-xs-6 scaleright">most important</div>
+						<div class="x_content" style="background-color:#eee;border-style:solid;border-width:1px;border-color: #ccc;">
+							<div style="margin-left: auto; margin-right: auto; max-width: 800px;">
+								<div id="factors_barchart" class="col-xs-12"><canvas id="criticalfactorschart" style="max-height:320px;"></canvas></div>
+								<div class="col-xs-6 scaleleft">least important</div>
+								<div class="col-xs-6 scaleright">most important</div>
 							</div>
 						</div>
 					</div>
@@ -153,12 +119,6 @@
 					</div>
 				</div>
 <!-- End Position Core Factor List -->
-<!-- Begin Remnants to keep JS code working until fully tested -->
-				<div class="hidden">
-								<canvas id="positionTenure" style="width: 100%, height: auto;"></canvas>
-								<canvas id="positionProfile" style="width: 100%, height: auto;"></canvas>
-				</div>
-<!-- End remnants to keep JS code working until fully tested -->
 			</div>
 		</div>
 	</div>
@@ -169,11 +129,6 @@
 	var cfBarChart = initCriticalFactorsChart();
 	updatePositionsSelect(true); // this script gets all the positions from the server, then triggers the first "refresh"
 
-	/// for now - we'll leave the raw code on this page, but it would be likely added to the "chage position" function
-	var data = getStubDataForRoleBenchmark(); /// replace with REST call or pull from other var
-	updatePositionModelDetails(data.role_benchmark);
-	updateGradesTable(data.role_benchmark.role_grade);
-	updateCriticalFactorsChart(data);
 </script>
 
 </html>
