@@ -59,3 +59,44 @@ function refreshPositionProfile(dataPositionProfile) {
 		legend: { display: false }
 	}});	
 }
+
+
+function renderPredictionElements(scores) {
+	$('#corefactorsused').empty();
+	var title = $('<div />', {
+		'class' : 'form-group'
+	});
+	title.append($('<h4 />', {
+		'class' : 'text-center',
+		'text' : 'Corefactors'
+	}));
+	$('#corefactorsused').append(title);
+	for (var key in scores) {
+		var group = $('<div />', {
+			'class' : 'form-group'
+		});
+
+		group.append($('<label />', {
+			'class' : 'control-label col-md-6 col-sm-6 col-xs-6',
+			'text' : key
+		}));
+
+		group.append($('<div />',{
+			'class':'col-md-6 col-sm-6 col-xs-6'
+		}).append($('<input />',{
+			'class':'form-control text-right',
+			'disabled' : true,
+			'value' : scores[key],
+			'type' : 'text'
+		})));
+
+		$('#corefactorsused').append(group);
+	}
+}
+
+function renderPredictionChart(scores) {
+	$('#candidateicon').html('<i class="fa ' + respondant.respondant_profile_icon +'"></i>');
+	$('#candidateicon').addClass(respondant.respondant_profile_class);
+
+	refreshPositionTenure(getPositionTenureData()); // use stub code
+}

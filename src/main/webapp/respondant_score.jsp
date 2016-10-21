@@ -27,8 +27,22 @@
 					</div>
 				</div>
 				<div class="x_content">
-				<h2>Applicant Details <i class="fa fa-chevron-down pull-right" onclick="expander('candidatedetails');"></i>
-				</h2>
+					<div>
+					    <h2 class='text-center'>Critical Trait Scores</h2>
+						<a href='/assessment_results.jsp?&respondant_id=4999' id='detailslink' class='pull-right'>More Detail</a>
+						<span id='assessmentdate' class='hidden'></span>
+						<h4 id='assessmentname'>Assessment</h4>
+					</div>
+					<div>
+						<table class='table table-hover'>
+							<tbody id='assessmentresults'>
+							</tbody>
+						</table>
+						<hr>
+					</div>
+				</div>
+				<h4>Application Details <i class="fa fa-chevron-down pull-right" onclick="$('#candidatedetails').toggleClass('hidden');"></i>
+				</h4>
 					<div class='row'>
 						<table class="table table-hover hidden" id='candidatedetails'>
 							<tbody>
@@ -51,18 +65,6 @@
 							</tbody>
 						</table>
 					</div>
-					<div>
-						<span id='assessmentdate' class='pull-right'>Date</span>
-						<h4 id='assessmentname'>Assessment</h4>
-					</div>
-					<div>
-						<table class='table table-hover'>
-							<tbody id='assessmentresults'>
-							</tbody>
-						</table>
-						<hr>
-					</div>
-				</div>
 			</div>
 		</div>
 		<div class="col-md-8 col-sm-8 col-xs-12">
@@ -104,7 +106,7 @@
 	}
 	if (respondantUuid != null) {
 		getPredictionsUuid(respondantUuid);
-	}	
+	}
 </script>
 
 </html>

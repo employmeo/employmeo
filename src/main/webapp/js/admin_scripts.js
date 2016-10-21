@@ -670,14 +670,38 @@ function presentPredictions(dataScores) {
 	var header = $('<h4 />',{'text': 'Probability that ' + respondant.respondant_person_fname + ' ...'});
 	$('#predictions').empty();
 	$('#predictions').append($('<div />',{'class':'row text-center'}).append(header));
+
+	// now - lets assume 3 max.
+	var counter = 0;
 	for (var i in respondant.predictions) {
+		if (i==3) break;
+        counter++;
 		addPrediction(respondant.predictions[i]);
 		produceHistogram(respondant.predictions[i]);
-	}	
+	}
+
+	for (var i=3; i>counter; i--) {
+		var card = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+		var preddiv = $('<div />', { 'class' : 'card-dashed text-center'});
+	    preddiv.append($('<canvas />', {
+	    	'class' : 'chart',
+	    	'style' : 'height:100px;width:100%;'
+	    }));
+		preddiv.append($('<hr />'));
+	    preddiv.append($('<h5 />',{'text' : 'Configure an additional prediction'} ));
+		preddiv.append($('<hr />'));
+	    preddiv.append($('<canvas />', {
+	    	'class' : 'chart',
+	    	'style' : 'height:auto;width:100%;'
+	    }));
+        card.append(preddiv);
+	    $('#predictions').append(card);
+	}
 }
 
 function addPrediction(prediction) {
-	var preddiv = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+	var card = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+	var preddiv = $('<div />', { 'class' : 'card-solid text-center'});
     preddiv.append($('<h5 />',{'text' : prediction.label} ));
     
     var spanid = 'prediction_' + prediction.prediction_id;
@@ -690,8 +714,22 @@ function addPrediction(prediction) {
     	'style' : 'line-height:100px;font-size:30px;'
     }));
 
+    var canvasid = 'histogram_' + prediction.prediction_id;
+    var histCanvas = $('<canvas />', {
+    	'class' : 'chart',
+    	'id' : canvasid,
+    	'style' : 'height:auto;width:100%;'
+    });
 	preddiv.append(spanChart);
-	$('#predictions').append(preddiv);
+	preddiv.append($('<hr />'));
+    preddiv.append($('<h5 />',{'text' : 'Compared to other applicants...'} ));
+	preddiv.append(histCanvas);
+	var comparison = respondant.respondant_person_fname + "'s predictions is better than " +
+    	(prediction.prediction_percentile * 100).toFixed(0) +
+	    "% of other applicants."
+    preddiv.append($('<h5 />',{'text' : comparison} ));
+    card.append(preddiv);
+    $('#predictions').append(card);
 	
 	var color;
 	switch (Math.floor(4*prediction.prediction_percentile)) {
@@ -724,18 +762,18 @@ function addPrediction(prediction) {
 }
 
 function produceHistogram(prediction) {
-	var histdiv = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
-    histdiv.append($('<h5 />',{'text' : prediction.label} ));
+//	var histdiv = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+ //   histdiv.append($('<h5 />',{'text' : prediction.label} ));
     
     var canvasid = 'histogram_' + prediction.prediction_id;
-    var histCanvas = $('<canvas />', {
-    	'class' : 'chart',
-    	'id' : canvasid,
-    	'style' : 'height:auto;width:100%;'
-    });
+//    var histCanvas = $('<canvas />', {
+//    	'class' : 'chart',
+//   	'id' : canvasid,
+//    	'style' : 'height:auto;width:100%;'
+//    });
 
-	histdiv.append(histCanvas);
-	$('#histograms').append(histdiv);
+//	histdiv.append(histCanvas);
+//	$('#histograms').append(histdiv);
 	var ctx = document.getElementById(canvasid);
 
 	var color;
@@ -951,8 +989,6 @@ function presentRespondantScores(dataScores) {
 
 	detailedScores = dataScores.detailed_scores;
 	renderDetailedAssessmentScore();
-	renderPredictionElements(dataScores.scores);
-	renderPredictionChart(dataScores.scores);
 }
 
 function showAllDetails() {
@@ -1076,67 +1112,72 @@ function prepPersonalMessage (message) {
 	return pm;
 }
 
-function renderAssessmentScore(scores) {
 
+
+function renderAssessmentScore(scores) {
+	$('#detailslink').prop("href", '/assessment_results.jsp?&respondant_id=' + respondant.respondant_id);
 	$('#assessmentresults').empty();
 	for (var key in scores) {
 		var row = $('<tr />');
-		row.append($('<th />', {'style':'width:100px;', 'text': key }))
-		var progress = $('<div />', {'class' : 'progress'}).append($('<div />', {
-			'class': 'progress-bar progress-bar-success progress-bar-striped',
+		var cell = $('<td />');
+		var quartile = Math.floor(4*scores[key]/11);
+		
+		cell.append($('<div />', {'text': key }));
+		cell.append( $('<div />', {'class' : 'progress'}).append($('<div />', {
+			'class': 'progress-bar '+getBarClass(quartile)+' progress-bar-striped',
 			'role': 'progressbar',
 			'aria-valuenow' : scores[key],
 			'aria-valuemin' : "1",
 			'aria-valuemax' : "11",
 			'style' : 'width: ' + scores[key]/0.11 + '%;',
 			'text' : scores[key]
-		})); 
-		row.append($('<td />').append(progress));
+		}))); 
+		row.append(cell);
 		$('#assessmentresults').append(row);
 	}
 
-}
+	var footer = $('<tr />');
+	var legend = $('<td />', {'style':'background-color:#eee;'});
+	legend.append($('<div />', {'class':'text-center', 'text': 'Bar Color Indicates Quartile'}));
 
-function renderPredictionElements(scores) {
-	$('#corefactorsused').empty();
-	var title = $('<div />', {
-		'class' : 'form-group'
-	});
-	title.append($('<h4 />', {
-		'class' : 'text-center',
-		'text' : 'Corefactors'
-	}));
-	$('#corefactorsused').append(title);
-	for (var key in scores) {
-		var group = $('<div />', {
-			'class' : 'form-group'
-		});
-
-		group.append($('<label />', {
-			'class' : 'control-label col-md-6 col-sm-6 col-xs-6',
-			'text' : key
-		}));
-
-		group.append($('<div />',{
-			'class':'col-md-6 col-sm-6 col-xs-6'
-		}).append($('<input />',{
-			'class':'form-control text-right',
-			'disabled' : true,
-			'value' : scores[key],
-			'type' : 'text'
+	for (var i = 0; i<4; i++) {
+		var div  = $('<div />', {'class' : 'col-xs-3 col-sm-3 col-md-3 col-lg 3'});	
+		div.append( $('<div />', {'class' : 'progress'}).append($('<div />', {
+			'class': 'progress-bar '+getBarClass(i)+' progress-bar-striped',
+			'role': 'progressbar',
+			'aria-valuenow' : 1,
+			'aria-valuemin' : "0",
+			'aria-valuemax' : "1",
+			'style' : 'width: 100%;',
+			'text' : i
 		})));
-
-		$('#corefactorsused').append(group);
+		legend.append(div);
 	}
+	$('#assessmentresults').append(footer.append(legend));
+
+    function getBarClass(quartile) {
+    	var barclass;
+		switch (quartile) {
+		case 0:
+			barclass = 'progress-bar-danger';
+			break;
+		case 1:
+			barclass = 'progress-bar-warning';
+			break;
+		case 2:
+			barclass = 'progress-bar-info';
+			break;
+		case 3:
+			barclass = 'progress-bar-success';
+			break;
+		default:
+			barclass = 'progress-bar-default';
+			break;
+		}
+		return barclass;
+	}
+
 }
-
-function renderPredictionChart(scores) {
-	$('#candidateicon').html('<i class="fa ' + respondant.respondant_profile_icon +'"></i>');
-	$('#candidateicon').addClass(respondant.respondant_profile_class);
-
-	refreshPositionTenure(getPositionTenureData()); // use stub code
-}
-
 
 
 function updatePositionModelDetails(role_benchmark) {

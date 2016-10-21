@@ -180,6 +180,22 @@ body.coverpage {
     margin-top: -12px;
 }
 
+.card-solid, .card-dashed {
+	border-width: 1px;
+	border-color: #ddd;
+	-webkit-box-shadow: 1px 1px 1px 1px rgba(170,170,170,1);
+	-moz-box-shadow: 1px 1px 1px 1px rgba(170,170,170,1);
+	box-shadow: 1px 1px 1px 1px rgba(170,170,170,1);
+}
+
+.card-solid {
+	border-style: solid;
+}
+
+.card-dashed {
+	border-style: dashed;
+}
+
 @media (max-width: 767px) {
   .squaretext {
     font-size: 6.5vw;
