@@ -20,6 +20,7 @@
 		<dbdeploy.version>3.0M3</dbdeploy.version>
 		<dbdeploy.db-driver>org.postgresql.Driver</dbdeploy.db-driver>
 		<dbdeploy.dbms>pgsql</dbdeploy.dbms>
+		<commons-math-version>3.6.1</commons-math-version>
 	</properties>
 
 	<dependencies>
@@ -73,6 +74,11 @@
 			<artifactId>guava</artifactId>
 			<version>19.0</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-math3</artifactId>
+		    <version>${commons-math-version}</version>
+		</dependency>		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

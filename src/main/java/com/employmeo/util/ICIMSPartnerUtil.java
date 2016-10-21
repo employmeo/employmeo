@@ -238,7 +238,7 @@ public class ICIMSPartnerUtil implements PartnerUtil {
 	public JSONObject getScoresMessage(Respondant respondant) {
 		
 		JSONObject scores = respondant.getAssessmentScore();
-		ScoringUtil.predictRespondant(respondant);
+		PredictionUtil.predictRespondant(respondant);
 
 		Iterator<String> it = scores.keys();
 		StringBuffer notes = new StringBuffer();

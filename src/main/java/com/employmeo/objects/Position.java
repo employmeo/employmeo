@@ -1,15 +1,27 @@
 package com.employmeo.objects;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.json.JSONObject;
 
 import com.employmeo.util.DBUtil;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The persistent class for the positions database table.
@@ -46,6 +58,9 @@ public class Position extends PersistantObject implements Serializable {
 	// bi-directional many-to-one association to Account
 	@OneToMany(mappedBy = "position", fetch = FetchType.EAGER)
 	private List<PredictiveModel> pmFactors;
+
+	@OneToMany(mappedBy = "position", fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+	private List<PositionPredictionConfiguration> positionPredictionConfigs;
 
 	public Position() {
 	}
@@ -111,6 +126,14 @@ public class Position extends PersistantObject implements Serializable {
 
 	public List<PredictiveModel> getPmFactors() {
 		return this.pmFactors;
+	}
+
+	public List<PositionPredictionConfiguration> getPositionPredictionConfigs() {
+		return positionPredictionConfigs;
+	}
+
+	public void setPositionPredictionConfigs(List<PositionPredictionConfiguration> positionPredictionConfigs) {
+		this.positionPredictionConfigs = positionPredictionConfigs;
 	}
 
 	public List<Corefactor> getCorefactors() {

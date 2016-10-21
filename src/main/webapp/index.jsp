@@ -45,7 +45,7 @@
 		<div class="tile-stats">
 			<div class="right">
 				<div class="icon">
-					<i class="fa fa-check-square-o">0</i>
+					<i class="fa fa-check-square-o"></i>
 				</div>
 				<div class="count" id='completedcount'>0</div>
 				<h3>Completed</h3>

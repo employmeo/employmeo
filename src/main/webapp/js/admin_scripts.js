@@ -14,6 +14,9 @@ var locationList;
 var qTable;
 var detailedScores;
 
+Chart.defaults.global.defaultFontColor = '#000';
+Chart.defaults.global.defaultFontFamily = '"Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif';
+
 //basic user / account functions (login/logout/etc)
 function login() {
 	$.ajax({
@@ -645,12 +648,221 @@ function showApplicantScoring(applicantData) {
 	refreshPositionTenure(getPositionTenureData()); // use stub code
 }
 
+function presentPredictions(dataScores) {
+	$('#candidateicon').html('<i class="fa ' + respondant.respondant_profile_icon +'"></i>');
+	$('#candidateicon').addClass(respondant.respondant_profile_class);
+	$('#compositescore').text(Math.round(respondant.respondant_composite_score));
+	$('#candidatename').text(respondant.respondant_person_fname + ' ' + respondant.respondant_person_lname);
+	$('#candidateemail').text(respondant.respondant_person_email);
+	$('#candidateaddress').text(respondant.respondant_person_address);
+	$('#candidateposition').text(respondant.respondant_position_name);
+	$('#candidatelocation').text(respondant.respondant_location_name);
+	$('#assessmentname').text(respondant.respondant_survey_name);
+	$('#assessmentdate').text(respondant.respondant_created_date);
+	
+	var fulltext = respondant.respondant_person_fname +
+	               "'s application is in the top " +
+	               Math.round(respondant.respondant_composite_score) +
+	               " percentile of applicants to " + 
+	               respondant.respondant_location_name + ".";
+	$('#fulltextdesc').text(fulltext);
+	
+	renderAssessmentScore(dataScores.scores);
+	var header = $('<h4 />',{'text': 'Probability that ' + respondant.respondant_person_fname + ' ...'});
+	$('#predictions').empty();
+	$('#predictions').append($('<div />',{'class':'row text-center'}).append(header));
+
+	// now - lets assume 3 max.
+	var counter = 0;
+	for (var i in respondant.predictions) {
+		if (i==3) break;
+        counter++;
+		addPrediction(respondant.predictions[i]);
+		produceHistogram(respondant.predictions[i]);
+	}
+
+	for (var i=3; i>counter; i--) {
+		var card = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+		var preddiv = $('<div />', { 'class' : 'card-dashed text-center'});
+	    preddiv.append($('<canvas />', {
+	    	'class' : 'chart',
+	    	'style' : 'height:100px;width:100%;'
+	    }));
+		preddiv.append($('<hr />'));
+	    preddiv.append($('<h5 />',{'text' : 'Configure an additional prediction'} ));
+		preddiv.append($('<hr />'));
+	    preddiv.append($('<canvas />', {
+	    	'class' : 'chart',
+	    	'style' : 'height:auto;width:100%;'
+	    }));
+        card.append(preddiv);
+	    $('#predictions').append(card);
+	}
+}
+
+function addPrediction(prediction) {
+	var card = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+	var preddiv = $('<div />', { 'class' : 'card-solid text-center'});
+    preddiv.append($('<h5 />',{'text' : prediction.label} ));
+    
+    var spanid = 'prediction_' + prediction.prediction_id;
+    var spanChart = $('<span />', {
+    	'class' : 'chart',
+    	'id' : spanid,
+    	'data-percent' : 0
+    }).append($('<span />', {
+    	'class' : 'percent',
+    	'style' : 'line-height:100px;font-size:30px;'
+    }));
+
+    var canvasid = 'histogram_' + prediction.prediction_id;
+    var histCanvas = $('<canvas />', {
+    	'class' : 'chart',
+    	'id' : canvasid,
+    	'style' : 'height:auto;width:100%;'
+    });
+	preddiv.append(spanChart);
+	preddiv.append($('<hr />'));
+    preddiv.append($('<h5 />',{'text' : 'Compared to other applicants...'} ));
+	preddiv.append(histCanvas);
+	var comparison = respondant.respondant_person_fname + "'s predictions is better than " +
+    	(prediction.prediction_percentile * 100).toFixed(0) +
+	    "% of other applicants."
+    preddiv.append($('<h5 />',{'text' : comparison} ));
+    card.append(preddiv);
+    $('#predictions').append(card);
+	
+	var color;
+	switch (Math.floor(4*prediction.prediction_percentile)) {
+		case 0:
+			color = '#d9534f';
+			break;
+		case 1:
+			color = '#F39C12';
+			break;
+		case 2:
+			color = '#3498DB';
+			break;
+		case 3:
+			color = '#26B99A';
+			break;
+		default:
+			color = 'gray';
+			break;		
+	}
+	
+	$('#'+spanid).easyPieChart({
+    	easing: 'easeOutBounce',
+    	lineWidth: '10',
+    	barColor: color,
+    	scaleColor: false,
+    	size: $('#'+spanid).width(),
+    	onStep: function(from, to, percent) { $(this.el).find('.percent').text(Math.round(percent));}
+  	});
+	$('#'+spanid).data('easyPieChart').update(100*prediction.prediction_score);	
+}
+
+function produceHistogram(prediction) {
+//	var histdiv = $('<div />', { 'class' : 'col-md-4 col-sm-4 col-xs-12 text-center'});
+ //   histdiv.append($('<h5 />',{'text' : prediction.label} ));
+    
+    var canvasid = 'histogram_' + prediction.prediction_id;
+//    var histCanvas = $('<canvas />', {
+//    	'class' : 'chart',
+//   	'id' : canvasid,
+//    	'style' : 'height:auto;width:100%;'
+//    });
+
+//	histdiv.append(histCanvas);
+//	$('#histograms').append(histdiv);
+	var ctx = document.getElementById(canvasid);
+
+	var color;
+	switch (Math.floor(4*prediction.prediction_percentile)) {
+		case 0:
+			color = '#d9534f';
+			break;
+		case 1:
+			color = '#F39C12';
+			break;
+		case 2:
+			color = '#3498DB';
+			break;
+		case 3:
+			color = '#26B99A';
+			break;
+		default:
+			color = 'gray';
+			break;		
+	}
+	
+	var mean= getPredictionMean(prediction);
+	var stdev = getPredictionStDev(prediction);	
+	var labels = new Array();
+	var bgColors = new Array();
+	var borderColors = new Array();
+	var datapoints = new Array();
+	
+	// Generate labels and data, and highlight person
+	for (var i = 0; i<20; i++) {
+		var label = i*5 + "-" + 5*(i+1) + '%';
+		labels[i] = label;
+		var datapoint = cdf((i+1)/20,mean,stdev) - cdf(i/20,mean,stdev);
+		datapoints[i] = datapoint;
+		if ((prediction.prediction_score > i/20) && (prediction.prediction_score < (i+1)/20)) {
+			bgColors[i] = color;
+		} else {
+			bgColors[i] = '#ccc';
+		}
+	}
+	
+	var data = {
+		    labels: labels,
+		    datasets: [
+		        {
+		            label: "frequency",
+		            borderWidth: 1,
+		            backgroundColor: bgColors,
+		            borderColor: borderColors,
+		            data: datapoints
+		        }
+		    ]
+		};
+    var options = {
+    		    legend: { display : false},
+  	  	        scales: {
+  	  	            xAxes: [{
+  	  	                stacked: false,
+  	  	                gridLines: {display:false},
+  	  	            	display: true
+  	  	            }],
+  	  	            yAxes: [{
+  	  	                stacked: false,
+  	  	                gridLines: {display:false},
+  	  	            	display: false
+  	  	            }],
+  	  	            showScale: false
+  	  	        }
+    		};
+    
+	var myBarChart = new Chart(ctx, {
+	    type: 'bar',
+	    data: data,
+	    options: options
+	});
+
+}
+
 function changePositionTo(pos_id) {
 	$(positionList).each(function() {
 		if (pos_id == this.position_id) {
+			this.data = getStubDataForRoleBenchmark(); /// replace with REST call or pull from other var
+
 			updatePositionDetails(this);
-			updatePositionTenure(this);
-			updatePositionProfile(this);
+			updatePositionModelDetails(this.data.role_benchmark);
+			updateGradesTable(this.data.role_benchmark.role_grade);
+			updateCriticalFactorsChart(this);
+
 		}		
 	});
 }
@@ -658,82 +870,7 @@ function changePositionTo(pos_id) {
 function updatePositionDetails(position) {
 	$('#positionname').text(position.position_name);
 	$('#positiondesc').text(position.position_description);
-	position.position_corefactors.sort(function(a,b) {
-		return a.corefactor_display_group.localeCompare(b.corefactor_display_group);
-	});
-	
-	$('#corefactorlist').empty();
-	$(position.position_corefactors).each(function () {
-		var row = $('<tr/>');
-		row.append($('<td />',{ text : this.corefactor_name }));
-		row.append($('<td />',{ text : this.corefactor_description }));
-		row.append($('<td />',{ text : this.corefactor_display_group }));		
-		$('#corefactorlist').append(row);
-	});
 }
-
-function updatePositionTenure(position) {
-	refreshPositionTenure(getPositionTenureData()); // use stub code
-}
-
-function refreshPositionTenure(dataPositionTenure) {
-	var positionTenure = $("#positionTenure").get(0).getContext("2d");
-	if (tenureChart != null) tenureChart.destroy();
-	tenureChart = new Chart(positionTenure, {type: 'bar', data: dataPositionTenure, options: { 
-		showScale: true,
-		scaleShowGridLines: false,
-		responsive : true,
-		legend: { display: false }
-	}});	
-}
-
-function updatePositionProfile(position) {
-	var dataPositionProfile = getApplicantProfileData(); // use stub code
-	positionProfile = $("#positionProfile").get(0).getContext("2d");
-	if (profileChart != null) profileChart.destroy();
-	var dataPosProfile = {
-			datasets : [{
-				backgroundColor : position.position_profiles[0].profile_overlay,
-				borderColor : position.position_profiles[0].profile_color,
-				label : position.position_profiles[0].profile_name,
-				pointBackgroundColor : position.position_profiles[0].profile_color,
-				pointBorderColor : position.position_profiles[0].profile_color,
-				pointHoverBackgroundColor : position.position_profiles[0].profile_highlight,
-				pointHoverBorderColor : position.position_profiles[0].profile_highlight,
-				data : []
-			}],
-			labels : []};
-		
-	$(position.position_corefactors).each(function (i) {
-		dataPosProfile.labels[i] = this.corefactor_name;
-		dataPosProfile.datasets[0].data[i] = this.pm_score_a;
-	});
-	
-
-	profileChart = new Chart(positionProfile, {type: 'radar', data: dataPosProfile, options: { 
-		scale: {
-                ticks: {
-                    beginAtZero: true
-                },
-                pointLabels : {
-                	fontSize : 16
-                }
-        },
-		legend: { display: false }
-	}});	
-}
-
-function refreshPositionProfile(dataPositionProfile) {
-	positionProfile = $("#positionProfile").get(0).getContext("2d");
-	if (profileChart != null) profileChart.destroy();
-	profileChart = new Chart(positionProfile, {type: 'radar', data: dataPositionProfile, options: { 
-		showScale: true,
-		responsive : true,
-		defaultFontSize: 16,
-		legend: { display: false }
-	}});	
-}
-
 
 //Payroll tools section
 function uploadPayroll(e) {
@@ -800,6 +937,40 @@ function getScoreUuid(respondantUuid) {
 	});    
 }
 
+//Respondant scoring section
+function getPredictions(respondantId) {
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/admin/getscore",
+		data: {
+			"respondant_id" : respondantId   	
+		},
+		success: function(data)
+		{
+			respondant = data.respondant;
+			presentPredictions(data);
+		}
+	});    
+}
+
+//Respondant scoring section
+function getPredictionsUuid(respondantUuid) {
+	$.ajax({
+		type: "POST",
+		async: true,
+		url: "/admin/getscore",
+		data: {
+			"respondant_uuid" : respondantUuid   	
+		},
+		success: function(data)
+		{
+			respondant = data.respondant;
+			presentPredictions(data);
+		}
+	});    
+}
+
 function copyToClipboard(element) {
     var $temp = $("<input>");
     $("body").append($temp);
@@ -819,8 +990,6 @@ function presentRespondantScores(dataScores) {
 
 	detailedScores = dataScores.detailed_scores;
 	renderDetailedAssessmentScore();
-	renderPredictionElements(dataScores.scores);
-	renderPredictionChart(dataScores.scores);
 }
 
 function showAllDetails() {
@@ -886,7 +1055,7 @@ function renderDetailedAssessmentScore() {
 		namediv.append(expander);
 		var scorediv = $('<div />', {
 			'class' : 'col-xs-2 col-sm-4 col-md-6 col-lg-6 text-right', 
-			html : '<h5><strong>' + score.cf_score + "/" + score.corefactor_high + '</strong></h5>'});
+			html : '<h5><strong>' + score.cf_score.toFixed(1) + " of " + score.corefactor_high + '</strong></h5>'});
 		var lowdesc = $('<div />', {
 			'class' : 'hidden-xs col-sm-3 col-md-2 col-lg-2 text-left', 
 			html : '<h6><em>' +score.corefactor_low_desc + '</em></h6>'});
@@ -928,81 +1097,293 @@ function renderDetailedAssessmentScore() {
 
 function prepPersonalMessage (message) {
 	var pm = message;
-	pm = pm.replace(new RegExp("\\[FNAME\\]","g"),respondant.respondant_person_fname);
-	pm = pm.replace(new RegExp("\\[LNAME\\]","g"),respondant.respondant_person_lname);
-
-	pm = pm.replace(new RegExp("\\[CHESHE\\]","g"),"This candidate");
-	pm = pm.replace(new RegExp("\\[LHESHE\\]","g"),"this candidate");
-	pm = pm.replace(new RegExp("\\[CHIMHER\\]","g"),"Him or her");
-	pm = pm.replace(new RegExp("\\[LHIMHER\\]","g"),"him or her");
-	pm = pm.replace(new RegExp("\\[HIMHER\\]","g"),"him or her");
-	pm = pm.replace(new RegExp("\\[CHISHER\\]","g"),"His or her");
-	pm = pm.replace(new RegExp("\\[LHISHER\\]","g"),"his or her");
-	pm = pm.replace(new RegExp("\\[HIMSELFHERSELF\\]","g"),"him or herself");
-
+	if (pm != null) {
+		pm = pm.replace(new RegExp("\\[FNAME\\]","g"),respondant.respondant_person_fname);
+		pm = pm.replace(new RegExp("\\[LNAME\\]","g"),respondant.respondant_person_lname);
+	
+		pm = pm.replace(new RegExp("\\[CHESHE\\]","g"),"This candidate");
+		pm = pm.replace(new RegExp("\\[LHESHE\\]","g"),"this candidate");
+		pm = pm.replace(new RegExp("\\[CHIMHER\\]","g"),"Him or her");
+		pm = pm.replace(new RegExp("\\[LHIMHER\\]","g"),"him or her");
+		pm = pm.replace(new RegExp("\\[HIMHER\\]","g"),"him or her");
+		pm = pm.replace(new RegExp("\\[CHISHER\\]","g"),"His or her");
+		pm = pm.replace(new RegExp("\\[LHISHER\\]","g"),"his or her");
+		pm = pm.replace(new RegExp("\\[HIMSELFHERSELF\\]","g"),"him or herself");
+	}
 	return pm;
 }
 
-function renderAssessmentScore(scores) {
 
+
+function renderAssessmentScore(scores) {
+	$('#detailslink').prop("href", '/assessment_results.jsp?&respondant_id=' + respondant.respondant_id);
 	$('#assessmentresults').empty();
 	for (var key in scores) {
 		var row = $('<tr />');
-		row.append($('<th />', {'style':'width:100px;', 'text': key }))
-		var progress = $('<div />', {'class' : 'progress'}).append($('<div />', {
-			'class': 'progress-bar progress-bar-success progress-bar-striped',
+		var cell = $('<td />');
+		var quartile = Math.floor(4*scores[key]/11);
+		
+		cell.append($('<div />', {'text': key }));
+		cell.append( $('<div />', {'class' : 'progress'}).append($('<div />', {
+			'class': 'progress-bar '+getBarClass(quartile)+' progress-bar-striped',
 			'role': 'progressbar',
 			'aria-valuenow' : scores[key],
 			'aria-valuemin' : "1",
 			'aria-valuemax' : "11",
 			'style' : 'width: ' + scores[key]/0.11 + '%;',
 			'text' : scores[key]
-		})); 
-		row.append($('<td />').append(progress));
+		}))); 
+		row.append(cell);
 		$('#assessmentresults').append(row);
 	}
 
-}
+	var footer = $('<tr />');
+	var legend = $('<td />', {'style':'background-color:#eee;'});
+	legend.append($('<div />', {'class':'text-center', 'text': 'Bar Color Indicates Quartile'}));
 
-function renderPredictionElements(scores) {
-	$('#corefactorsused').empty();
-	var title = $('<div />', {
-		'class' : 'form-group'
-	});
-	title.append($('<h4 />', {
-		'class' : 'text-center',
-		'text' : 'Corefactors'
-	}));
-	$('#corefactorsused').append(title);
-	for (var key in scores) {
-		var group = $('<div />', {
-			'class' : 'form-group'
-		});
-
-		group.append($('<label />', {
-			'class' : 'control-label col-md-6 col-sm-6 col-xs-6',
-			'text' : key
-		}));
-
-		group.append($('<div />',{
-			'class':'col-md-6 col-sm-6 col-xs-6'
-		}).append($('<input />',{
-			'class':'form-control text-right',
-			'disabled' : true,
-			'value' : scores[key],
-			'type' : 'text'
+	for (var i = 0; i<4; i++) {
+		var div  = $('<div />', {'class' : 'col-xs-3 col-sm-3 col-md-3 col-lg 3'});	
+		div.append( $('<div />', {'class' : 'progress'}).append($('<div />', {
+			'class': 'progress-bar '+getBarClass(i)+' progress-bar-striped',
+			'role': 'progressbar',
+			'aria-valuenow' : 1,
+			'aria-valuemin' : "0",
+			'aria-valuemax' : "1",
+			'style' : 'width: 100%;',
+			'text' : i
 		})));
-
-		$('#corefactorsused').append(group);
+		legend.append(div);
 	}
+	$('#assessmentresults').append(footer.append(legend));
+
+    function getBarClass(quartile) {
+    	var barclass;
+		switch (quartile) {
+		case 0:
+			barclass = 'progress-bar-danger';
+			break;
+		case 1:
+			barclass = 'progress-bar-warning';
+			break;
+		case 2:
+			barclass = 'progress-bar-info';
+			break;
+		case 3:
+			barclass = 'progress-bar-success';
+			break;
+		default:
+			barclass = 'progress-bar-default';
+			break;
+		}
+		return barclass;
+	}
+
 }
 
-function renderPredictionChart(scores) {
-	$('#candidateicon').html('<i class="fa ' + respondant.respondant_profile_icon +'"></i>');
-	$('#candidateicon').addClass(respondant.respondant_profile_class);
 
-	refreshPositionTenure(getPositionTenureData()); // use stub code
+function updatePositionModelDetails(role_benchmark) {
+	document.querySelector('#div_applicant_count').innerHTML = role_benchmark.applicant_count;
+	document.querySelector('#div_hire_count').innerHTML = role_benchmark.hire_count;
+	document.querySelector('#div_hire_rate').innerHTML = Math.round((role_benchmark.hire_count/role_benchmark.applicant_count)*100)+'%';		
 }
+
+function updateGradesTable(arr1) {
+	$('#gradetable').empty();
+	$('#gradefooter').empty();
+	
+	var frag = document.createDocumentFragment();
+	// measure variables
+	var avg0 = 0;
+	var avg1 = 0;
+			
+	for (var i = 0, len = Object.keys(arr1).length; i < len; i++) {
+		//summary variables
+		avg0 += parseFloat(arr1[i].v0);
+		avg1 += parseFloat(arr1[i].v1);
+		
+		var tr0 = document.createElement("tr");
+		var td0 = document.createElement("td");
+		var divClass;
+		var iconClass;
+		
+		switch (arr1[i].grade){
+			case "A":
+				divClass='btn-success';
+				iconClass='fa-rocket';
+				break;
+			case "B":
+				divClass='btn-info';
+				iconClass='fa-user-plus';
+				break;
+			case "C":
+				divClass='btn-warning';
+				iconClass='fa-warning';
+				break;
+			case "D":
+				divClass='btn-danger';
+				iconClass='fa-hand-stop-o';
+				break;
+		}	
+		$(td0).append(getProfileBadge(divClass, iconClass));
+		tr0.appendChild(td0);		
+		
+		var td1 = document.createElement("td");
+		td1.className="text-center";
+		td1.innerHTML = arr1[i].v0;
+		
+		var td2 = document.createElement("td");
+		td2.className="text-center";
+		td2.innerHTML = (arr1[i].v1*100).toPrecision(2)+'%';
+		
+		tr0.appendChild(td1);
+		tr0.appendChild(td2);
+		frag.appendChild(tr0);	
+		
+		var el = document.querySelector('#gradetable');
+		el.appendChild(frag);
+	}
+	
+	var tr0 = document.createElement("tr");
+	var td0 = document.createElement("th");
+	td0.innerHTML = "Average";
+	var td1 = document.createElement("th");
+	td1.className="text-center";
+	td1.innerHTML = (avg0/Object.keys(arr1).length).toFixed(1);
+	var td2 = document.createElement("th");
+	td2.className="text-center";
+	td2.innerHTML = (avg1*100/Object.keys(arr1).length).toFixed(1)+'%';
+	
+	tr0.appendChild(td0);
+	tr0.appendChild(td1);
+	tr0.appendChild(td2);	
+	
+	var el = document.querySelector('#gradefooter');
+	el.appendChild(tr0);
+}
+
+function getProfileBadge(divClass,iconClass) {
+	var div = $('<div />', {'class':'profilesquare'}).addClass(divClass);
+	var icon = $('<i />', {'class':'fa'}).addClass(iconClass);
+	$(div).append(icon);
+	return div;
+}	
+
+function initCriticalFactorsChart() {
+    var ctx = document.querySelector("#criticalfactorschart").getContext("2d");
+	var barChartConfig = {
+		    type: "bar",
+	  	    data: {
+	  	  	  labels: ["loading..."],
+  	  	  	  
+  	  	  	  datasets: [{
+  	  	  		label: "Applicants",
+  	  	        backgroundColor: 'rgba(200, 200, 200, 0.8)',
+  	  	        borderColor: 'rgba(150, 150, 150, 0.8)',
+  	  	  		borderWidth: 2,
+  	  	  	    data: []
+  	  	  	  },
+  	  	  	{
+  	  	  		label: "Employees",
+  	  	  		backgroundColor: 'rgba(0, 200, 0, 0.8)',
+  	  	  		borderColor: 'rgba(0, 150, 0, 0.8)',
+  	  	  		borderWidth: 2,
+  	  	    	data: []
+  	  	    	  }
+  	  	  	  ]
+  	  	  	},
+  	  	    options: {
+  	  	    	responsive: true,
+  	  	        maintainAspectRatio: false,
+  	  	        title: {
+  	  	        	display: true,
+  	  	        	fontSize: 18,
+  	  	        	text: 'Critical Factors'
+  	  	        },
+  	  	        legend: {
+  	  	        	position: 'left',
+  	  	        	labels: {
+  	  	        		boxWidth: 12
+  	  	        	}
+  	  	        },
+  	  	        scales: {
+  	  	            xAxes: [{
+  	  	                stacked: false
+  	  	                ,gridLines: {display:false}
+  	  	            	,display: true
+  	  	            }],
+  	  	            yAxes: [{
+  	                    ticks: {
+  	                    	min: 0,
+  	                    	max: 12,
+  	                    	beginAtZero : true
+  	                    },
+  	  	                stacked: false
+  	  	                ,gridLines: {display:false}
+  	  	            	,display: false
+  	  	            }]
+  	  	        ,showScale: false
+  	  	        },
+  	  	    animation: {
+  	    	  	duration: 500,
+  	    	  	onComplete: function () {
+  	    	  	    // render the value of the chart above the bar
+  	    	  	    var ctx = this.chart.ctx;
+  	    	  	    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'normal', Chart.defaults.global.defaultFontFamily);
+  	    	  	    ctx.fillStyle = this.chart.config.options.defaultFontColor;
+  	    	  	    ctx.textAlign = 'center';
+  	    	  	    ctx.textBaseline = 'bottom';
+  	    	  	    var fontVar = 'normal 16px "Helvetica Neue", Roboto, Arial'
+    	    	  	if (this.chart.width < 600) fontVar = 'bold 14px "Helvetica Neue", Roboto, Arial';
+
+  	    	  	    this.data.datasets.forEach(function (dataset) {
+  	    	  	    	
+  	    	  	        for (var i = 0; i < dataset.data.length; i++) {
+  	    	  	        	if (! dataset._meta[0].hidden) {
+  	    	  	                var model = dataset._meta[0].data[i]._model;
+  	    	  	                ctx.font = fontVar;
+  	    	  	                ctx.fillText(dataset.data[i].toFixed(1), model.x, model.y - 0);
+  	    	  	        	}
+  	    	  	        }
+  	    	  	    });
+  	    	  	}}    
+  	  	    }
+  	  	};
+	return new Chart(ctx, barChartConfig);
+
+}
+	
+function updateCriticalFactorsChart(position) {
+
+	position.position_corefactors.sort(function(a,b) {
+		return a.corefactor_display_group.localeCompare(b.corefactor_display_group);
+	});
+	
+	$('#corefactorlist').empty();
+	$(position.position_corefactors).each(function () {
+		var row = $('<tr/>');
+		row.append($('<td />',{ text : this.corefactor_name }));
+		row.append($('<td />',{ text : this.corefactor_description }));
+		row.append($('<td />',{ text : this.corefactor_display_group }));		
+		$('#corefactorlist').append(row);
+	});
+	
+	var chartLabels = [];
+	var chartData0 = []; 
+	var chartData1 = [];
+	
+	for (var i = 0; i < position.position_corefactors.length;i++) {
+		chartLabels.push(position.position_corefactors[i].corefactor_name);
+		chartData0.push(position.position_corefactors[i].pm_score_a-2*Math.random());
+		chartData1.push(position.position_corefactors[i].pm_score_a+1*Math.random());
+	}
+	
+	cfBarChart.config.data.labels = chartLabels;	
+	cfBarChart.config.data.datasets[0].data = chartData0;
+	cfBarChart.config.data.datasets[1].data = chartData1;
+	
+	cfBarChart.update();
+}
+
 
 
 function lookupLastTenCandidates() {
@@ -1043,4 +1424,27 @@ function lookupLastTenCandidates() {
 				li.append(badge);
 				$('#recentcandidates').append(li);
 			}}});
+}
+
+function cdf(x, mean, variance) {
+	  return 0.5 * (1 + erf((x - mean) / (Math.sqrt(2 * variance))));
+}
+
+function erf(x) {
+	  // save the sign of x
+	  var sign = (x >= 0) ? 1 : -1;
+	  x = Math.abs(x);
+
+	  // constants
+	  var a1 =  0.254829592;
+	  var a2 = -0.284496736;
+	  var a3 =  1.421413741;
+	  var a4 = -1.453152027;
+	  var a5 =  1.061405429;
+	  var p  =  0.3275911;
+
+	  // A&S formula 7.1.26
+	  var t = 1.0/(1.0 + p*x);
+	  var y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+	  return sign * y; // erf(-x) = -erf(x);
 }

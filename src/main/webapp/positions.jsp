@@ -1,9 +1,10 @@
 <%@ include file="/WEB-INF/includes/inc_head.jsp"%>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 <div class="row">
-	<div class="col-xs-12 col-sm-3 col-md-3">
-		<h3>Positions</h3>
+	<div class="col-xs-12 col-sm-6 col-md-6">
+		<h3>Position Benchmarking</h3>
 	</div>
-	<div class="col-md-9 col-sm-9 col-xs-12 pull-right">
+	<div class="col-md-6 col-sm-6 col-xs-12 pull-right">
 		<form class="form-inline pull-right" id='refinequery'>
 			<div class="form-group">
 				<select class="form-control" id="position_id" name="positionid"
@@ -16,24 +17,85 @@
 <div class="row content">
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		<div class="x_panel">
-			<div class="x_title">
-				<h3 id="positionname">Position Name</h3>
-			</div>
 			<div class="x_content">
+
+<!-- Begin Position Description and Stats -->
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
 					<div class="x_panel">
 						<div class="x_title">
-							<h4>Position Description<i class="fa fa-briefcase pull-right"></i></h4>
+							<h3 id="positionname">Position Name</h3>
 						</div>
 						<div class="x_content">
-							<span id="positiondesc"></span>
+							<h4 id="positiondesc"></h4>
+							<hr>
+							<div class="col-xs-12 col-sm-4 tile_stats_count text-center">
+								<div class="count_top">Applicants</div>
+								<div id="div_applicant_count" class="count">1234</div>
+							</div>
+							<div class="col-xs-12 col-sm-4 tile_stats_count text-center">
+								<div class="count_top">Hires</div>
+								<div id="div_hire_count" class="count">23</div>
+							</div>
+							<div class="col-xs-12 col-sm-4 tile_stats_count text-center">
+								<div class="count_top">Hire Rate</div>
+								<div id="div_hire_rate" class="count">35%</div>
+							</div>
+							<div class="col-xs-12 text-right">
+								<hr>
+								<span id='#last_updated' style="font-style:italic;">Model Last Updated: Oct 15, 2016</span>
+							</div>
 						</div>
 					</div>
 				</div>
+<!-- End Position Description and Stats -->
+<!-- Begin Stats by Profile Table -->
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
 					<div class="x_panel">
 						<div class="x_title">
-							<h4>Important Factors for Position<i class="fa fa-cogs pull-right"></i></h4>
+							<h4>
+								Key Metrics by Grade<i class="fa fa-sliders pull-right"></i>
+							</h4>
+						</div>
+						<div class="x_content">
+							<div>
+							<table class="table table-condensed table-hover h4">
+								<thead id="gradeheader">
+									<tr>
+										<th class="text-left">Grade</th>
+										<th class="text-center">Tenure (months)</th>
+										<th class="text-center">Annual Wage Inc %</th>
+									</tr>
+								</thead>
+								<tbody id="gradetable">
+								</tbody>
+								<tfoot id="gradefooter">
+								</tfoot>
+							</table>
+							</div>
+						</div>
+					</div>
+				</div>
+<!-- End Stats by Profile Table -->
+<!-- Begin Position Core Factors Bar Chart -->
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="x_panel">
+						<div class="x_content" style="background-color:#eee;border-style:solid;border-width:1px;border-color: #ccc;">
+							<div>
+								<div id="factors_barchart" class="col-xs-12"><canvas id="criticalfactorschart" style="min-height:320px;"></canvas></div>
+								<div class="col-xs-6 scaleleft">least important</div>
+								<div class="col-xs-6 scaleright">most important</div>
+							</div>
+						</div>
+					</div>
+				</div>
+<!-- End Position Core Factors Bar Chart -->
+<!-- Begin Position Core Factor List -->
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="x_panel">
+						<div class="x_title">
+							<h4>
+								Important Factors for Position<i class="fa fa-cogs pull-right"></i>
+							</h4>
 						</div>
 						<div class="x_content">
 							<table class="table table-condensed table-hover">
@@ -49,40 +111,17 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-					<div class="x_panel">
-						<div class="x_title">
-							<h4>
-								Position Profile<i class="fa fa-sliders pull-right"></i>
-							</h4>
-						</div>
-						<div class="x_content">
-							<div>
-								<canvas id="positionProfile" style="width: 100%, height: auto;"></canvas>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-					<div class="x_panel">
-						<div class="x_title">
-							<h4>
-								Position Turnover<i class="fa fa-bar-chart pull-right"></i>
-							</h4>
-						</div>
-						<div class="x_content">
-							<div>
-								<canvas id="positionTenure" style="width: 100%, height: auto;"></canvas>
-							</div>
-						</div>
-					</div>
-				</div>
+<!-- End Position Core Factor List -->
 			</div>
 		</div>
 	</div>
 </div>
 <%@ include file="/WEB-INF/includes/inc_header.jsp"%>
+
 <script type="text/javascript">
-	updatePositionsSelect(true);
+	var cfBarChart = initCriticalFactorsChart();
+	updatePositionsSelect(true); // this script gets all the positions from the server, then triggers the first "refresh"
+
 </script>
+
 </html>

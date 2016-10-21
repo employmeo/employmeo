@@ -20,7 +20,7 @@ import com.employmeo.objects.Partner;
 import com.employmeo.objects.Respondant;
 import com.employmeo.util.EmailUtility;
 import com.employmeo.util.PartnerUtil;
-import com.employmeo.util.ScoringUtil;
+import com.employmeo.util.PredictionUtil;
 
 @Path("submitassessment")
 public class SubmitAssessment {
@@ -61,7 +61,7 @@ public class SubmitAssessment {
 					pu.postScoresToPartner(respondant, message);
 				} else {
 					respondant.getAssessmentScore();
-					ScoringUtil.predictRespondant(respondant);
+					PredictionUtil.predictRespondant(respondant);
 				}
 
 				if (respondant.getRespondantEmailRecipient() != null
