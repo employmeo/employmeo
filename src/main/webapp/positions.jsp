@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/includes/inc_head.jsp"%>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 <div class="row">
 	<div class="col-xs-12 col-sm-6 col-md-6">
 		<h3>Position Benchmarking</h3>
@@ -16,19 +17,16 @@
 <div class="row content">
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		<div class="x_panel">
-			<div class="x_title">
-				<h3 id="positionname">Position Name</h3>
-			</div>
 			<div class="x_content">
 
 <!-- Begin Position Description and Stats -->
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
 					<div class="x_panel">
 						<div class="x_title">
-							<h4>Position Description<i class="fa fa-briefcase pull-right"></i></h4>
+							<h3 id="positionname">Position Name</h3>
 						</div>
 						<div class="x_content">
-							<span id="positiondesc"></span>
+							<h4 id="positiondesc"></h4>
 							<hr>
 							<div class="col-xs-12 col-sm-4 tile_stats_count text-center">
 								<div class="count_top">Applicants</div>
@@ -60,7 +58,7 @@
 						</div>
 						<div class="x_content">
 							<div>
-							<table class="table table-condensed table-hover">
+							<table class="table table-condensed table-hover h4">
 								<thead id="gradeheader">
 									<tr>
 										<th class="text-left">Grade</th>
@@ -81,14 +79,9 @@
 <!-- Begin Position Core Factors Bar Chart -->
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<div class="x_panel">
-						<div class="x_title">
-							<h4>
-								Critical Factors<i class="fa fa-bar-chart pull-right"></i>
-							</h4>
-						</div>
 						<div class="x_content" style="background-color:#eee;border-style:solid;border-width:1px;border-color: #ccc;">
-							<div style="margin-left: auto; margin-right: auto; max-width: 800px;">
-								<div id="factors_barchart" class="col-xs-12"><canvas id="criticalfactorschart" style="max-height:320px;"></canvas></div>
+							<div>
+								<div id="factors_barchart" class="col-xs-12"><canvas id="criticalfactorschart" style="min-height:320px;"></canvas></div>
 								<div class="col-xs-6 scaleleft">least important</div>
 								<div class="col-xs-6 scaleright">most important</div>
 							</div>

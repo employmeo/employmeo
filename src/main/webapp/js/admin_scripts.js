@@ -15,6 +15,7 @@ var qTable;
 var detailedScores;
 
 Chart.defaults.global.defaultFontColor = '#000';
+Chart.defaults.global.defaultFontFamily = '"Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif';
 
 //basic user / account functions (login/logout/etc)
 function login() {
@@ -1276,17 +1277,34 @@ function initCriticalFactorsChart() {
   	  	  	  
   	  	  	  datasets: [{
   	  	  		label: "Applicants",
-  	  	        backgroundColor: 'rgba(150, 150, 150, 0.8)',
+  	  	        backgroundColor: 'rgba(200, 200, 200, 0.8)',
+  	  	        borderColor: 'rgba(150, 150, 150, 0.8)',
+  	  	  		borderWidth: 2,
   	  	  	    data: []
   	  	  	  },
   	  	  	{
   	  	  		label: "Employees",
-  	  	  		backgroundColor: 'rgba(0, 150, 0, 0.8)',
+  	  	  		backgroundColor: 'rgba(0, 200, 0, 0.8)',
+  	  	  		borderColor: 'rgba(0, 150, 0, 0.8)',
+  	  	  		borderWidth: 2,
   	  	    	data: []
   	  	    	  }
   	  	  	  ]
   	  	  	},
   	  	    options: {
+  	  	    	responsive: true,
+  	  	        maintainAspectRatio: false,
+  	  	        title: {
+  	  	        	display: true,
+  	  	        	fontSize: 18,
+  	  	        	text: 'Critical Factors'
+  	  	        },
+  	  	        legend: {
+  	  	        	position: 'left',
+  	  	        	labels: {
+  	  	        		boxWidth: 12
+  	  	        	}
+  	  	        },
   	  	        scales: {
   	  	            xAxes: [{
   	  	                stacked: false
@@ -1314,10 +1332,15 @@ function initCriticalFactorsChart() {
   	    	  	    ctx.fillStyle = this.chart.config.options.defaultFontColor;
   	    	  	    ctx.textAlign = 'center';
   	    	  	    ctx.textBaseline = 'bottom';
+  	    	  	    var fontVar = 'normal 16px "Helvetica Neue", Roboto, Arial'
+    	    	  	if (this.chart.width < 600) fontVar = 'bold 14px "Helvetica Neue", Roboto, Arial';
+
   	    	  	    this.data.datasets.forEach(function (dataset) {
+  	    	  	    	
   	    	  	        for (var i = 0; i < dataset.data.length; i++) {
   	    	  	        	if (! dataset._meta[0].hidden) {
   	    	  	                var model = dataset._meta[0].data[i]._model;
+  	    	  	                ctx.font = fontVar;
   	    	  	                ctx.fillText(dataset.data[i].toFixed(1), model.x, model.y - 0);
   	    	  	        	}
   	    	  	        }
