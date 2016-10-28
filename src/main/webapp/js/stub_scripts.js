@@ -373,7 +373,7 @@ function postToService(data, url, callback) {
 function getPredictionMean(prediction) {
 	switch (prediction.model_id) {
 		case 1:
-			return .72;
+			return .48;
 			break;
 		case 2:
 			return .31
@@ -388,14 +388,14 @@ function getPredictionMean(prediction) {
 function getPredictionStDev(prediction) {
 	switch (prediction.model_id) {
 	case 1:
-		return .05;
+		return .052;
 		break;
 	case 2:
-		return .045
+		return .047;
 		break;
 	case 3:
 	default:
-		return .04;
+		return .038;
 		break;	
 }
 	
