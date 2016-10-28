@@ -45,6 +45,7 @@ $RECYCLE.BIN/
 .gitignore
 .project
 .tomcatplugin
+*.properties
 startserver.bat
 
 # Directories potentially created on remote AFP share
