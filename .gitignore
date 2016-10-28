@@ -43,6 +43,7 @@ $RECYCLE.BIN/
 .VolumeIcon.icns
 .classpath
 .gitignore
+*.properties
 .project
 .tomcatplugin
 startserver.bat

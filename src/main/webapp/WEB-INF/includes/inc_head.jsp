@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Employmeo</title>
+<title>TALYTICA</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width"/>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -44,7 +44,7 @@
       <div class="col-md-3 left_col">
 	    <div class="left_col scroll-view">
           <div class="navbar nav_title" style="border: 0;">
-            <a href="/index.jsp" class="site_title"><span><img height="55px" width="auto" src="/images/emp-logo-sm.png" alt="employmeo"></span></a>
+            <a href="/index.jsp" class="site_title"><span><img height="55px" width="auto" src="/images/tal-logo-sm.png" alt="TALYTICA"></span></a>
           </div>
           <div class="clearfix"></div>
           <br>
