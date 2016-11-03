@@ -805,11 +805,21 @@ function produceHistogram(prediction) {
 	
 	// Generate labels and data, and highlight person
 	for (var i = 0; i<20; i++) {
-		var label = i*5 + "-" + 5*(i+1) + '%';
+		var low = mean + ((i-10)*stdev)/3;
+		var high = mean + ((i-9)*stdev)/3;
+		var label = Math.round(100*low) + "-" + Math.round(100*high) + '%';
+		if (i == 0) {
+			label = "<" + Math.round(100*high) + '%';
+			low = 0;
+		}
+		if (i == 19) {
+			label = Math.round(100*low) + "%+";
+			high = 1;		
+		}
 		labels[i] = label;
-		var datapoint = cdf((i+1)/20,mean,stdev) - cdf(i/20,mean,stdev);
+		var datapoint = cdf(high,mean,stdev) - cdf(low,mean,stdev);
 		datapoints[i] = datapoint;
-		if ((prediction.prediction_score > i/20) && (prediction.prediction_score < (i+1)/20)) {
+		if ((prediction.prediction_score >= low) && (prediction.prediction_score < high)) {
 			bgColors[i] = color;
 		} else {
 			bgColors[i] = '#ccc';
@@ -1427,7 +1437,7 @@ function lookupLastTenCandidates() {
 }
 
 function cdf(x, mean, variance) {
-	  return 0.5 * (1 + erf((x - mean) / (Math.sqrt(2 * variance))));
+	  return 0.5 * (1 + erf((x - mean) / (Math.sqrt(2 * variance * variance))));
 }
 
 function erf(x) {
