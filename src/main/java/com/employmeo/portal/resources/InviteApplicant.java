@@ -26,19 +26,17 @@ public class InviteApplicant {
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
+	public String doPost(
+			@FormParam("account_id") Long accountId,
 			@FormParam("email") String to, @FormParam("fname") String fname, @FormParam("lname") String lname,
 			@FormParam("address") String address, @FormParam("lat") Double personLat,
 			@FormParam("lng") Double personLng, @FormParam("asid") Long asid,
 			@FormParam("position_id") Long positionId, @FormParam("location_id") Long locationId,
+			@FormParam("notifyemail") String notifyemail,
 			@DefaultValue("false") @FormParam("notifyme") boolean notifyMe) {
 		// Collect expected input fields
-		User user = (User) reqt.getSession().getAttribute("User");
-		if (user == null) {
-			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return null;
-		}
-		Account account = user.getAccount();
+
+		Account account = Account.getAccountById(accountId);
 
 		// Perform business logic
 		Person applicant = new Person();
@@ -56,7 +54,7 @@ public class InviteApplicant {
 		respondant.setRespondantAsid(asid);
 		respondant.setRespondantLocationId(locationId);// ok for null location
 		respondant.setRespondantPositionId(positionId);// ok for null location
-		if (notifyMe) respondant.setRespondantEmailRecipient(user.getUserEmail());
+		if (notifyMe) respondant.setRespondantEmailRecipient(notifyemail);
 		respondant.persistMe();
 		respondant.refreshMe(); // gets the remaining auto-gen-fields
 		

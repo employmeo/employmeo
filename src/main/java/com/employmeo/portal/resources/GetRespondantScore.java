@@ -38,14 +38,6 @@ public class GetRespondantScore {
 
 		JSONObject json = new JSONObject();
 		
-		HttpSession sess = reqt.getSession();
-		User user = (User) sess.getAttribute("User");
-		if (user == null) {
-			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			json.put("message", "Access Restricted");
-			return json.toString();
-		} 
-		
 		Respondant respondant = null;
 		if (respondantId != null) {
 			respondant = Respondant.getRespondantById(respondantId);
@@ -55,12 +47,6 @@ public class GetRespondantScore {
 
 		if (respondant != null) {
 			respondant.refreshMe();
-			if (!user.canView(respondant)) {
-				resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				log.warn("Unauthorized Access Attempted by User: " + user.getUserId());
-				json.put("message", "Access Restricted");
-				return json.toString();			
-			}
 			if (respondant.getRespondantStatus() < Respondant.STATUS_PREDICTED) {
 				respondant.refreshMe();
 			}

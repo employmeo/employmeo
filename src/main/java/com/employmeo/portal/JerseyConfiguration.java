@@ -11,20 +11,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.employmeo.portal.resources.AccountResource;
 import com.employmeo.portal.resources.ChangePassword;
-import com.employmeo.portal.resources.FortgotPassword;
-import com.employmeo.portal.resources.GetAssessmentList;
+import com.employmeo.portal.resources.CorefactorResource;
+import com.employmeo.portal.resources.Dashboard;
+import com.employmeo.portal.resources.ForgotPassword;
 import com.employmeo.portal.resources.GetLastTenRespondants;
-import com.employmeo.portal.resources.GetLocationList;
-import com.employmeo.portal.resources.GetPositionList;
-import com.employmeo.portal.resources.GetRespondants;
 import com.employmeo.portal.resources.InviteApplicant;
 import com.employmeo.portal.resources.Login;
 import com.employmeo.portal.resources.Logout;
-import com.employmeo.portal.resources.UpdateAccount;
-import com.employmeo.portal.resources.UpdateDash;
-import com.employmeo.portal.resources.AccountResource;
-import com.employmeo.portal.resources.CorefactorResource;
 import com.employmeo.portal.resources.PartnerResource;
 import com.employmeo.portal.resources.PersonResource;
 import com.employmeo.portal.resources.PredictionConfigurationResource;
@@ -62,17 +57,12 @@ public class JerseyConfiguration extends ResourceConfig {
 		
 //need redesign resources
 		register(ChangePassword.class);
-		register(FortgotPassword.class);
-		register(GetAssessmentList.class);
+		register(ForgotPassword.class);
 		register(GetLastTenRespondants.class);
-		register(GetLocationList.class);
-		register(GetPositionList.class);
-		register(GetRespondants.class);
 		register(InviteApplicant.class);
 		register(Login.class);
 		register(Logout.class);
-		register(UpdateAccount.class);
-		register(UpdateDash.class);
+		register(Dashboard.class);
 
 // properly designed resources		
 		register(AccountResource.class);

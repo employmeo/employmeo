@@ -8,13 +8,17 @@ import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,34 +29,36 @@ import com.employmeo.objects.User;
 import com.employmeo.util.DBUtil;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Path("updatedash")
-@Api( value="/updatedash", consumes=MediaType.APPLICATION_FORM_URLENCODED, produces=MediaType.APPLICATION_JSON)
-public class UpdateDash {
+@Path("dashboard")
+@Api( value="/dashboard", consumes=MediaType.APPLICATION_FORM_URLENCODED, produces=MediaType.APPLICATION_JSON)
+public class Dashboard {
 
 	private static final long ONE_DAY = 24*60*60*1000; // one day in milliseconds
 	
-	@POST
+	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
-			@DefaultValue("-1") @FormParam("location_id") Long locationId,
-			@DefaultValue("-1") @FormParam("position_id") Long positionId,
-			@DefaultValue("2015-01-01") @FormParam("fromdate") String fromDate,
-			@DefaultValue("2020-12-31") @FormParam("todate") String toDate) {
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@ApiOperation(value = "Gets dashboard metrics for given date-time range", response = String.class)
+	   @ApiResponses(value = {
+			     @ApiResponse(code = 200, message = "Respondant found"),
+			     @ApiResponse(code = 404, message = "No such Respondant found")
+			   })
+	public String doPost(
+			@ApiParam(value = "account id") @QueryParam("id") Long accountId,
+			@DefaultValue("-1") @ApiParam(value = "location id") @QueryParam("location") Long locationId,
+			@DefaultValue("-1") @ApiParam(value = "position id") @QueryParam("position") Long positionId,
+			@DefaultValue("2015-01-01") @ApiParam(value = "from date") @QueryParam("fromdate") String fromDate,
+			@DefaultValue("2020-12-31") @ApiParam(value = "to date") @QueryParam("todate") String toDate) {
 
 		JSONObject response = new JSONObject();
-
-		HttpSession sess = reqt.getSession();
-		User user = (User) sess.getAttribute("User");
-
-		if (user == null) {
-			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return null;
-		} // else if (false) { //
-			// {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
 		Timestamp from = new Timestamp(Date.valueOf(fromDate).getTime());
 		Timestamp to = new Timestamp(Date.valueOf(toDate).getTime() + ONE_DAY);
@@ -69,7 +75,7 @@ public class UpdateDash {
 		String sql = "SELECT r.respondantStatus, r.respondantProfile, COUNT(r) from Respondant r WHERE r.respondantAccountId = :accountId "
 				+ locationSQL + positionSQL + dateSQL + "GROUP BY r.respondantStatus, r.respondantProfile";
 		TypedQuery<Object[]> query = em.createQuery(sql, Object[].class);
-		query.setParameter("accountId", user.getAccount().getAccountId());
+		query.setParameter("accountId", accountId);
 		if (locationId > -1)
 			query.setParameter("locationId", locationId);
 		if (positionId > -1)

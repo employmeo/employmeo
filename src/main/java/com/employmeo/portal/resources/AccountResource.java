@@ -83,5 +83,69 @@ public class AccountResource {
 		log.debug("Saved account {}", savedAccount);
 		
 		return Response.status(Status.CREATED).entity(savedAccount).build();
-	}		
+	}
+	
+	@GET
+	@Path("/{id}/locations")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Gets the account by provided Id", response = Account.class)
+	   @ApiResponses(value = {
+	     @ApiResponse(code = 200, message = "Account found"),
+	     @ApiResponse(code = 404, message = "No such Account found")
+	   })	
+	public Response getLocations(@ApiParam(value = "account id") @PathParam("id") @NotNull Long id) {
+		log.debug("Requested locations for account id {}", id);
+		
+		Account account = accountService.getAccountById(id);
+		log.debug("Returning locations for account id {}", id);
+		
+		if(null != account) {
+			return Response.status(Status.OK).entity(account.getLocations()).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+	}	
+
+	@GET
+	@Path("/{id}/positions")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Gets the account by provided Id", response = Account.class)
+	   @ApiResponses(value = {
+	     @ApiResponse(code = 200, message = "Account found"),
+	     @ApiResponse(code = 404, message = "No such Account found")
+	   })	
+	public Response getPositions(@ApiParam(value = "account id") @PathParam("id") @NotNull Long id) {
+		log.debug("Requested positions for account id {}", id);
+		
+		Account account = accountService.getAccountById(id);
+		log.debug("Returning positions for account id {}", id);
+		
+		if(null != account) {
+			return Response.status(Status.OK).entity(account.getPositions()).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+	}	
+
+	@GET
+	@Path("/{id}/assessments")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Gets the account by provided Id", response = Account.class)
+	   @ApiResponses(value = {
+	     @ApiResponse(code = 200, message = "Account found"),
+	     @ApiResponse(code = 404, message = "No such Account found")
+	   })	
+	public Response getAssessments(@ApiParam(value = "account id") @PathParam("id") @NotNull Long id) {
+		log.debug("Requested assessments for account id {}", id);
+		
+		Account account = accountService.getAccountById(id);
+		log.debug("Returning assessments for account id {}", id);
+		
+		if(null != account) {
+			return Response.status(Status.OK).entity(account.getAccountSurveys()).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+	}	
+
 }

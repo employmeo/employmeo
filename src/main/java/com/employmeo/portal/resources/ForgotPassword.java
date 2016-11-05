@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 
 @Path("forgotpassword")
 @Api( value="/forgotpassword", consumes=MediaType.APPLICATION_FORM_URLENCODED)
-public class FortgotPassword {
+public class ForgotPassword {
 
-	private static final Logger log = LoggerFactory.getLogger(FortgotPassword.class);
+	private static final Logger log = LoggerFactory.getLogger(ForgotPassword.class);
 	
 	@POST
 	@PermitAll

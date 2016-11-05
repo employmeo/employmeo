@@ -12,6 +12,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,20 +35,13 @@ public class GetLastTenRespondants {
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public String doPost(@Context final HttpServletRequest reqt, @Context final HttpServletResponse resp,
+	public Response doPost(
+			@FormParam("account_id") Long accountId,
 			@DefaultValue("-1") @FormParam("location_id") Long locationId,
 			@DefaultValue("-1") @FormParam("position_id") Long positionId) {
 		log.debug("Fetching last 10 respondants");
 		
 		JSONArray response = new JSONArray();
-
-		HttpSession sess = reqt.getSession();
-		User user = (User) sess.getAttribute("User");
-		if (user == null) {
-			resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return null;
-		} // else if (false) { //
-			// {resp.setStatus(HttpServletResponse.SC_FORBIDDEN); return null;}
 
 		String locationSQL = "";
 		String positionSQL = "";
@@ -61,7 +56,7 @@ public class GetLastTenRespondants {
 				+ "ORDER BY r.respondantCreatedDate DESC";
 		TypedQuery<Respondant> query = em.createQuery(sql, Respondant.class);
 		query.setMaxResults(10);
-		query.setParameter("accountId", user.getAccount().getAccountId());
+		query.setParameter("accountId", accountId);
 		if (locationId > -1)
 			query.setParameter("locationId", locationId);
 		if (positionId > -1)
@@ -76,8 +71,9 @@ public class GetLastTenRespondants {
 			jresp.put("scores", respondant.getAssessmentScore());
 			response.put(jresp);
 		}
+		
+		return Response.status(Status.OK).entity(respondants).build();
 
-		return response.toString();
 	}
 
 }

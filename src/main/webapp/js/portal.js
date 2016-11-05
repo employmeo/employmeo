@@ -78,7 +78,7 @@ clientPortal.prototype.getLocations = function () {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/getlocations",
+		url: "/portal/getlocations",
 		success: function(data)
 		{
 			thisPortal.locationList = data;
@@ -91,7 +91,7 @@ clientPortal.prototype.getAssessments = function () {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/getassessments",
+		url: "/portal/getassessments",
 		success: function(data)
 		{
 			thisPortal.surveyList = data;
@@ -104,7 +104,7 @@ clientPortal.prototype.getPositions = function (list) {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/getpositions",
+		url: "/portal/getpositions",
 		success: function(data)
 		{
 			thisPortal.positionList = data;
@@ -118,7 +118,7 @@ function login() {
 		type: "POST",
 		async: true,
 		data : $('#loginform').serialize(),
-		url: "/admin/login",
+		url: "/portal/login",
 		xhrFields: {
 			withCredentials: true
 		},
@@ -147,7 +147,7 @@ function logout() {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/logout",
+		url: "/portal/logout",
 		xhrFields: {
 			withCredentials: true
 		},
@@ -162,7 +162,7 @@ function forgotPass() {
 		type: "POST",
 		async: true,
 		data : $('#forgotpassform').serialize(),
-		url: "/admin/forgotpassword",
+		url: "/portal/forgotpassword",
 		success: function(data) {
 			// disable forms
 			$('#forgotpassform :submit').text('Request Sent');
@@ -178,7 +178,7 @@ function forgotPass() {
 function resetPassword() {
 	$.ajax({
 		type: "POST",
-		url: "/admin/changepass",
+		url: "/portal/changepass",
 		async: true,
 	    headers: { 
 	        'Accept': 'application/json',
@@ -221,7 +221,7 @@ function updatePositionsSelect(detail) {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/getpositions",
+		url: "/portal/getpositions",
 		success: function(data)
 		{
 			positionList = data;
@@ -240,7 +240,7 @@ function updateLocationsSelect(detail) {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/getlocations",
+		url: "/portal/getlocations",
 		success: function(data)
 		{
 			locationList = data;
@@ -259,7 +259,7 @@ function updateSurveysSelect(detail) {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/getassessments",
+		url: "/portal/getassessments",
 		success: function(data)
 		{
 			surveyList = data;
@@ -354,7 +354,7 @@ function inviteApplicant() {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/inviteapplicant",
+		url: "/portal/inviteapplicant",
 		data: $('#inviteapplicant').serialize(),
 		beforeSend: function(data) {
 			$("#inviteapplicant :input").prop('readonly', true);
@@ -552,7 +552,7 @@ function updateRespondantsTable() {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/getrespondants",
+		url: "/portal/getrespondants",
 		data: $('#refinequery').serialize(),
 		beforeSend: function() {
 			$("#waitingmodal").removeClass("hidden");
@@ -637,7 +637,7 @@ function updateDash() {
 	$.ajax({
 		type: "POST",
 		async: true,
-		url: "/admin/updatedash",
+		url: "/portal/updatedash",
 		data: $('#refinequery').serialize(),
 		success: function(data)
 		{
