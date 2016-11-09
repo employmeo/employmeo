@@ -26,7 +26,7 @@
 	<div id='wait' class="hidden text-center" style='position:absolute;width:100%;position: absolute;background: black;opacity: .75;padding: 35%;height: 100%;z-index: 99;'>
 		<i class="fa fa-spinner fa-5x fa-spin"></i>
 	</div>
-	<div class="col-xs-12 text-center"><img src="/images/emp-logo-sm.png" style="width:65%;"></div>
+	<div class="col-xs-12 text-center"><img src="/images/tal-logo-sm.png" style="width:65%;"></div>
 	<div class="col-xs-12 text-center"><hr></div>
     <div id='logindiv' class="col-xs-12 text-center">
 		  <form name="login" method="post" action="javascript:login();" id="loginform">
