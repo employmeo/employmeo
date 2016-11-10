@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Employmeo | Login</title>
+<title>Talytica | Login</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width"/>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,7 +22,7 @@
 <body class="coverpage" style="background-image:url('/images/background-<%=new java.util.Random().nextInt(8)+1%>.jpg');">
 <div class="container-fluid">
     <div id="wrapper">
-<div class="container" style="background: black;color: white;opacity: .85;">
+<div class="container" style="background: rgba(0, 0, 0, 0.5);color: white;">
 	<div id='wait' class="hidden text-center" style='position:absolute;width:100%;position: absolute;background: black;opacity: .75;padding: 35%;height: 100%;z-index: 99;'>
 		<i class="fa fa-spinner fa-5x fa-spin"></i>
 	</div>
@@ -44,7 +44,12 @@
 			<div class="clearfix" style="height: 15px;"></div>
 			<div class="col-xs-12 text-center"><hr></div>
             <div class="col-xs-12 text-center"><p class="change_link">Forgot Password?
-                <a href="#" onClick="$('#logindiv').toggleClass('hidden');$('#forgotdiv').toggleClass('hidden');"> Request Reset </a></p>
+                <a href="#" onClick="$('#logindiv').toggleClass('hidden');$('#forgotdiv').toggleClass('hidden');" style='font-weight:800;color:white;'> Request Reset </a></p>
+            </div>
+			<div class="clearfix" style="height: 15px;"></div>
+			<div class="col-xs-12 text-center"><hr></div>
+            <div class="col-xs-12 text-center">
+              <button class="btn btn-info btn-block submit" type="button" onClick="window.location.assign('http://www.talytica.com/free-trial')">New Account Sign Up</button>
             </div>
 			<input id="toPage" type="hidden" value="/index.jsp">
           </form>
